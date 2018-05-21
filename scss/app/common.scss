@@ -1,0 +1,57 @@
+.loginTab{
+  display: flex;
+  justify-content:center;
+  margin-top: 100px;
+  .loginTabName{
+    font-size: 16px;
+    padding: 10px;
+    border-bottom: 1px solid $assertive;
+    &.isSelected{
+      border-bottom:3px solid $assertive;
+    }
+  }
+}
+.appIndex{
+  .indexSlide{
+    height: 150px;
+    .box{
+      img{
+        height: 150px;
+        width:100%;
+      }
+    }
+  }
+  .chooseTypes{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 50px;
+    .chooseType{
+      display: flex;
+      flex-direction: column;
+      .icon{
+        font-size: 50px;
+        color: $assertive;
+      }
+    }
+  }
+}
+.cateHomeSlide{
+  height: 200px;
+  margin-bottom: 10px;
+  .box{
+    img{
+      height: 200px;
+      width:100%;
+    }
+  }
+}
+.itemCart{
+  bottom: 0;
+  .popup{
+    height: 250px;
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+  }
+}
