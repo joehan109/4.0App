@@ -2,7 +2,7 @@
 
 <ion-view>
   <div class="bar bar-header">
-      <button class="button button-clear button-dark icon ion-ios-arrow-back"  ng-click="$state.go('tab.home')"></button>
+      <button class="button button-clear button-dark icon ion-ios-arrow-back"  ng-click="$ionicGoBack()"></button>
       <div class="title">购物车</div>
       <button class="button button-clear button-dark icon" ng-class="editShown?'ion-ios-color-wand-outline': 'ion-ios-trash-outline'"  ng-click="toggleEditShown()"></button>
 
@@ -95,7 +95,7 @@
         <a class="button button-clear">
             总价:  <span class="footer-price"> {{ ngCart.totalCost() |currency}}</span>
         </a>
-        <button class="button button-assertive button-cart pull-right" ng-click="$state.go('tab.checkout')">
+        <button class="button button-assertive button-cart pull-right" ng-click="$state.go('checkout')">
             结算({{ngCart.getTotalSelectedItems()}})
 
         </button>

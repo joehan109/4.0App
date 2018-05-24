@@ -46,6 +46,37 @@ angular.module('maybi.directives', [])
     };
 })
 
+.directive('ngcartBuyrightnow', function(ngCart, $state, $rootScope){
+    return {
+        restrict : 'E',
+        scope: {
+            id:'@',
+            name:'@',
+            quantity:'@',
+            quantityMax:'@',
+            price:'@',
+            data:'='
+        },
+        transclude: true,
+        templateUrl: function(element, attrs) {
+            if ( typeof attrs.templateUrl == 'undefined' ) {
+                return 'ngCart/buyrightnow.html';
+            } else {
+                return attrs.templateUrl;
+            }
+        },
+        link: function(scope, element, attrs){
+            scope.ngCart = ngCart;
+            scope.attrs = attrs;
+            scope.buyRightNow = function (id, name, price, quantity, data) {
+              ngCart.buyRightNow(id, name, price, quantity, data);
+              $rootScope.$broadcast('specsBuyModal:hide');
+              $state.go('checkout');
+            };
+        }
+    };
+})
+
 .directive('ngcartSummary', function(ngCart){
     return {
         restrict : 'E',
@@ -337,7 +368,7 @@ angular.module('maybi.directives', [])
                 var y = scrollView.__scrollTop;
                 if (y >= 0) {
                   header.style[ionic.CSS.TRANSFORM] = 'translate3d(0, -' + Math.min(148, y) + 'px, 0)';
-                  scrollContent.style.top = Math.max(64, 250 - y) + 'px';
+                  scrollContent.style.top = Math.max(64, 150 - y) + 'px';
                 }
             });
         }

@@ -281,15 +281,10 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
       }
   })
 
-  .state('tab.account', {
+  .state('account', {
       url: '/account',
-      nativeTransitions: null,
-      views: {
-        'tab-account@tab': {
-          templateUrl: 'account.html',
-          controller: 'accountCtrl'
-        }
-      }
+      templateUrl: 'account.html',
+      controller: 'accountCtrl'
     })
 
   .state('tab.coupons', {
@@ -340,14 +335,10 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
         controller: 'cartCtrl'
       })
 
-    .state('tab.checkout', {
+    .state('checkout', {
       url: '/checkout',
-      views: {
-        'tab-cateHome': {
-          templateUrl: 'checkout.html',
-          controller: 'checkoutCtrl'
-        }
-      }
+      templateUrl: 'checkout.html',
+      controller: 'checkoutCtrl'
     })
 
   .state('tab.categories', {
@@ -418,26 +409,18 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
       }
     })
 
-  .state('tab.address', {
+  .state('address', {
       url: '/address',
       cache: false,
-      views: {
-        'tab-cateHome': {
-          templateUrl: 'address.html',
-          controller: 'addressCtrl'
-        }
-      }
+      templateUrl: 'address.html',
+      controller: 'addressCtrl'
     })
 
-  .state('tab.address_list', {
+  .state('address_list', {
       url: '/address/list',
       cache: false,
-      views: {
-        'tab-account': {
-          templateUrl: 'address_list.html',
-          controller: 'addressCtrl'
-        }
-      }
+      templateUrl: 'address_list.html',
+      controller: 'addressCtrl'
     })
 
   .state('tab.orders', {
@@ -521,14 +504,10 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
       }
     })
 
-  .state('tab.favors', {
+  .state('favors', {
       url: '/favors',
-      views: {
-        'tab-account': {
-          templateUrl: 'favors.html',
-          controller: 'favorCtrl'
-        }
-      }
+      templateUrl: 'favors.html',
+      controller: 'favorCtrl'
     })
 
   .state('tab.like_posts', {

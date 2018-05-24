@@ -3,7 +3,7 @@
 var controllersModule = angular.module('maybi.controllers', [])
 
 function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
-        Photogram, PhotoService, $timeout, geoService, FetchData,$ionicSlideBoxDelegate,$interval) {
+        Photogram, PhotoService, $timeout, geoService, FetchData,$ionicSlideBoxDelegate,$interval,Storage) {
       // 解决每次路由切换轮播停止
       $scope.$on('$ionicView.beforeEnter',function(){
         $ionicSlideBoxDelegate.start();
@@ -11,9 +11,14 @@ function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
       $scope.types = [
         {name:'扫一扫',url:'tab.search',icon:'search'},
         {name:'4.0 商城',url:'shopTab.cateHome',icon:'search'},
-        {name:'4.0 拍卖',url:'tab.user',icon:'search'}
+        {name:'4.0 拍卖',url:'tab.home',icon:'search'}
       ];
       $scope.goto = function (item) {
+        if (item.url === 'shopTab.cateHome') {
+          Storage.set('shopOrSell', 'shop')
+        } else if (item.url === 'tab.home'){
+          Storage.set('shopOrSell', 'sell')
+        } else {}
         $state.go(item.url);
       }
       $scope.form = {
@@ -1070,10 +1075,11 @@ function authCtrl($rootScope, $scope, FetchData, $state,
 }
 
 function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
-        $ionicScrollDelegate) {
+        $ionicScrollDelegate, Storage) {
     //个人页面
-    //
+    //查看是在商城还是特卖
     $scope.$on('$ionicView.beforeEnter', function() {
+      $scope.isShop = Storage.get('shopOrSell') === 'shop';
       $rootScope.hideTabs = '';
     });
 
@@ -1280,7 +1286,7 @@ function paymentCancelCtrl() {
 }
 
 
-function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal,
+function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal, ngCart,
         $ionicSlideBoxDelegate, sheetShare, $cordovaSocialSharing,$ionicPopup) {
     //商品详情
     //
@@ -1329,13 +1335,28 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal,
       });
     };
 
+    $scope.showSpecsBuy = function() {
+      $scope.buyDialog = $ionicPopup.show({
+        templateUrl:'specsBuy-dialog.html',
+        scope: $scope,
+        cssClass: "itemCart"
+      });
+    };
+
     $scope.closeSpecsBox= function() {
       $scope.specsDialog.close();
     };
 
-    $scope.$on('specsModal:close', function (event) {
+    $scope.closeSpecsBuy= function() {
+      $scope.buyDialog.close();
+    };
+
+    $scope.$on('specsModal:hide', function (event) {
       $scope.specsDialog.close();
-      $scope.specsDialog.remove();
+    })
+
+    $scope.$on('specsBuyModal:hide', function (event) {
+      $scope.buyDialog.close();
     })
 
     FetchData.get('/api/items/'+ $stateParams.itemID).then(function(data) {
@@ -1363,6 +1384,9 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal,
         $ionicSlideBoxDelegate.$getByHandle('image-viewer').update();
         $ionicSlideBoxDelegate.$getByHandle('image-viewer').loop(true);
 
+    }, function () {
+      // 接口出错，mock数据
+      $scope.selectedSpec = {sku:$stateParams.itemID,price:111};
     });
 
     $scope.favor = function(item_id){
@@ -1601,7 +1625,7 @@ function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData
 
     $scope.addr = ngCart.getAddress();
     $scope.gotoAddress = function(){
-        $state.go('tab.address');
+        $state.go('address');
     };
     $scope.fillTracking = function(entry) {
         FetchData.post('/api/orders/fill_shipping_info', {
@@ -1771,7 +1795,7 @@ function expressCtrl($rootScope, $scope, FetchData, ngCart, AuthService, $state,
 
     $scope.addr = ngCart.getAddress();
     $scope.gotoAddress = function(){
-        $state.go('tab.address')
+        $state.go('address')
     };
 
     $scope.entries = expressList.get() || [];
@@ -1872,7 +1896,15 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart) {
             'quantity': item.getQuantity()
         });
     };
-
+    $scope.$watch(function () {
+      return ngCart.getSelectedItems()
+    }, function (newVal) {
+      if (newVal.length) {
+        $scope.isSelectedAll = newVal.length === ngCart.getItems().length
+      } else {
+        $scope.isSelectedAll = false;
+      }
+    }, true)
 
     $scope.selectEntry = function(id) {
         if (ngCart.getSelectedItemById(id)) {
@@ -1882,7 +1914,6 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart) {
         }
     };
 
-    $scope.isSelectedAll = false;
     $scope.selectAllEntries = function() {
         if ($scope.isSelectedAll === false) {
             angular.forEach(ngCart.getCart().items, function (item, index) {
@@ -1907,8 +1938,12 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
     });
 
     $scope.ngCart = ngCart;
+    $scope.clearSelectedCart = function () {
+      ngCart.emptySelectedItems();
+      $scope.$ionicGoBack();
+    };
     $scope.gotoAddress = function(){
-        $state.go('tab.address');
+        $state.go('address');
     };
 
 

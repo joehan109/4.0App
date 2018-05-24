@@ -16,11 +16,23 @@
     <div class="list">
         <label class="item item-input">
             <div class="input-label" ng-class="{'warning': addressForm.receiver.$error.required && !addressForm.receiver.$pristine}">
-                收件人全称
+                收货人
             </div>
             <input type="text" ng-model="addr.receiver" name="receiver" required />
         </label>
-        <label class="item item-input item-select">
+        <label class="item item-input">
+            <div class="input-label" ng-class="{'warning': addressForm.mobile_number.$error.required && !addressForm.mobile_number.$pristine}">
+                联系方式
+            </div>
+            <input type="text" ng-model="addr.mobile_number" name="mobile_number" required />
+        </label>
+        <label class="item item-input">
+            <div class="input-label" ng-class="{'warning': addressForm.street1.$error.required && !addressForm.street1.$pristine}">
+                详细地址
+            </div>
+            <input type="text" ng-model="addr.street1" name="street1" required />
+        </label>
+        <!-- <label class="item item-input item-select">
             <div class="input-label" ng-class="addressForm.country.$error.required && !addressForm.country.$pristine">
                 国家
             </div>
@@ -45,26 +57,20 @@
                 城市
             </div>
             <input type="text" ng-model="addr.city" name="city" required />
-        </label>
-        <label class="item item-input item-select">
+        </label> -->
+        <!-- <label class="item item-input item-select">
             <div class="input-label" ng-class="addressForm.state.$error.required && !addressForm.state.$pristine">
                 州/省
             </div>
             <select ng-model="addr.state" name="state" required>
                 <option ng-selected="addr.state == k" value="{{k}}" ng-repeat="(k, v) in REGIONS">{{v}}</option>
-            </select>
-        </label>
+            </select> -->
+        <!-- </label> -->
         <label class="item item-input">
             <div class="input-label" ng-class="{'warning': addressForm.postcode.$error.required && !addressForm.postcode.$pristine}">
                 邮编
             </div>
             <input type="text" ng-model="addr.postcode" name="postcode" required />
-        </label>
-        <label class="item item-input">
-            <div class="input-label" ng-class="{'warning': addressForm.mobile_number.$error.required && !addressForm.mobile_number.$pristine}">
-                联系电话
-            </div>
-            <input type="text" ng-model="addr.mobile_number" name="mobile_number" required />
         </label>
     </div>
 </form>

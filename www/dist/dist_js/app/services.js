@@ -810,15 +810,22 @@ angular.module('maybi.services', [])
 
         var _self = this;
 
+        var item = this.getItemById(id);
+
         $http.post(ENV.SERVER_URL+'/api/cart/add/'+ id, {
             'quantity': quantity,
         }).success(function(res) {
             _self.$loadCart(res.cart);
         }).error(function() {
-
+          if (item) {
+            item._quantity += +quantity;
+          } else {
+            _self.$cart.items.push(new ngCartItem(id, name, price, quantity, data));
+          }
+        }).finally(function () {
+          $rootScope.$broadcast('specsModal:hide');
+          $rootScope.$broadcast('ngCart:change', "商品已添加到购物车");
         });
-        $rootScope.$broadcast('specsModal:hide');
-        $rootScope.$broadcast('ngCart:change', "商品已添加到购物车");
     };
 
     this.selectItem = function (id) {
@@ -829,8 +836,14 @@ angular.module('maybi.services', [])
         } else {
             console.log('irregular item');
         }
+        this.$save();
     };
-
+    this.buyRightNow = function (id, name, price, quantity, data) {
+      // 商品详情页直接购买时使用，不影响到购物车其他商品
+      // 清空购物车已选择物品，将当前商品作为唯一选择的商品
+      this.$cart.selectedItems = [new ngCartItem(id, name, price, quantity, data)];
+      this.$save();
+    };
     this.getItemById = function (itemId) {
         var items = this.getCart().items;
         var build = false;
@@ -941,9 +954,12 @@ angular.module('maybi.services', [])
             'skus': [id]
         }).success(function(data){
             _self.$loadCart(res.cart);
-        });
+        }).error(function() {
 
-        $rootScope.$broadcast('ngCart:change', "商品已从购物车清除");
+        }).finally(function () {
+          this.$save();
+          $rootScope.$broadcast('ngCart:change', "商品已从购物车清除");
+        });
     };
 
     this.removeSelectedItemById = function (id) {
@@ -953,9 +969,13 @@ angular.module('maybi.services', [])
                 cart.selectedItems.splice(index, 1);
             }
         });
-        this.setCart(cart);
+        this.$save();
     };
 
+    this.emptySelectedItems = function () {
+      this.$cart.selectedItems = [];
+      this.$save();
+    };
     this.empty = function () {
 
         $rootScope.$broadcast('ngCart:change', "已成功清空购物车");
@@ -1008,7 +1028,9 @@ angular.module('maybi.services', [])
         var _self = this;
         _self.init();
         angular.forEach(storedCart.items, function (item) {
+          if (item.id) {
             _self.$cart.items.push(new ngCartItem(item._id,  item._name, item._price, item._quantity, item._data));
+          }
         });
         this.$save();
     };
