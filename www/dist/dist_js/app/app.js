@@ -11,9 +11,9 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
         'maybi.controllers', 'maybi.services', 'maybi.directives', 'maybi.photogram',
         'maybi.constants', 'maybi.filters', 'tag-select'])
 
-.run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$ionicSlideBoxDelegate', function($ionicPlatform, $rootScope, $state, JPush,
+.run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$ionicSlideBoxDelegate', '$cordovaBarcodeScanner', function($ionicPlatform, $rootScope, $state, JPush,
             $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast,
-            amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate) {
+            amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate, $cordovaBarcodeScanner) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -70,7 +70,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
         ngCart.$restore(Storage.get('cart'));
     } else {
         ngCart.init();
-        FetchData.get('/api/cart').then(function(data) {
+        FetchData.get('/mall/mashopping/getAll').then(function(data) {
             ngCart.$loadCart(data.cart);
         });
     }
@@ -585,6 +585,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/appIndex');
   $httpProvider.interceptors.push('timeoutHttpIntercept');
+  $httpProvider.defaults.withCredentials = true;
+  $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
   AWS.config.update({
       accessKeyId: 'AKIAI4JD55P3DQLOXQKQ',

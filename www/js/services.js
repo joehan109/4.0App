@@ -175,19 +175,21 @@ angular.module('maybi.services', [])
 
         login: function (email, password) {
             var deferred = $q.defer();
-            $http.post(ENV.SERVER_URL+'/api/auth/login_email', {
-                email: email,
-                password: password
+            $http.post(ENV.SERVER_URL+'/mall/vip/login', {
+                name: email,
+                pwd: password
             }).success(function(data, status) {
-                if (status === 200 && data.message == "OK"){
+                if (status === 200 && data.ret){
                     isAuthenticated = true;
-                    user = data.user;
-                    Storage.set('user', data.user);
-                    Storage.set('access_token', data.remember_token);
-                    if (window.cordova && window.cordova.plugins) {
-                        plugins.jPushPlugin.setAlias(data.user.id);
-                    }
-                    deferred.resolve();
+                    $http.get(ENV.SERVER_URL+'/mall/vip/login').success(function () {
+                      user = data.user;
+                      Storage.set('user', data.user);
+                      Storage.set('access_token', data.remember_token);
+                      if (window.cordova && window.cordova.plugins) {
+                          plugins.jPushPlugin.setAlias(data.user.id);
+                      }
+                      deferred.resolve();
+                    })
                 } else {
                     isAuthenticated = false;
                     deferred.reject();
@@ -356,9 +358,9 @@ angular.module('maybi.services', [])
         register: function(form) {
             var deferred = $q.defer();
 
-            $http.post(ENV.SERVER_URL+'/api/auth/signup', {
+            $http.post(ENV.SERVER_URL+'/mall/vip/app/save', {
                 email: form.email,
-                password: form.password,
+                pwd: form.password,
                 name: form.name
             }).success(function (data, status) {
                 if(status === 200 && data.message == "OK"){
@@ -532,7 +534,7 @@ angular.module('maybi.services', [])
             hasNextPage = true;
             isEmpty = false;
 
-            $http.get(ENV.SERVER_URL + '/api/items', {
+            $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                 params: {
                     main_category: currentTab,
                     page: 0,

@@ -19,7 +19,7 @@ angular.module('maybi.constants', [])
     "DEBUG": false,
     //"FIREBASE_URL": "http://sizzling-inferno-6138.firebaseIO.com/",
     //"SERVER_URL": "http://127.0.0.1:8890",
-    "SERVER_URL": "http://api.maybi.cn",
+    "SERVER_URL": "http://39.106.199.108:8080",
 })
 .constant("paypalSettings", {
     "PAYPAL_LIVE_CLIENT_ID": "",

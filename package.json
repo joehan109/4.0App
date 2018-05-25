@@ -4,12 +4,16 @@
   "description": "maybi-ionic: An Ionic project",
   "dependencies": {
     "angular-moment": "^1.0.0-beta.3",
+    "cordova-android": "^7.0.0",
+    "cordova-plugin-camera": "git+https://github.com/apache/cordova-plugin-camera.git",
+    "cordova-plugin-whitelist": "git+https://github.com/apache/cordova-plugin-whitelist.git",
     "gulp": "^3.5.6",
     "gulp-concat": "^2.2.0",
     "gulp-minify-css": "^0.3.0",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.0.4",
-    "moment": "^2.10.6"
+    "moment": "^2.10.6",
+    "phonegap-plugin-barcodescanner": "git+https://github.com/phonegap/phonegap-plugin-barcodescanner.git"
   },
   "devDependencies": {
     "async": "^1.5.2",
@@ -44,5 +48,19 @@
   "cordovaPlatforms": [
     "ios",
     "android"
-  ]
+  ],
+  "cordova": {
+    "platforms": [
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-camera": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
+      "phonegap-plugin-barcodescanner": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      }
+    }
+  }
 }

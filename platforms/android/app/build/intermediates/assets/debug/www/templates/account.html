@@ -1,0 +1,90 @@
+<ion-view>
+    <div class="buttons">
+        <button class="button button-clear icon ion-ios-gear account-setting-btn pull-right"
+            ng-click="$state.go('tab.settings')" ng-if="user.getUser().name"></button>
+    </div>
+    <div class="avatar-section">
+        <div ng-if="user.getUser().name">
+            <a class="logo" ng-click="$state.go('tab.profile')"
+                style="background: url({{user.getUser().avatar_url}}) center no-repeat; background-size: cover">
+            </a>
+            <div class="avatar-wrap">
+                <p><img class="avatar" ng-src="{{user.getUser().avatar_url}}" alt=""></p>
+                <p ng-if="user.getUser().name" class="user">{{user.getUser().name}}</p>
+            </div>
+            <div class="social-btns">
+                <a ng-href="#/myuserList/{{user.getUser().id}}/followers">
+                    <strong>{{user.getUser().num_followers}} </strong>粉丝
+                </a>
+                <a ng-href="#/myuserList/{{user.getUser().id}}/followings">
+                    <strong>{{user.getUser().num_followings}} </strong>关注
+                </a>
+            </div>
+        </div>
+        <div ng-click="showAuthBox()" ng-if="!user.getUser().name">
+            <a
+                class="logo"
+                style="background: url(img/b7.jpg) center no-repeat; background-size: cover">
+            </a>
+            <div class="avatar-wrap">
+                <p><img class="avatar" ng-src="{{user.getUser().avatar_url}}" alt=""></p>
+                <p ng-if="!user.getUser().name" class="login-btn">登陆</p>
+            </div>
+         </div>
+
+    </div>
+
+  <ion-content class="account-view" style="top:150px" overflow-scroll='false' delegate-handle="userDetailContent" on-scroll="onUserDetailContentScroll()" header-shrink scroll-event-interval="5">
+    <ion-list>
+      <div class="list">
+
+        <a class="item item-icon-left item-icon-right" href="#/favors">
+          <i class="icon ion-ios-star-outline"></i>
+          收藏
+          <i class="icon ion-ios-arrow-right"></i>
+        </a>
+
+        <a class="item item-icon-left item-icon-right" href="#/cart">
+          <i class="icon icon ion-ios-cart-outline"></i>
+          购物车
+          <i class="icon ion-ios-arrow-right"></i>
+        </a>
+
+        <a class="item item-icon-left item-icon-right" href="#/orders">
+          <i class="icon ion-ios-list-outline"></i>
+          我的订单
+          <i class="icon ion-ios-arrow-right"></i>
+        </a>
+
+        <a class="item item-icon-left item-icon-right" href="#/address/list">
+          <i class="icon ion-android-locate"></i>
+          地址管理
+          <i class="icon ion-ios-arrow-right"></i>
+        </a>
+
+        <a class="item item-icon-left item-icon-right" href="#/setting">
+          <i class="icon ion-ios-gear-outline"></i>
+          设置
+          <i class="icon ion-ios-arrow-right"></i>
+        </a>
+      </div>
+    </ion-list>
+
+  </ion-content>
+  <ion-tabs class="maybi-tabs tabs-icon-top tabs-color-active-positive">
+
+    <!-- Home Tab -->
+    <ion-tab title="首页" icon-off="ion-ios-home-outline" icon-on="ion-ios-home" href="#/shopTab/cateHome">
+    </ion-tab>
+
+    <!-- Noti Tab -->
+    <ion-tab title="购物车" icon-off="ion-ios-cart-outline" icon-on="ion-ios-cart" href="#/cart">
+    </ion-tab>
+
+    <!-- Account Tab -->
+    <ion-tab title="我的" icon-off="ion-ios-person-outline" icon-on="ion-ios-person" href="#/account">
+    </ion-tab>
+
+
+  </ion-tabs>
+</ion-view>
