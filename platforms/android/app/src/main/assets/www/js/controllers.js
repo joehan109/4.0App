@@ -585,17 +585,21 @@ function userListCtrl($scope, $rootScope, $state, FetchData, $stateParams,
 
 function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         $ionicModal, $ionicScrollDelegate, ngCart,
-        Items, FetchData, Categories, $ionicSlideBoxDelegate) {
+        Items, FetchData, Categories, $ionicSlideBoxDelegate,$http,ENV) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
         $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
     });
 
-    FetchData.get('/api/banners').then(function(data) {
-        $scope.banners = data.banners;
+    $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
+        if (r.ret){
+          $scope.banners = r.data;
+          $scope.changeTab(r.data[0],0);
+        }
     });
-    $scope.Categories = Categories;
+
+    // $scope.Categories = Categories;
 
     $scope.ngCart = ngCart;
 
@@ -622,11 +626,11 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     $scope.changeTab = function(tab, index) {
         $scope.items = [];
-        $scope.currentTab = tab;
+        $scope.currentTab = tab.codeKey;
         $scope.currentIndex = index;
-        Items.setCurrentTab(tab);
+        Items.setCurrentTab(tab.codeKey);
         Items.fetchTopItems().then(function(data){
-            $scope.items = data.items;
+            $scope.items = data;
         });
         if (!index) {
             index = GetCateIndex($scope.currentTab);
@@ -677,7 +681,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     function GetCateIndex(k) {
         var i = 0, key;
-        for (key in Categories) {
+        for (key in $scope.banners) {
             if (k == key) {
                 return i;
             }
@@ -687,14 +691,14 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     }
 
     function GetCate(index) {
-        var i = 0, key;
-        for (key in Categories) {
-            if (i == index) {
-                return key;
-            }
-            i++;
-        }
-        return null;
+        return $scope.banners[index];
+        // for (key in $scope.banners) {
+        //     if (i == index) {
+        //         return key;
+        //     }
+        //     i++;
+        // }
+        // return null;
     }
 
     Items.fetchTopItems().then(function(data){
@@ -1096,6 +1100,9 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
       $rootScope.hideTabs = '';
     });
 
+    $scope.logout = function () {
+      AuthService.logout();
+    };
     $scope.user = AuthService;
 
     $scope.onUserDetailContentScroll = onUserDetailContentScroll;
@@ -1244,7 +1251,7 @@ function forgotPWCtrl($rootScope, $scope, AuthService) {
     };
 }
 
-function signupCtrl($rootScope, $scope, AuthService) {
+function signupCtrl($rootScope, $scope, AuthService, $state) {
     $scope.signup = function () {
         // call register from service
         AuthService.register($scope.signupForm)
@@ -1253,6 +1260,7 @@ function signupCtrl($rootScope, $scope, AuthService) {
                 $rootScope.$broadcast('signupModal:hide');
                 $rootScope.authDialog.hide()
                 $scope.$emit('alert', "注册成功");
+                $state.go('appIndex')
             })
             .catch(function (data) {
                 if (data) {

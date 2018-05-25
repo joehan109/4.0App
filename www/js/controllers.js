@@ -585,17 +585,25 @@ function userListCtrl($scope, $rootScope, $state, FetchData, $stateParams,
 
 function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         $ionicModal, $ionicScrollDelegate, ngCart,
-        Items, FetchData, Categories, $ionicSlideBoxDelegate) {
+        Items, FetchData, Categories, $ionicSlideBoxDelegate,$http,ENV) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
         $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
+        $scope.changeTab($scope.banners[0],0);
     });
 
-    FetchData.get('/api/banners').then(function(data) {
-        $scope.banners = data.banners;
+    $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
+        if (r.ret){
+          $scope.banners = r.data;
+          $scope.changeTab(r.data[0],0);
+        }
     });
-    $scope.Categories = Categories;
+
+    FetchData.get('/mall/mapro/app/getAll').then(function(res) {
+        $scope.tuijian = res.data;
+    });
+  // $scope.Categories = Categories;
 
     $scope.ngCart = ngCart;
 
@@ -608,7 +616,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     };
 
     $scope.goItem = function(item_id) {
-        $state.go('tab.item', {itemID: item_id});
+        $state.go('tab.item', {id: item_id});
     };
 
     $scope.slideHasChanged = function(index){
@@ -622,11 +630,11 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     $scope.changeTab = function(tab, index) {
         $scope.items = [];
-        $scope.currentTab = tab;
+        $scope.currentTab = tab.codeKey;
         $scope.currentIndex = index;
-        Items.setCurrentTab(tab);
+        Items.setCurrentTab(tab.codeKey);
         Items.fetchTopItems().then(function(data){
-            $scope.items = data.items;
+            $scope.items = data;
         });
         if (!index) {
             index = GetCateIndex($scope.currentTab);
@@ -677,7 +685,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     function GetCateIndex(k) {
         var i = 0, key;
-        for (key in Categories) {
+        for (key in $scope.banners) {
             if (k == key) {
                 return i;
             }
@@ -687,14 +695,14 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     }
 
     function GetCate(index) {
-        var i = 0, key;
-        for (key in Categories) {
-            if (i == index) {
-                return key;
-            }
-            i++;
-        }
-        return null;
+        return $scope.banners[index];
+        // for (key in $scope.banners) {
+        //     if (i == index) {
+        //         return key;
+        //     }
+        //     i++;
+        // }
+        // return null;
     }
 
     Items.fetchTopItems().then(function(data){
@@ -1247,7 +1255,7 @@ function forgotPWCtrl($rootScope, $scope, AuthService) {
     };
 }
 
-function signupCtrl($rootScope, $scope, AuthService) {
+function signupCtrl($rootScope, $scope, AuthService, $state) {
     $scope.signup = function () {
         // call register from service
         AuthService.register($scope.signupForm)
@@ -1256,6 +1264,7 @@ function signupCtrl($rootScope, $scope, AuthService) {
                 $rootScope.$broadcast('signupModal:hide');
                 $rootScope.authDialog.hide()
                 $scope.$emit('alert', "注册成功");
+                $state.go('appIndex')
             })
             .catch(function (data) {
                 if (data) {
@@ -1375,7 +1384,8 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal, ngCa
       $scope.buyDialog.close();
     })
 
-    FetchData.get('/api/items/'+ $stateParams.itemID).then(function(data) {
+    FetchData.get('/mall/mapro/app/get?id='+ $stateParams.id).then(function(data) {
+      debugger
         $scope.item = data.item;
         $scope.specs = data.item.specs;
         $scope.selectedSpec = data.item.specs[0];
@@ -1505,6 +1515,7 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
     });
 
     $scope.goItem = function(item_id) {
+      debugger
         $state.go('tab.item', {itemID: item_id});
     };
 

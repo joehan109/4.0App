@@ -2,7 +2,7 @@
 
 appIndexCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$cordovaToast', 'Photogram', 'PhotoService', '$timeout', 'geoService', 'FetchData', '$ionicSlideBoxDelegate', '$interval', 'Storage'];
 homeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicModal', 'ngCart', '$ionicSlideBoxDelegate', 'Board', 'Items', 'FetchData', 'Categories'];
-cateHomeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicModal', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate'];
+cateHomeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicModal', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV'];
 introCtrl.$inject = ['$rootScope', '$scope', '$state', 'FetchData', '$ionicSlideBoxDelegate', 'Storage'];
 exploreCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$ionicPopover', 'Photogram', 'FetchData'];
 notificationCtrl.$inject = ['$rootScope', '$scope', '$state', 'Notification'];
@@ -19,7 +19,7 @@ faqCtrl.$inject = ['$rootScope', '$scope'];
 couponsCtrl.$inject = ['$rootScope', '$scope', 'AuthService'];
 categoryCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state'];
 authCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'AuthService', '$ionicModal', '$cordovaFacebook', '$interval'];
-signupCtrl.$inject = ['$rootScope', '$scope', 'AuthService'];
+signupCtrl.$inject = ['$rootScope', '$scope', 'AuthService', '$state'];
 accountCtrl.$inject = ['$rootScope', '$scope', 'AuthService', 'User', 'Photogram', '$ionicScrollDelegate', 'Storage'];
 profileCtrl.$inject = ['$scope', 'AuthService', '$state', '$rootScope', 'PhotoService', '$http', 'ENV', '$ionicPopup'];
 bindEmailCtrl.$inject = ['$rootScope', '$scope', 'AuthService'];
@@ -625,17 +625,21 @@ function userListCtrl($scope, $rootScope, $state, FetchData, $stateParams,
 
 function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         $ionicModal, $ionicScrollDelegate, ngCart,
-        Items, FetchData, Categories, $ionicSlideBoxDelegate) {
-    //登陆
+        Items, FetchData, Categories, $ionicSlideBoxDelegate,$http,ENV) {
+    //登录
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
         $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
     });
 
-    FetchData.get('/api/banners').then(function(data) {
-        $scope.banners = data.banners;
+    $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
+        if (r.ret){
+          $scope.banners = r.data;
+          $scope.changeTab(r.data[0],0);
+        }
     });
-    $scope.Categories = Categories;
+
+    // $scope.Categories = Categories;
 
     $scope.ngCart = ngCart;
 
@@ -662,11 +666,11 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     $scope.changeTab = function(tab, index) {
         $scope.items = [];
-        $scope.currentTab = tab;
+        $scope.currentTab = tab.codeKey;
         $scope.currentIndex = index;
-        Items.setCurrentTab(tab);
+        Items.setCurrentTab(tab.codeKey);
         Items.fetchTopItems().then(function(data){
-            $scope.items = data.items;
+            $scope.items = data;
         });
         if (!index) {
             index = GetCateIndex($scope.currentTab);
@@ -717,7 +721,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     function GetCateIndex(k) {
         var i = 0, key;
-        for (key in Categories) {
+        for (key in $scope.banners) {
             if (k == key) {
                 return i;
             }
@@ -727,14 +731,14 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     }
 
     function GetCate(index) {
-        var i = 0, key;
-        for (key in Categories) {
-            if (i == index) {
-                return key;
-            }
-            i++;
-        }
-        return null;
+        return $scope.banners[index];
+        // for (key in $scope.banners) {
+        //     if (i == index) {
+        //         return key;
+        //     }
+        //     i++;
+        // }
+        // return null;
     }
 
     Items.fetchTopItems().then(function(data){
@@ -767,7 +771,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 function homeCtrl($scope, $rootScope, $log, $timeout, $state,
         $ionicModal, ngCart, $ionicSlideBoxDelegate, Board,
         Items, FetchData, Categories) {
-    //登陆
+    //登录
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
     });
@@ -1007,7 +1011,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
         AuthService.login($scope.email, $scope.password)
             .then(function() {
                 $rootScope.authDialog.hide()
-                $scope.$emit('alert', "登陆成功");
+                $scope.$emit('alert', "登录成功");
             }).catch(function () {
                 $scope.$emit('alert', "Invalid username and/or password");
                 $scope.disabled = false;
@@ -1031,7 +1035,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
                         });
                     } else {
                         $rootScope.authDialog.hide();
-                        $scope.$emit('alert', "登陆成功");
+                        $scope.$emit('alert', "登录成功");
                     }
                 })
         }
@@ -1093,7 +1097,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
     //绑定email页面
 
     $scope.closeBindEmailBox= function() {
-        $scope.$emit('alert', "需绑定邮箱才能登陆");
+        $scope.$emit('alert', "需绑定邮箱才能登录");
         $scope.bindEmailDialog.hide();
         $scope.bindEmailDialog.remove();
     };
@@ -1136,6 +1140,9 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
       $rootScope.hideTabs = '';
     });
 
+    $scope.logout = function () {
+      AuthService.logout();
+    };
     $scope.user = AuthService;
 
     $scope.onUserDetailContentScroll = onUserDetailContentScroll;
@@ -1284,7 +1291,7 @@ function forgotPWCtrl($rootScope, $scope, AuthService) {
     };
 }
 
-function signupCtrl($rootScope, $scope, AuthService) {
+function signupCtrl($rootScope, $scope, AuthService, $state) {
     $scope.signup = function () {
         // call register from service
         AuthService.register($scope.signupForm)
@@ -1293,6 +1300,7 @@ function signupCtrl($rootScope, $scope, AuthService) {
                 $rootScope.$broadcast('signupModal:hide');
                 $rootScope.authDialog.hide()
                 $scope.$emit('alert', "注册成功");
+                $state.go('appIndex')
             })
             .catch(function (data) {
                 if (data) {

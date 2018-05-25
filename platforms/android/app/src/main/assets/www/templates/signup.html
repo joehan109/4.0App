@@ -12,12 +12,17 @@
       </label>
 
       <label class="item item-input">
-        <input type="password" placeholder="密码" ng-model="signupForm.password">
+        <input type="text" placeholder="手机号" ng-model="signupForm.phone">
       </label>
 
       <label class="item item-input">
         <input type="text" placeholder="用户名" ng-model="signupForm.name">
       </label>
+
+      <label class="item item-input">
+        <input type="password" placeholder="密码" ng-model="signupForm.password">
+      </label>
+
     </div>
 
     <button class="button button-block login-btn" ng-click="signup()">

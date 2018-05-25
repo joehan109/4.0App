@@ -9,7 +9,7 @@
     <ion-slide-box delegate-handle="image-viewer"
         ng-style="{'height':(images?'auto':'0px'),'padding-top':(images?'0':'100%')}">
         <ion-slide ng-repeat="img in images">
-            <img ng-src="{{ img.url }}" ng-click="zoom(img.url)">
+            <img ng-src="{{ img.detailUrl }}" ng-click="zoom(img.url)">
         </ion-slide>
     </ion-slide-box>
 

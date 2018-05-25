@@ -188,6 +188,7 @@ angular.module('maybi.services', [])
                       if (window.cordova && window.cordova.plugins) {
                           plugins.jPushPlugin.setAlias(data.user.id);
                       }
+                      $state.go('appIndex')
                       deferred.resolve();
                     })
                 } else {
@@ -362,20 +363,23 @@ angular.module('maybi.services', [])
             $http.post(ENV.SERVER_URL+'/mall/vip/app/save', {
                 email: form.email,
                 pwd: form.password,
-                name: form.name
+                name: form.name,
+                phone: form.phone
             }).success(function (data, status) {
-                if(status === 200 && data.message == "OK"){
+                if(status === 200 && data.ret){
                     isAuthenticated = true;
-                    user = data.user;
-                    Storage.set('user', data.user);
-                    Storage.set('access_token', data.remember_token);
-                    if (window.cordova && window.cordova.plugins) {
-                        plugins.jPushPlugin.setAlias(data.user.id);
-                    }
-                    deferred.resolve();
+                    $http.get(ENV.SERVER_URL+'/mall/vip/get').success(function (data) {
+                      user = data.user;
+                      Storage.set('user', data.user);
+                      Storage.set('access_token', data.remember_token);
+                      if (window.cordova && window.cordova.plugins) {
+                          plugins.jPushPlugin.setAlias(data.user.id);
+                      }
+                      deferred.resolve();
+                    });
                 } else {
                     isAuthenticated = false;
-                    deferred.reject(data);
+                    deferred.reject(data.errmsg);
                 }
             }).error(function (data) {
                 deferred.reject();
@@ -537,18 +541,18 @@ angular.module('maybi.services', [])
 
             $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                 params: {
-                    main_category: currentTab,
+                    oneType: currentTab,
                     page: 0,
                     per_page: perPage,
                 }
             }).success(function(r, status) {
-                if (status === 200 && r.message == "OK"){
-                    if (r.items.length < perPage) {
+                if (status === 200 && r.ret){
+                    if (r.data.data.length < perPage) {
                         hasNextPage = false;
                     }
                     nextPage = 1;
-                    deferred.resolve(r);
-                    if (r.items.length === 0) {
+                    deferred.resolve(r.data.data);
+                    if (r.data.data.length === 0) {
                         isEmpty = true;
                     }
                 } else {
@@ -595,7 +599,7 @@ angular.module('maybi.services', [])
             hasNextPage = true;
             isEmpty = false;
 
-            $http.get(ENV.SERVER_URL + '/api/items', {
+            $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                 params: {
                     sub_category: sub_category,
                     page: page,
@@ -636,9 +640,9 @@ angular.module('maybi.services', [])
 
         increaseNewItems: function() {
             var deferred = $q.defer();
-            $http.get(ENV.SERVER_URL + '/api/items', {
+            $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                 params: {
-                    main_category: currentTab,
+                    oneType: currentTab,
                     page: nextPage,
                     per_page: perPage,
                 }
@@ -686,7 +690,7 @@ angular.module('maybi.services', [])
                 params: kargs,
 
             }).success(function(res, status) {
-                if (status === 200 && res.message == "OK") {
+                if (status === 200 && res.ret) {
                     //$ionicLoading.hide();
                     d.resolve(res);
                 } else {
