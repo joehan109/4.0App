@@ -587,7 +587,20 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
   $httpProvider.interceptors.push('timeoutHttpIntercept');
   $httpProvider.defaults.withCredentials = true;
   $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
-
+  $httpProvider.defaults.transformRequest.push(function(data) {
+          var requestStr;
+          if (data) {
+              data = JSON.parse(data);
+              for (var key in data) {
+                  if (requestStr) {
+                      requestStr += "&" + key + "=" + data[key];
+                  } else {
+                      requestStr = key + "=" + data[key];
+                  }
+              }
+          }
+          return requestStr;
+      });
   AWS.config.update({
       accessKeyId: 'AKIAI4JD55P3DQLOXQKQ',
       secretAccessKey: '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'

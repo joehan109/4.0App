@@ -181,9 +181,9 @@ angular.module('maybi.services', [])
             }).success(function(data, status) {
                 if (status === 200 && data.ret){
                     isAuthenticated = true;
-                    $http.get(ENV.SERVER_URL+'/mall/vip/login').success(function () {
-                      user = data.user;
-                      Storage.set('user', data.user);
+                    $http.get(ENV.SERVER_URL+'/mall/vip/get').success(function (data) {
+                      user = data.data;
+                      Storage.set('user', data.data);
                       Storage.set('access_token', data.remember_token);
                       if (window.cordova && window.cordova.plugins) {
                           plugins.jPushPlugin.setAlias(data.user.id);
@@ -289,11 +289,12 @@ angular.module('maybi.services', [])
 
         logout: function() {
             var deferred = $q.defer();
-            $http.get(ENV.SERVER_URL+'/api/auth/logout').success(function (data) {
+            $http.get(ENV.SERVER_URL+'/mall/vip/logout').success(function (data) {
                 isAuthenticated = false;
                 user = {};
                 Storage.remove('user');
                 Storage.remove('access_token');
+                window.location.href="#/appIndex";
                 deferred.resolve();
             }).error(function (data) {
                 isAuthenticated = false;

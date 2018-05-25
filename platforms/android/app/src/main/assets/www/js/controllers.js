@@ -586,7 +586,7 @@ function userListCtrl($scope, $rootScope, $state, FetchData, $stateParams,
 function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         $ionicModal, $ionicScrollDelegate, ngCart,
         Items, FetchData, Categories, $ionicSlideBoxDelegate) {
-    //登陆
+    //登录
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
         $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
@@ -727,7 +727,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 function homeCtrl($scope, $rootScope, $log, $timeout, $state,
         $ionicModal, ngCart, $ionicSlideBoxDelegate, Board,
         Items, FetchData, Categories) {
-    //登陆
+    //登录
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
     });
@@ -967,7 +967,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
         AuthService.login($scope.email, $scope.password)
             .then(function() {
                 $rootScope.authDialog.hide()
-                $scope.$emit('alert', "登陆成功");
+                $scope.$emit('alert', "登录成功");
             }).catch(function () {
                 $scope.$emit('alert', "Invalid username and/or password");
                 $scope.disabled = false;
@@ -991,7 +991,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
                         });
                     } else {
                         $rootScope.authDialog.hide();
-                        $scope.$emit('alert', "登陆成功");
+                        $scope.$emit('alert', "登录成功");
                     }
                 })
         }
@@ -1053,7 +1053,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
     //绑定email页面
 
     $scope.closeBindEmailBox= function() {
-        $scope.$emit('alert', "需绑定邮箱才能登陆");
+        $scope.$emit('alert', "需绑定邮箱才能登录");
         $scope.bindEmailDialog.hide();
         $scope.bindEmailDialog.remove();
     };
