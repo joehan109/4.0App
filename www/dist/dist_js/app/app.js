@@ -66,14 +66,18 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
     $rootScope.$state = $state;
 
 
-    if (angular.isObject(Storage.get('cart'))) {
-        ngCart.$restore(Storage.get('cart'));
-    } else {
-        ngCart.init();
-        FetchData.get('/mall/mashopping/getAll').then(function(data) {
-            ngCart.$loadCart(data.cart);
-        });
-    }
+    // if (angular.isObject(Storage.get('cart'))) {
+    //     ngCart.$restore(Storage.get('cart'));
+    // } else {
+    //     ngCart.init();
+    //     FetchData.get('/mall/mashopping/getAll').then(function(data) {
+    //         ngCart.$loadCart(data.data);
+    //     });
+    // }
+    ngCart.init();
+    FetchData.get('/mall/mashopping/getAll').then(function(data) {
+        ngCart.$loadCart(data.data);
+    });
 
     $ionicModal.fromTemplateUrl('auth.html', {
         scope: $rootScope
@@ -94,12 +98,12 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
         if (AuthService.isLoggedIn() === false) {
             var token = Storage.get('access_token');
             if (token) {
-                AuthService.authenticate(token)
-                    .then(function() {
-
-                    }).catch(function() {
-                        Storage.remove('access_token');
-                    })
+                // AuthService.authenticate(token)
+                //     .then(function() {
+                //
+                //     }).catch(function() {
+                //         Storage.remove('access_token');
+                //     })
             } else if (next.loginRequired) {
                 $rootScope.authDialog.show();
             }
@@ -390,7 +394,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
     })
 
   .state('tab.item', {
-      url: '/item/:itemID',
+      url: '/item/:id',
       views: {
         'tab-cateHome': {
           templateUrl: 'item.html',

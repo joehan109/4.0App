@@ -1,7 +1,7 @@
 <ion-view>
   <ion-content class="topic-create">
     <ion-item class="item item-thumbnail-left">
-        <img ng-src="{{selectedSpec.images[0]}}">
+        <img ng-src="{{item.mainUrl}}">
         <h2>{{item.title}}</h2>
         <p>{{selectedSpec.price | currency}} x {{quantity}}</p>
         <div class="footer-price">{{subTotal(selectedSpec.price, quantity) | currency}}</div>
@@ -41,7 +41,7 @@
   </ion-content>
 
     <ion-footer-bar  class="bar-energized" >
-      <ngcart-buyrightnow id="{{selectedSpec.sku}}" name="{{item.title}}" price="{{selectedSpec.price}}" quantity="{{quantity}}" quantity-max="5" data="selectedSpecData">立即购买</ngcart-buyrightnow>
+      <ngcart-buyrightnow id="{{item.id}}" name="{{item.title}}" price="{{selectedSpec.price}}" quantity="{{quantity}}" quantity-max="5" data="item">立即购买</ngcart-buyrightnow>
     </ion-footer-bar>
 
 </ion-view>

@@ -184,7 +184,7 @@ angular.module('maybi.services', [])
                     $http.get(ENV.SERVER_URL+'/mall/vip/get').success(function (data) {
                       user = data.data;
                       Storage.set('user', data.data);
-                      Storage.set('access_token', data.remember_token);
+                      Storage.set('access_token', data.data.name);
                       if (window.cordova && window.cordova.plugins) {
                           plugins.jPushPlugin.setAlias(data.user.id);
                       }
@@ -539,7 +539,7 @@ angular.module('maybi.services', [])
             hasNextPage = true;
             isEmpty = false;
 
-            $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
+            currentTab && $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                 params: {
                     oneType: currentTab,
                     page: 0,
@@ -559,37 +559,7 @@ angular.module('maybi.services', [])
                     deferred.reject();
                 }
             }).error(function (data){
-              var url = 'http://www.guandongphoto.com/data/attachment/forum/201804/27/023630bpyfwaljwpwpenny.jpg';
-                deferred.resolve({
-                  status:'200',
-                  items:[{
-                    title:'11',
-                    item_id:'1',
-                    price:'11',
-                    thumbnail:url
-                  },{
-                    item_id:'2',
-                    title:'22',
-                    price:'11',
-                    thumbnail:url
-                  },{
-                    item_id:'3',
-                    title:'33',
-                    price:'11',
-                    thumbnail:url
-                  },{
-                    item_id:'4',
-                    title:'44',
-                    price:'11',
-                    thumbnail:url
-                  },{
-                    title:'44',
-                    item_id:'5',
-                    price:'11',
-                    thumbnail:url
-                  }]
-                });
-                // deferred.reject();
+                deferred.reject();
             });
             return deferred.promise;
         },
@@ -819,10 +789,8 @@ angular.module('maybi.services', [])
 
         var item = this.getItemById(id);
 
-        $http.post(ENV.SERVER_URL+'/api/cart/add/'+ id, {
-            'quantity': quantity,
-        }).success(function(res) {
-            _self.$loadCart(res.cart);
+        $http.post(ENV.SERVER_URL+'/mall/mashopping/save?maProId='+ id + '&num=' + quantity).success(function(res) {
+            _self.$loadCart(res.data);
         }).error(function() {
           if (item) {
             item._quantity += +quantity;
@@ -1036,7 +1004,7 @@ angular.module('maybi.services', [])
         _self.init();
         angular.forEach(storedCart.items, function (item) {
           if (item.id) {
-            _self.$cart.items.push(new ngCartItem(item._id,  item._name, item._price, item._quantity, item._data));
+            _self.$cart.items.push(new ngCartItem(item._id,  item._name, item._price, item._quantity, item));
           }
         });
         this.$save();
@@ -1046,7 +1014,7 @@ angular.module('maybi.services', [])
         var _self = this;
         _self.init();
         angular.forEach(cart, function (item) {
-            _self.$cart.items.push(new ngCartItem(item.spec.sku,  item.item.title, item.unit_price, item.quantity, item));
+            _self.$cart.items.push(new ngCartItem(item.id,  item.name, item.price, item.num, item));
         });
         this.$save();
     };

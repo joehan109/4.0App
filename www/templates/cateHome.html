@@ -33,28 +33,8 @@
         delegate-handle="delegateHandler2"
         ng-click="coverFlowClick()">
         <ion-slide ng-repeat="item in tuijian track by $index">
-          <div class="box" ng-click="goItem(item.maProId)">
+          <div class="box" ng-click="goItem(item.id)">
             <img ng-src="{{item.detailUrl}}">
-          </div>
-        </ion-slide>
-        <ion-slide>
-          <div class="box">
-            <img src="http://www.guandongphoto.com/data/attachment/forum/201804/27/023703sik4pwquiwqzzdwr.jpg">
-          </div>
-        </ion-slide>
-        <ion-slide>
-          <div class="box">
-            <img src="http://www.guandongphoto.com/data/attachment/forum/201804/27/023745mz4y3n6q36vkq3yh.jpg">
-          </div>
-        </ion-slide>
-        <ion-slide>
-          <div class="box">
-            <img src="http://www.guandongphoto.com/data/attachment/forum/201804/27/023703sik4pwquiwqzzdwr.jpg">
-          </div>
-        </ion-slide>
-        <ion-slide>
-          <div class="box">
-            <img src="http://www.guandongphoto.com/data/attachment/forum/201804/27/023745mz4y3n6q36vkq3yh.jpg">
           </div>
         </ion-slide>
       </ion-slide-box>
@@ -81,8 +61,7 @@
                         <div class="item item-text-wrap" href="#">
                             <h2 class="product-title" style="overflow: hidden;">{{item.name}}</h2>
                             <p class="product-prices">
-                                <span class="curr-price">{{::item.price | currency}}</span>
-                                <del class="orig-price">{{::item.orig_price | currency}}</del>
+                                <span class="curr-price">{{::item.price | currency:'￥'}}</span>
                             </p>
                         </div>
                     </div>

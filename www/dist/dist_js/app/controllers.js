@@ -630,9 +630,8 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
         $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
-        $scope.changeTab($scope.banners[0],0);
+        $scope.banners && $scope.changeTab($scope.banners[0],0);
     });
-
     $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
         if (r.ret){
           $scope.banners = r.data;
@@ -640,8 +639,10 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         }
     });
 
+
     FetchData.get('/mall/mapro/app/getAll').then(function(res) {
         $scope.tuijian = res.data;
+        $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').update();
     });
   // $scope.Categories = Categories;
 
@@ -655,8 +656,8 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         }
     };
 
-    $scope.goItem = function(item_id) {
-        $state.go('tab.item', {id: item_id});
+    $scope.goItem = function(id) {
+        $state.go('tab.item', {id: id});
     };
 
     $scope.slideHasChanged = function(index){
@@ -666,6 +667,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     $scope.currentIndex = 0;
     $scope.items = [];
+    $scope.tuijian = [];
     $scope.currentTab = '';
 
     $scope.changeTab = function(tab, index) {
@@ -675,6 +677,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         Items.setCurrentTab(tab.codeKey);
         Items.fetchTopItems().then(function(data){
             $scope.items = data;
+            $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
         if (!index) {
             index = GetCateIndex($scope.currentTab);
@@ -1425,44 +1428,43 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal, ngCa
     })
 
     FetchData.get('/mall/mapro/app/get?id='+ $stateParams.id).then(function(data) {
-      debugger
-        $scope.item = data.item;
-        $scope.specs = data.item.specs;
-        $scope.selectedSpec = data.item.specs[0];
-
-        // 可选属性与属性列表组成的字典
-        $scope.attrChoices = {};
-        angular.forEach($scope.item.attributes_desc, function(key, value) {
-            var attrChoices = [];
-            angular.forEach($scope.specs, function(s){
-                this.push(s.attributes[value]);
-            }, attrChoices);
-            $scope.attrChoices[value] = unique(attrChoices);
-        });
-
-        var images = [];
-        angular.forEach($scope.item.specs, function (spec, index) {
-            angular.forEach(spec.images, function (img, i) {
-                images.push({url: img});
-            });
-        });
-        $scope.images = images;
+        $scope.item = data.data;
+        // $scope.specs = data.data.specs;
+        // $scope.selectedSpec = data.data.specs[0];
+        //
+        // // 可选属性与属性列表组成的字典
+        // $scope.attrChoices = {};
+        // angular.forEach($scope.item.attributes_desc, function(key, value) {
+        //     var attrChoices = [];
+        //     angular.forEach($scope.specs, function(s){
+        //         this.push(s.attributes[value]);
+        //     }, attrChoices);
+        //     $scope.attrChoices[value] = unique(attrChoices);
+        // });
+        //
+        // var images = [];
+        // angular.forEach($scope.item.specs, function (spec, index) {
+        //     angular.forEach(spec.images, function (img, i) {
+        //         images.push({url: img});
+        //     });
+        // });
+        // $scope.images = images;
         $ionicSlideBoxDelegate.$getByHandle('image-viewer').update();
         $ionicSlideBoxDelegate.$getByHandle('image-viewer').loop(true);
 
     }, function () {
       // 接口出错，mock数据
-      $scope.selectedSpec = {sku:$stateParams.itemID,price:111};
+      $scope.selectedSpec = {sku:$stateParams.id,price:111};
     });
 
     $scope.favor = function(item_id){
-        if (!$scope.item.is_favored) {
-            FetchData.get('/api/items/favor/'+item_id).then(function(data){
-                $scope.item.is_favored = true;
+        if (!$scope.item.collectFlag) {
+            FetchData.post('/mall/macollect/save?maProId='+item_id).then(function(data){
+                $scope.item.collectFlag = true;
             })
         } else {
-            FetchData.get('/api/items/unfavor/'+item_id).then(function(data){
-                $scope.item.is_favored = false;
+            FetchData.get('/mall/macollect/delete?maProId='+item_id).then(function(data){
+                $scope.item.collectFlag = false;
             })
         }
     };
@@ -1555,8 +1557,7 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
     });
 
     $scope.goItem = function(item_id) {
-      debugger
-        $state.go('tab.item', {itemID: item_id});
+        $state.go('tab.item', {id: item_id});
     };
 
     $scope.items = [];
@@ -1604,8 +1605,8 @@ function favorCtrl($rootScope, $scope, FetchData, $state) {
       $rootScope.hideTabs = 'tabs-item-hide';
     });
 
-    FetchData.get('/api/items/favors').then(function(data) {
-        $scope.items = data.items;
+    FetchData.get('/mall/macollect/getAll').then(function(data) {
+        $scope.items = data.data;
     });
 
     $scope.goItem = function(item_id) {
@@ -1934,6 +1935,10 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart) {
     //
     $scope.$on('$ionicView.beforeEnter', function() {
       $rootScope.hideTabs = '';
+      ngCart.init();
+      FetchData.get('/mall/mashopping/getAll').then(function(data) {
+          ngCart.$loadCart(data.data);
+      });
     });
 
     FetchData.get('/mall/mashopping/getAll').then(function(data) {
@@ -1959,8 +1964,8 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart) {
             item.setQuantity(1)
             $scope.$emit('Quantity must be an integer and was defaulted to 1');
         }
-        FetchData.post('/api/cart/entry/'+item.getId()+'/update', {
-            'quantity': item.getQuantity()
+        FetchData.post('/mall/mashopping/updateNum?id='+item.getId()+'&num='+item.getQuantity()).then(function (data) {
+
         });
     };
     $scope.$watch(function () {
