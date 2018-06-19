@@ -6,7 +6,7 @@
     density="420dpi"
     format="10"
     plugin-version="3.0.0"
-    timestamp="1529077541604"
+    timestamp="1529248135273"
     token="484144525310997091"
     verifier="FULL_BUILD_REQUESTED" >
 
@@ -18,10 +18,10 @@
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="136" />
+        duration="0" />
     <task
         name="verifier"
-        duration="12" />
+        duration="0" />
 
     <artifact
         location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/dep/dependencies.apk"
@@ -30,25 +30,22 @@
         location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_5.apk"
         type="SPLIT" />
     <artifact
-        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_1.apk"
+        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
         type="SPLIT" />
     <artifact
         location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_3.apk"
         type="SPLIT" />
     <artifact
-        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_6.apk"
+        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_0.apk"
         type="SPLIT" />
     <artifact
         location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
         type="SPLIT" />
     <artifact
-        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
+        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_6.apk"
         type="SPLIT" />
     <artifact
-        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_0.apk"
-        type="SPLIT" />
-    <artifact
-        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
+        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_1.apk"
         type="SPLIT" />
     <artifact
         location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_7.apk"
@@ -57,12 +54,15 @@
         location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_8.apk"
         type="SPLIT" />
     <artifact
+        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
+        type="SPLIT" />
+    <artifact
         location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/outputs/apk/debug/app-debug.apk"
         type="SPLIT_MAIN" />
 
     <build
         build-mode="FULL"
-        timestamp="1529077541604"
+        timestamp="1529248135273"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/dep/dependencies.apk"
@@ -71,31 +71,31 @@
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_5.apk"
             type="SPLIT" />
         <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_1.apk"
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
             type="SPLIT" />
         <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_3.apk"
             type="SPLIT" />
         <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_6.apk"
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_0.apk"
             type="SPLIT" />
         <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
             type="SPLIT" />
         <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_6.apk"
             type="SPLIT" />
         <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_0.apk"
-            type="SPLIT" />
-        <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_1.apk"
             type="SPLIT" />
         <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_7.apk"
             type="SPLIT" />
         <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_8.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
             type="SPLIT" />
         <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/outputs/apk/debug/app-debug.apk"

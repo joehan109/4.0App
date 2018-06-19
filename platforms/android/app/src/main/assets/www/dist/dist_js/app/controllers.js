@@ -36,7 +36,7 @@ expressCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', 'AuthServi
 expressItemAddCtrl.$inject = ['$rootScope', '$scope', 'expressList'];
 orderDetailCtrl.$inject = ['$rootScope', '$scope', '$state', '$stateParams', 'FetchData', 'ngCart', '$ionicPopup'];
 logisticsDetailCtrl.$inject = ['$rootScope', '$scope', '$stateParams', '$state', 'FetchData', 'ngCart'];
-cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart'];
+cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage'];
 checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart'];
 addressCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart'];
 aboutCtrl.$inject = ['$rootScope', '$scope', '$state', 'appUpdateService'];
@@ -1178,31 +1178,31 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
     var userId = AuthService.getUser().id;
     var page = 0;
 
-    Photogram.getUserPosts(userId, page).then(function(data){
-        $scope.posts = data.posts;
-        page++;
-    });
+    // Photogram.getUserPosts(userId, page).then(function(data){
+    //     $scope.posts = data.posts;
+    //     page++;
+    // });
 
-    $scope.doRefresh = function() {
-        page = 0;
-        Photogram.getUserPosts(userId, page).then(function(data){
-            $scope.posts = data.posts;
-            page++;
-        });
-        $scope.$broadcast('scroll.refreshComplete');
-    };
+    // $scope.doRefresh = function() {
+    //     page = 0;
+    //     Photogram.getUserPosts(userId, page).then(function(data){
+    //         $scope.posts = data.posts;
+    //         page++;
+    //     });
+    //     $scope.$broadcast('scroll.refreshComplete');
+    // };
+    //
+    // $scope.loadMore = function() {
+    //     Photogram.getUserPosts(userId, page).then(function(data){
+    //         $scope.posts = $scope.posts.concat(data.posts);
+    //         $scope.$broadcast('scroll.infiniteScrollComplete');
+    //         page++;
+    //     });
+    // };
 
-    $scope.loadMore = function() {
-        Photogram.getUserPosts(userId, page).then(function(data){
-            $scope.posts = $scope.posts.concat(data.posts);
-            $scope.$broadcast('scroll.infiniteScrollComplete');
-            page++;
-        });
-    };
-
-    $scope.moreDataCanBeLoaded = function() {
-        return Photogram.hasNextPage();
-    };
+    // $scope.moreDataCanBeLoaded = function() {
+    //     return Photogram.hasNextPage();
+    // };
 
     $scope.isEmpty = function() {
         return Photogram.isEmpty();
@@ -1930,14 +1930,19 @@ function expressItemAddCtrl($rootScope, $scope, expressList){
     }
 }
 
-function cartCtrl(FetchData, $rootScope, $scope, ngCart) {
+function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage) {
     //购物车
     //
     $scope.$on('$ionicView.beforeEnter', function() {
       $rootScope.hideTabs = '';
       ngCart.init();
       FetchData.get('/mall/mashopping/getAll').then(function(data) {
+        if (data.ret) {
           ngCart.$loadCart(data.data);
+        } else {
+          Storage.remove('user');
+          alert('请先登录');
+        }
       });
     });
 
@@ -2008,6 +2013,11 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
       $rootScope.hideTabs = 'tabs-item-hide';
       $scope.addr = ngCart.getAddress();
     });
+    $scope.provider_prices=[{
+      name:'普通快递'
+    },{
+      name:'同城闪送'
+    }];
 
     $scope.ngCart = ngCart;
     $scope.clearSelectedCart = function () {
@@ -2029,27 +2039,27 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
             return ;
         }
         $scope.providersShown = !$scope.providersShown;
-        FetchData.post('/api/logistic/channel_prices', {
-            'entries': ngCart.selectedItemsObjects(),
-            'country': $scope.addr.data.country,
-        }).then(function(data) {
-            $scope.provider_prices = data.logistics.providers;
-            $scope.selectedProvider = data.logistics.providers[0];
-        });
+        // FetchData.post('/api/logistic/channel_prices', {
+        //     'entries': ngCart.selectedItemsObjects(),
+        //     'country': $scope.addr.data.country,
+        // }).then(function(data) {
+        //     $scope.provider_prices = data.logistics.providers;
+        //     $scope.selectedProvider = data.logistics.providers[0];
+        // });
     };
 
     $scope.selectPartner = function(provider){
         $scope.selectedProvider = provider;
         $scope.providersShown = !$scope.providersShown;
 
-        FetchData.post('/api/orders/cal_entries_price', {
-            'entries': ngCart.selectedItemsObjects(),
-            'address_id': ngCart.getAddress().id,
-            'coupon_codes': [$scope.coupon_codes.code],
-            'logistic_provider': $scope.selectedProvider.name,
-        }).then(function(data) {
-            $scope.order = data.order;
-        });
+        // FetchData.post('/api/orders/cal_entries_price', {
+        //     'entries': ngCart.selectedItemsObjects(),
+        //     'address_id': ngCart.getAddress().id,
+        //     'coupon_codes': [$scope.coupon_codes.code],
+        //     'logistic_provider': $scope.selectedProvider.name,
+        // }).then(function(data) {
+        //     $scope.order = data.order;
+        // });
     };
 
     // coupon actions
@@ -2141,16 +2151,27 @@ function addressCtrl($rootScope, $state, $scope, FetchData, ngCart) {
     });
 
     FetchData.get('/mall/receipt/query').then(function(data){
-        $scope.addresses = data.addresses;
+        $scope.addresses = data.data.data;
     });
 
     $scope.editShown = false;
     $scope.toggleEditShown = function() {
         $scope.editShown = !$scope.editShown;
     };
+    $scope.setDefault = function(addr_id) {
+        FetchData.post('/mall/receipt/updateFlag?id='+addr_id).then(function(data){
+          angular.forEach($scope.addresses, function (addr, index) {
+            if (addr.id === addr_id) {
+              addr.flag = 1;
+            } else{
+              addr.flag = 0;
+            }
+          });
+        });
+    };
     $scope.removeAddr = function(addr_id) {
-        FetchData.get('/api/address/del/'+addr_id).then(function(data){
-            if(data.message == 'OK') {
+        FetchData.get('/mall/receipt/delete?id='+addr_id).then(function(data){
+            if(data.ret) {
                 angular.forEach($scope.addresses, function (addr, index) {
                     if  (addr.id === addr_id) {
                         $scope.addresses.splice(index, 1);
@@ -2166,11 +2187,17 @@ function addressCtrl($rootScope, $state, $scope, FetchData, ngCart) {
     $scope.selectedAddress = '';
     $scope.selectAddress = function(address){
         $scope.selectedAddress = address;
+        angular.forEach($scope.addresses, function (addr, index) {
+          if (addr.id === address.id) {
+            addr.selected = true;
+          } else{
+            addr.selected = false;
+          }
+        });
     };
     $scope.confirmAddress = function(){
         ngCart.setAddress($scope.selectedAddress);
         $rootScope.$ionicGoBack();
-
     };
 }
 

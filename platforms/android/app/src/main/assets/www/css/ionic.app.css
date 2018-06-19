@@ -14646,7 +14646,7 @@ input.ion-google-place[readonly] {
       color: #6fd6b9; }
 
 .cateHomeSlide {
-  height: 200px;
+  height: 150px;
   margin-bottom: 10px; }
   .cateHomeSlide .box img {
     height: 200px;
@@ -14972,14 +14972,18 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
     text-align: center;
     color: white;
     font-size: 16px;
-    margin-top: 28px; }
+    margin-top: 15px; }
   .avatar-section .avatar-wrap {
     position: absolute;
-    top: 40px;
+    top: 30px;
     left: 50%;
     margin-left: -100px;
     width: 200px;
     text-align: center; }
+  .avatar-section .avatar-content {
+    background: url(../../img/b7.jpg) center no-repeat;
+    background-size: cover;
+    height: 150px; }
   .avatar-section .follow_btn {
     position: absolute;
     left: 50%;
@@ -15131,7 +15135,6 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
   width: 15%;
   min-width: 60px;
   font-size: 14px;
-  font-weight: 500;
   color: #6fd6b9;
   text-align: right;
   padding-right: 8px; }
@@ -15297,8 +15300,13 @@ span.add-icon {
 .address-select-info .close-icon {
   top: 50%;
   right: 10px;
-  position: absolute;
   margin-top: -10px; }
+
+.address-add-btn {
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+  line-height: 33px; }
 
 .address-row span.select-icon {
   display: inline-block;
@@ -15594,14 +15602,18 @@ span.checklist-icon {
   font-size: 14px; }
 
 .address-row {
-  border-bottom: solid 1px #e8e8e8;
-  padding: 10px;
-  position: relative;
+  border-bottom: solid 10px #ededed;
   display: block;
   font-size: 14px; }
 
 .address-row:last-child {
   border-bottom: none; }
+
+.address-selected {
+  background-color: #e6e6e6; }
+
+.address-operate {
+  border-top: 1px solid #eee; }
 
 .select-arrow {
   width: 7px;
@@ -15635,21 +15647,19 @@ span.checklist-icon {
   color: #888;
   line-height: 24px; }
 
+.address-info-1 {
+  margin-right: 10px; }
+
 .addressForm .item-select select {
   right: auto;
   padding: 13px 45px 12px 0px;
   direction: ltr; }
-
-.select-row {
-  line-height: 38px;
-  border-bottom: 1px solid #e8e8e8; }
 
 .select-row .coupon-input {
   display: inline-block;
   margin-left: 8px; }
 
 .select-row span.select-icon {
-  position: absolute;
   left: 18px;
   margin-top: 10px;
   background: url("../img/icons/select_or_not.png") no-repeat;
@@ -15658,8 +15668,13 @@ span.checklist-icon {
   width: 20px;
   height: 20px; }
 
-.select-row span.select-icon.selected {
-  background-position: 0px; }
+.select-row i.icon {
+  font-size: 18px;
+  text-align: right;
+  color: #000; }
+
+.select-row i.icon.selected {
+  color: red; }
 
 .cal-unit {
   right: 8px;
@@ -15667,12 +15682,12 @@ span.checklist-icon {
   line-height: 34px; }
 
 .checkout-choices {
-  margin-top: -20px; }
+  margin-top: -20px;
+  border-bottom: 1px solid #e8e8e8; }
 
 .checkout-choice {
   cursor: pointer;
-  margin-left: 48px;
-  line-height: 38px; }
+  margin-left: 10px; }
 
 .checkout-info .icon {
   float: left;
@@ -15699,12 +15714,11 @@ span.checklist-icon {
 
 .address-select-info .icon {
   float: left;
+  font-size: 18px;
   width: 24px;
   height: 24px;
   background-size: 24px;
-  position: relative;
-  left: 8px;
-  top: -4px; }
+  position: relative; }
 
 .partner-icon {
   background-image: url(../img/icons/partner.png); }

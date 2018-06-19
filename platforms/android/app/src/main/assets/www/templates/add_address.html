@@ -15,22 +15,22 @@
 
     <div class="list">
         <label class="item item-input">
-            <div class="input-label" ng-class="{'warning': addressForm.receiver.$error.required && !addressForm.receiver.$pristine}">
+            <div class="input-label" ng-class="{'warning': addressForm.name.$error.required && !addressForm.name.$pristine}">
                 收货人
             </div>
-            <input type="text" ng-model="addr.receiver" name="receiver" required />
+            <input type="text" ng-model="addr.name" name="name" required />
         </label>
         <label class="item item-input">
-            <div class="input-label" ng-class="{'warning': addressForm.mobile_number.$error.required && !addressForm.mobile_number.$pristine}">
+            <div class="input-label" ng-class="{'warning': addressForm.phone.$error.required && !addressForm.phone.$pristine}">
                 联系方式
             </div>
-            <input type="text" ng-model="addr.mobile_number" name="mobile_number" required />
+            <input type="text" ng-model="addr.phone" name="phone" required />
         </label>
         <label class="item item-input">
-            <div class="input-label" ng-class="{'warning': addressForm.street1.$error.required && !addressForm.street1.$pristine}">
+            <div class="input-label" ng-class="{'warning': addressForm.detail.$error.required && !addressForm.detail.$pristine}">
                 详细地址
             </div>
-            <input type="text" ng-model="addr.street1" name="street1" required />
+            <input type="text" ng-model="addr.detail" name="detail" required />
         </label>
         <!-- <label class="item item-input item-select">
             <div class="input-label" ng-class="addressForm.country.$error.required && !addressForm.country.$pristine">
@@ -41,10 +41,10 @@
             </select>
         </label>
         <label class="item item-input">
-            <div class="input-label" ng-class="{'warning': addressForm.street1.$error.required && !addressForm.street1.$pristine}">
+            <div class="input-label" ng-class="{'warning': addressForm.detail.$error.required && !addressForm.detail.$pristine}">
                 地址 1
             </div>
-            <input type="text" ng-model="addr.street1" name="street1" required />
+            <input type="text" ng-model="addr.detail" name="detail" required />
         </label>
         <label class="item item-input">
             <div class="input-label">

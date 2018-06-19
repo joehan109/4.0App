@@ -76,7 +76,10 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
     // }
     ngCart.init();
     FetchData.get('/mall/mashopping/getAll').then(function(data) {
-        ngCart.$loadCart(data.data);
+      ngCart.$loadCart(data.data);
+    },function(err){
+      Storage.remove('user');
+      $rootScope.authDialog.show();
     });
 
     $ionicModal.fromTemplateUrl('auth.html', {

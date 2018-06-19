@@ -106,7 +106,7 @@ angular.module('maybi.directives', [])
               var sheet = {};
               sheet.buttonClicked = buttonClicked;
               sheet.buttons = [{
-                text: '<i class="icon fa fa-paypal"></i> Paypal支付$'
+                text: '<i class="icon fa fa-paypal"></i> 支付宝支付$'
               }, {
                 text: '<i class="icon fa fa-wechat"></i> 微信支付￥'
               }];
@@ -114,7 +114,7 @@ angular.module('maybi.directives', [])
               $ionicActionSheet.show(sheet);
 
               function buttonClicked(index) {
-                var service = { 0: 'paypal', 1: 'wechat'}
+                var service = { 0: 'alipay', 1: 'wechat'}
 
                 fulfilmentProvider.setService(service[index]);
                 fulfilmentProvider.setSettings(scope.settings);
@@ -234,7 +234,7 @@ angular.module('maybi.directives', [])
     };
 }])
 
-.directive('addressForm', ['$rootScope', '$ionicModal', 'FetchData', 'ngCart', '$state', function($rootScope, $ionicModal, FetchData, ngCart, $state){
+.directive('addressForm', ['$rootScope', '$ionicModal', 'FetchData', 'ngCart', '$state', 'utils', function($rootScope, $ionicModal, FetchData, ngCart, $state, utils){
     return {
         restrict : 'A',
         scope: {
@@ -246,10 +246,12 @@ angular.module('maybi.directives', [])
             scope.addr = {};
 
             var addr_id = scope.addrId;
-            if (addr_id) {
-                FetchData.get('/api/address/get/'+addr_id).then(function(data){
-                    scope.addr= data.address;
-                });
+            if (addr_id && scope.addresses) {
+              scope.addresses.forEach(function(item){
+                if (item.id === addr_id) {
+                  scope.addr= item;
+                }
+              })
             }
             $ionicModal.fromTemplateUrl('add_address.html', {
                 scope: scope,
@@ -266,42 +268,36 @@ angular.module('maybi.directives', [])
                 scope.addressModal.show();
             })
 
-            FetchData.get('/api/address/hierarchy').then(function(data){
-                scope.COUNTRIES= data.countries;
-            });
-            scope.$watch('addr["country"]', function(new_val) {
-                FetchData.get('/api/address/hierarchy/'+scope.addr.country).then(function(data) {
-                    scope.REGIONS= data.regions;
-                });
-            });
+            // FetchData.get('/api/address/hierarchy').then(function(data){
+            //     scope.COUNTRIES= data.countries;
+            // });
+            // scope.$watch('addr["country"]', function(new_val) {
+            //     FetchData.get('/api/address/hierarchy/'+scope.addr.country).then(function(data) {
+            //         scope.REGIONS= data.regions;
+            //     });
+            // });
 
             scope.ngCart = ngCart;
             scope.saveAddress = function(){
                 if (addr_id) {
-                    FetchData.post('/api/address/update/'+addr_id, {
-                        'receiver': scope.addr.receiver,
-                        'street1': scope.addr.street1,
-                        'street2': scope.addr.street2,
-                        'city': scope.addr.city,
-                        'state': scope.addr.state,
-                        'postcode': scope.addr.postcode,
-                        'country': scope.addr.country,
-                        'mobile_number': scope.addr.mobile_number,
-                    }).then(function(data) {
+                    FetchData.post('/mall/receipt/update'+utils.formatGetParams({
+                      'id':addr_id,
+                      'name': scope.addr.name,
+                      'detail': scope.addr.detail,
+                      'postcode': scope.addr.postcode,
+                      'phone': scope.addr.phone,
+                    })).then(function(data) {
                         scope.addressModal.hide();
                         $state.transitionTo($state.current, $state.$current.params, { reload: true, inherit: true, notify: true });
                     });
                 } else {
-                    FetchData.post('/api/address/add', {
-                        'receiver': scope.addr.receiver,
-                        'street1': scope.addr.street1,
-                        'street2': scope.addr.street2,
-                        'city': scope.addr.city,
-                        'state': scope.addr.state,
-                        'postcode': scope.addr.postcode,
-                        'country': scope.addr.country,
-                        'mobile_number': scope.addr.mobile_number,
-                    }).then(function(data) {
+                    FetchData.post('/mall/receipt/save'+utils.formatGetParams({
+                      'flag':1,
+                      'name': scope.addr.name,
+                      'detail': scope.addr.detail,
+                      'postcode': scope.addr.postcode,
+                      'phone': scope.addr.phone,
+                    })).then(function(data) {
                         scope.addressModal.hide();
                         $state.transitionTo($state.current, $state.$current.params, { reload: true, inherit: true, notify: true });
 
@@ -364,13 +360,13 @@ angular.module('maybi.directives', [])
             var resizeFactor, blurFactor;
             var scrollContent = $element[0];
             var header = document.body.querySelector('.avatar-section');
-            $scope.$on('userDetailContent.scroll', function(event,scrollView) {
-                var y = scrollView.__scrollTop;
-                if (y >= 0) {
-                  header.style[ionic.CSS.TRANSFORM] = 'translate3d(0, -' + Math.min(148, y) + 'px, 0)';
-                  scrollContent.style.top = Math.max(64, 150 - y) + 'px';
-                }
-            });
+            // $scope.$on('userDetailContent.scroll', function(event,scrollView) {
+            //     var y = scrollView.__scrollTop;
+            //     if (y >= 0) {
+            //       header.style[ionic.CSS.TRANSFORM] = 'translate3d(0, -' + Math.min(148, y) + 'px, 0)';
+            //       scrollContent.style.top = Math.max(64, 150 - y) + 'px';
+            //     }
+            // });
         }
     }
 }])

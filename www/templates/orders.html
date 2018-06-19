@@ -9,13 +9,19 @@
 
 <section>
 <div class="order-btn-row">
-    <div class="btn-group cart-btn">
-        <button class="btn order-btn"
-            ng-class="{'active': orderType == 'COMMODITIES'}"
-            ng-click="setType('COMMODITIES')">商城订单</button>
-        <button class="btn order-btn"
-            ng-class="{'active': orderType == 'TRANSFER'}"
-            ng-click="setType('TRANSFER')">转运订单</button>
+    <div class="btn-group cart-btn row">
+      <button class="btn order-btn col-25"
+          ng-class="{'active': orderType == '0'}"
+          ng-click="setType('0')">待付款</button>
+      <button class="btn order-btn col-25"
+          ng-class="{'active': orderType == '1'}"
+          ng-click="setType('1')">待收货</button>
+      <button class="btn order-btn col-25"
+          ng-class="{'active': orderType == '2'}"
+          ng-click="setType('2')">已完成</button>
+      <button class="btn order-btn col-25"
+          ng-class="{'active': orderType == '3'}"
+          ng-click="setType('3')">已取消</button>
     </div>
 </div>
 <div class="order-detail" ng-repeat="order in orders track by $index">

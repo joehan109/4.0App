@@ -1,36 +1,17 @@
 <ion-view>
-    <div class="buttons">
-        <button class="button button-clear icon ion-ios-gear account-setting-btn pull-right"
-            ng-click="$state.go('tab.settings')" ng-if="user.getUser().name"></button>
-    </div>
     <div class="avatar-section">
-        <div ng-if="user.getUser().name">
-            <a class="logo" ng-click="$state.go('tab.profile')"
-                style="background: url({{user.getUser().avatar_url}}) center no-repeat; background-size: cover">
-            </a>
-            <div class="avatar-wrap">
-                <p><img class="avatar" ng-src="{{user.getUser().avatar_url}}" alt=""></p>
-                <p ng-if="user.getUser().name" class="user">{{user.getUser().name}}</p>
-            </div>
-            <div class="social-btns">
-                <a ng-href="#/myuserList/{{user.getUser().id}}/followers">
-                    <strong>{{user.getUser().num_followers}} </strong>粉丝
-                </a>
-                <a ng-href="#/myuserList/{{user.getUser().id}}/followings">
-                    <strong>{{user.getUser().num_followings}} </strong>关注
-                </a>
+        <div ng-if="user.getUser().name" class="avatar-content">
+            <div class="avatar-wrap" ng-click="$state.go('tab.profile')">
+              <p><img class="avatar" ng-src="{{user.getUser().image}}" alt=""></p>
+              <p ng-if="user.getUser().name" class="user">{{user.getUser().name}}</p>
             </div>
         </div>
-        <div ng-click="showAuthBox()" ng-if="!user.getUser().name">
-            <a
-                class="logo"
-                style="background: url(img/b7.jpg) center no-repeat; background-size: cover">
-            </a>
-            <div class="avatar-wrap">
-                <p><img class="avatar" ng-src="{{user.getUser().avatar_url}}" alt=""></p>
-                <p ng-if="!user.getUser().name" class="login-btn">登录</p>
-            </div>
-         </div>
+        <div ng-click="showAuthBox()" ng-if="!user.getUser().name" class="avatar-content">
+          <div class="avatar-wrap">
+            <p><img class="avatar" ng-src="{{user.getUser().image}}" alt=""></p>
+            <p ng-if="!user.getUser().name" class="login-btn">登录</p>
+          </div>
+       </div>
 
     </div>
 

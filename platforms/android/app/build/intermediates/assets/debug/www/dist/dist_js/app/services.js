@@ -10,6 +10,18 @@ angular.module('maybi.services', [])
         }
     };
 })
+.service('utils',['$rootScope', function($rootScope) {
+  return {
+    formatGetParams:formatGetParams
+  };
+    function formatGetParams(obj) {
+      var params = '?';
+      for(var key in obj){
+        params += [key, '=', obj[key], '&'].join('')
+      }
+      return params.slice(0, -1)
+  }
+}])
 .service('sheetShare', ['$rootScope', '$bottomSheet', function($rootScope, $bottomSheet) {
     this.popup = showSheet;
 
@@ -205,12 +217,11 @@ angular.module('maybi.services', [])
 
         setUsername:function(username){ //TODO 目前后台返回的data只有message，需要让后台返回新的user对象，然后前端Storage.set('user', data.user);
             var deferred = $q.defer();
-            $http.post(ENV.SERVER_URL+'/api/users/update_username', {
-                username: username
-            }).success(function(data, status){
-                if (status === 200 && data.message == "OK"){
-                    user = data.user;
-                    Storage.set('user', data.user);
+            $http.post(ENV.SERVER_URL+'/mall/vip/updateName?name=' + username).success(function(data, status){
+                if (status === 200 && data.ret){
+                    user = Storage.get('user');
+                    user.name = username;
+                    Storage.set('user', user);
                     deferred.resolve(data);
                 } else {
                     deferred.reject(data);
@@ -664,7 +675,7 @@ angular.module('maybi.services', [])
                     //$ionicLoading.hide();
                     d.resolve(res);
                 } else {
-                    if (status == 404 || status == 302 ) {
+                    if (status == 404 || status == 302 || !res.ret) {
                         $ionicLoading.show({
                           template: '请先登录',
                           duration: 1000,
@@ -702,11 +713,11 @@ angular.module('maybi.services', [])
                 data: kargs
 
             }).success(function(res, status) {
-                if (status === 200 && res.message == "OK") {
+                if (status === 200 && res.ret) {
                     //$ionicLoading.hide();
                     d.resolve(res);
                 } else {
-                    if (status == 404 || status == 302 ) {
+                    if (status == 404 || status == 302) {
                         $ionicLoading.show({
                           template: '请先登录',
                           duration: 1000,
@@ -773,9 +784,9 @@ angular.module('maybi.services', [])
         var _self = this;
 
         if (this.$addr.id === undefined) {
-            $http.get(ENV.SERVER_URL + '/api/address/default').success(function(data) {
-                if (data.address) {
-                    _self.setAddress(data.address);
+            $http.get(ENV.SERVER_URL + '/mall/receipt/get').success(function(data) {
+                if (data.ret) {
+                    _self.setAddress(data.data.data);
                 }
             });
         }
