@@ -625,6 +625,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         $scope.changeTab(nextTab, index);
     }
 
+    $scope.isFirst = true;
     $scope.currentIndex = 0;
     $scope.items = [];
     $scope.tuijian = [];
@@ -636,8 +637,9 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         $scope.currentIndex = index;
         Items.setCurrentTab(tab.codeKey);
         Items.fetchTopItems().then(function(data){
-            $scope.items = data;
-            $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+          $scope.isFirst = false;
+          $scope.items = data;
+          $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
         if (!index) {
             index = GetCateIndex($scope.currentTab);
@@ -708,22 +710,27 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         // return null;
     }
 
-    Items.fetchTopItems().then(function(data){
-        $scope.items = data.items;
-    });
+    // Items.fetchTopItems().then(function(data){
+    //     $scope.items = data;
+    // });
 
     $scope.doRefresh = function() {
         Items.fetchTopItems().then(function(data){
-            $scope.items = data.items;
+            $scope.items = data;
         });
         $scope.$broadcast('scroll.refreshComplete');
     };
 
     $scope.loadMore = function() {
+      if (!$scope.isFirst && Items.hasNextPage()) {
         Items.increaseNewItems().then(function(data){
-            $scope.items = $scope.items.concat(data.items);
-            $scope.$broadcast('scroll.infiniteScrollComplete');
+          $scope.items = $scope.items.concat(data);
+          $scope.$broadcast('scroll.infiniteScrollComplete');
         });
+      } else {
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+        console.log($scope.isFirst , Items.hasNextPage())
+      }
     };
 
     $scope.moreDataCanBeLoaded = function() {
@@ -1439,7 +1446,7 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal, ngCa
                 $scope.quantity = quantityInt;
             }
             if ($scope.quantity < 1) $scope.quantity = 1;
-            if ($scope.quantity >= 5) $scope.quantity = 5;
+            // if ($scope.quantity >= 5) $scope.quantity = 5;
 
         } else {
             $scope.quantity = 1;
@@ -1530,14 +1537,14 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
     var page = 0;
 
     Items.searchItems(query, sub_cate, page).then(function(data){
-        $scope.items = data.items;
+        $scope.items = data;
         page++;
     });
 
     $scope.doRefresh = function() {
         page = 0;
         Items.searchItems(query, sub_cate, page).then(function(data){
-            $scope.items = data.items;
+            $scope.items = data;
             page++;
         });
         $scope.$broadcast('scroll.refreshComplete');
@@ -1545,7 +1552,7 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
 
     $scope.loadMore = function() {
         Items.searchItems(query, sub_cate, page).then(function(data){
-            $scope.items = $scope.items.concat(data.items);
+            $scope.items = $scope.items.concat(data);
             $scope.$broadcast('scroll.infiniteScrollComplete');
             page++;
         });
@@ -1559,7 +1566,7 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
     };
 }
 
-function favorCtrl($rootScope, $scope, FetchData, $state) {
+function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
     //我的喜欢
     $scope.$on('$ionicView.beforeEnter', function() {
       $rootScope.hideTabs = 'tabs-item-hide';
@@ -1569,9 +1576,14 @@ function favorCtrl($rootScope, $scope, FetchData, $state) {
         $scope.items = data.data;
     });
 
-    $scope.goItem = function(item_id) {
-        $state.go('tab.order_entry', {'itemID': item_id})
+    $scope.unfavor = function(item) {
+      FetchData.get('/mall/macollect/delete?maProId='+item.id).then(function(data){
+          item.collectFlag = false;
+      })
     };
+    $scope.addToCart = function (item){
+      ngCart.addItem(item.id, item.name, item.price, 1, item);
+    }
 }
 
 function ordersCtrl($rootScope, $scope, FetchData, ngCart) {
@@ -1923,7 +1935,7 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage) {
                 item.setQuantity(quantityInt)
             }
             if (item.getQuantity() < 1) item.setQuantity(1);
-            if (item.getQuantity() >= 5) item.setQuantity(5);
+            // if (item.getQuantity() >= 5) item.setQuantity(5);
 
         } else {
             item.setQuantity(1)

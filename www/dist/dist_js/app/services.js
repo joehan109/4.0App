@@ -541,7 +541,7 @@ angular.module('maybi.services', [])
     var currentTab = '';
     var hasNextPage = true;
     var nextPage = 0;
-    var perPage = 12;
+    var perPage = 8;
     var isEmpty = false;
 
     return {
@@ -588,18 +588,18 @@ angular.module('maybi.services', [])
                     title: query,
                 }
             }).success(function(r, status) {
-                if (status === 200 && r.message == "OK"){
-                    if (r.items.length < perPage) {
-                        hasNextPage = false;
-                    }
-                    nextPage = 1;
-                    deferred.resolve(r);
-                    if (page == 0 && r.items.length === 0) {
-                        isEmpty = true;
-                    }
-                } else {
-                    deferred.reject();
-                }
+              if (status === 200 && r.ret){
+                  if (r.data.data.length < perPage) {
+                      hasNextPage = false;
+                  }
+                  nextPage = 1;
+                  deferred.resolve(r.data.data);
+                  if (r.data.data.length === 0) {
+                      isEmpty = true;
+                  }
+              } else {
+                  deferred.reject();
+              }
             }).error(function (data){
                 deferred.reject();
             });
@@ -628,15 +628,18 @@ angular.module('maybi.services', [])
                     per_page: perPage,
                 }
             }).success(function(r, status) {
-                if (status === 200 && r.message == "OK"){
-                    if (r.items.length < perPage) {
-                        hasNextPage = false;
-                    }
-                    nextPage++;
-                    deferred.resolve(r);
-                } else {
-                    deferred.reject();
-                }
+              if (status === 200 && r.ret){
+                  if (r.data.data.length < perPage) {
+                      hasNextPage = false;
+                  }
+                  nextPage += 1;
+                  deferred.resolve(r.data.data);
+                  if (r.data.data.length === 0) {
+                      isEmpty = true;
+                  }
+              } else {
+                  deferred.reject();
+              }
             }).error(function (data){
                 deferred.reject();
             });
@@ -786,7 +789,7 @@ angular.module('maybi.services', [])
         if (this.$addr.id === undefined) {
             $http.get(ENV.SERVER_URL + '/mall/receipt/get').success(function(data) {
                 if (data.ret) {
-                    _self.setAddress(data.data.data);
+                    _self.setAddress(data.data);
                 }
             });
         }
@@ -1095,7 +1098,7 @@ angular.module('maybi.services', [])
                 this._quantity = quantityInt;
             }
             if (this._quantity < 1) this._quantity = 1;
-            if (this._quantity >= 5) this._quantity = 5;
+            // if (this._quantity >= 5) this._quantity = 5;
 
         } else {
             this._quantity = 1;

@@ -12,15 +12,14 @@
         </ion-refresher>
 
         <div class="col col-50 animated fadeIn"
-            collection-repeat="item in items" ng-click="goItem(item.item_id)">
+            collection-repeat="item in items" ng-click="goItem(item.id)">
             <div class="item item-image">
-                <img ng-src="{{item.thumbnail}}" cache-src>
+                <img ng-src="{{item.mainUrl}}" cache-src>
             </div>
             <div class="item item-text-wrap" href="#">
-                <h2 class="product-title" style="overflow: hidden;">{{item.title}}</h2>
+                <h2 class="product-title" style="overflow: hidden;">{{item.name}}</h2>
                 <p class="product-prices">
-                    <span class="curr-price">{{item.price | currency}}</span>
-                    <del class="orig-price">{{item.orig_price | currency}}</del>
+                    <span class="curr-price">{{item.price | currency:'￥'}}</span>
                 </p>
             </div>
         </div>
