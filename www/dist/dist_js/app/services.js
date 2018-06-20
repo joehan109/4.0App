@@ -541,7 +541,7 @@ angular.module('maybi.services', [])
     var currentTab = '';
     var hasNextPage = true;
     var nextPage = 0;
-    var perPage = 8;
+    var perPage = 2;
     var isEmpty = false;
 
     return {
