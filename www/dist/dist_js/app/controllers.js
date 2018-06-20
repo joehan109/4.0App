@@ -635,7 +635,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     });
     $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
         if (r.ret){
-          $scope.banners = [{"id":12,"codeType":"ma_pro_one_type","codeKey":"5","codeVal":"4.2酒系列","parentId":null,"codeDesc":"一级分类","latestUpdateBy":"","createTime":"1970-01-01 08:00:00","latestTime":"1970-01-01 08:00:00"}].concat(r.data);
+          $scope.banners = r.data;
           $scope.changeTab($scope.banners[0],0);
         }
     });
