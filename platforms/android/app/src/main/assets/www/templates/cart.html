@@ -69,7 +69,7 @@
                             ng-click="setQuantity(item, 1, true)">+</button>
                     </div>
                 </td>
-                <td class="price-cell">{{ item.getTotal() | currency }}</td>
+                <td class="price-cell">{{ item.getTotal() | currency:'￥' }}</td>
             </tr>
             </tbody>
             <tfoot>
@@ -83,7 +83,7 @@
                 <td class="check-cell">
                 </td>
                 <td></td>
-                <td colspan="2" class="total">商品总价: {{ ngCart.totalCost() | currency }}</td>
+                <td colspan="2" class="total">商品总价: {{ ngCart.totalCost() | currency:'￥' }}</td>
             </tr>
             </tfoot>
 

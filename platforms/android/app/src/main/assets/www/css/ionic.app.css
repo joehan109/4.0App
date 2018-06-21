@@ -15230,6 +15230,10 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
   text-align: center;
   margin: 12px 0 0 0; }
 
+.order-btn-row .btn-group .btn {
+  float: none;
+  width: 20%; }
+
 .btn-empty {
   float: right; }
 
@@ -15246,7 +15250,6 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
   height: 30px; }
 
 .btn-group .order-btn {
-  width: 100px;
   height: 34px; }
 
 .btn-group .active {
