@@ -1,3 +1,6 @@
+.button-energized{
+  background-color: $energized
+}
 .loginTab{
   display: flex;
   justify-content:center;
@@ -63,5 +66,33 @@
 .addressForm{
   .input-label{
     width: 75px;
+  }
+}
+.item-bottom-bar{
+  padding:0;
+  display: flex;
+  .only-btn{
+    margin: 0 10px;
+  }
+  i.icon{
+    font-size: 24px;
+    display: block;
+    text-align: center;
+  }
+  span{
+    font-size: 6px;
+  }
+  .item-bar-icon{
+    flex:1;
+    text-align: center;
+    color:#fff;
+    line-height: 44px;
+    font-size: 14px;
+  }
+  .add-to-cart{
+    background-color: #aaa
+  }
+  .buy-rightnow{
+    background-color: $energized;
   }
 }

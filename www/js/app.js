@@ -27,7 +27,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
             // org.apache.cordova.statusbar required
             StatusBar.styleDefault();
         }
-
+        // alert(cordova.plugins.AliPay,'Alipay')
         // Wechat.isInstalled(function (installed) {
         //     $rootScope.IsWechatInstalled = installed;
         // }, function (reason) {
@@ -141,9 +141,9 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
         }
     });
 
-    if (Storage.get('introPage') !== 'alreadyShow') {
-        $state.go('intro');
-    }
+    // if (Storage.get('introPage') !== 'alreadyShow') {
+    //     $state.go('intro');
+    // }
 })
 
 .config(function($httpProvider, $stateProvider, $urlRouterProvider, $ionicConfigProvider,
@@ -208,7 +208,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
         url: '/cateHome',
         nativeTransitions: null,
         views: {
-            'shopTab-cateHome': {
+            'shopTab-cateHome': { //对应ion-view的name
                 controller: 'cateHomeCtrl',
                 templateUrl: 'cateHome.html',
             }
@@ -295,10 +295,14 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
         }
     })
 
-    .state('account', {
+    .state('shopTab.account', {
         url: '/account',
-        templateUrl: 'account.html',
-        controller: 'accountCtrl'
+        views: {
+            'shopTab-account': {
+                templateUrl: 'account.html',
+                controller: 'accountCtrl'
+            }
+        }
     })
 
     .state('tab.coupons', {

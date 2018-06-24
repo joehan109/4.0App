@@ -2,7 +2,7 @@
 
 angular.module('maybi.services', [])
 
-.factory('timeoutHttpIntercept', function() {
+    .factory('timeoutHttpIntercept', function() {
         return {
             'request': function(config) {
                 config.timeout = 10000;
@@ -29,11 +29,27 @@ angular.module('maybi.services', [])
         function showSheet(item, share_type) {
             $bottomSheet.show({
                 buttons: [
-                    [
-                        { btText: "微信好友", btClass: "icon fa fa-weixin", btId: "0", hideOnClick: true }, //hide the bottomSheet when click
-                        { btText: "朋友圈", btClass: "icon pyq", btId: "1" },
-                        { btText: "微博", btClass: "icon fa fa-weibo", btId: "2" },
-                        { btText: "QQ好友", btClass: "icon fa fa-qq", btId: "3" }
+                    [{
+                            btText: "微信好友",
+                            btClass: "icon fa fa-weixin",
+                            btId: "0",
+                            hideOnClick: true
+                        }, //hide the bottomSheet when click
+                        {
+                            btText: "朋友圈",
+                            btClass: "icon pyq",
+                            btId: "1"
+                        },
+                        {
+                            btText: "微博",
+                            btClass: "icon fa fa-weibo",
+                            btId: "2"
+                        },
+                        {
+                            btText: "QQ好友",
+                            btClass: "icon fa fa-qq",
+                            btId: "3"
+                        }
                     ]
                 ],
                 titleText: '分享到',
@@ -92,75 +108,75 @@ angular.module('maybi.services', [])
         }
     }])
 
-.service('share', ['$rootScope', '$ionicActionSheet', function($rootScope, $ionicActionSheet) {
-    this.popup = showPopup;
+    .service('share', ['$rootScope', '$ionicActionSheet', function($rootScope, $ionicActionSheet) {
+        this.popup = showPopup;
 
-    function showPopup(item) {
-        var sheet = {};
-        sheet.cancelText = '取消';
-        sheet.buttonClicked = buttonClicked;
-        sheet.buttons = [{
-            text: '<i class="icon fa fa-weixin"></i> 发送给微信好友'
-        }, {
-            text: '<i class="icon fa fa-weixin"></i> 分享到朋友圈'
-        }, {
-            text: '<i class="icon fa fa-weibo"></i> 分享到微博'
-        }, {
-            text: '<i class="icon fa fa-qq"></i> 发送给QQ好友'
-        }];
+        function showPopup(item) {
+            var sheet = {};
+            sheet.cancelText = '取消';
+            sheet.buttonClicked = buttonClicked;
+            sheet.buttons = [{
+                text: '<i class="icon fa fa-weixin"></i> 发送给微信好友'
+            }, {
+                text: '<i class="icon fa fa-weixin"></i> 分享到朋友圈'
+            }, {
+                text: '<i class="icon fa fa-weibo"></i> 分享到微博'
+            }, {
+                text: '<i class="icon fa fa-qq"></i> 发送给QQ好友'
+            }];
 
-        $ionicActionSheet.show(sheet);
+            $ionicActionSheet.show(sheet);
 
-        function buttonClicked(index) {
+            function buttonClicked(index) {
 
-            var title = item.title;
-            var description = "美比，给您比邻中国的海外生活。";
-            var url = "http://may.bi/#/items/" + item.item_id;
-            var image = item.small_thumbnail;
+                var title = item.title;
+                var description = "美比，给您比邻中国的海外生活。";
+                var url = "http://may.bi/#/items/" + item.item_id;
+                var image = item.small_thumbnail;
 
-            var successCallback = function() {
-                $rootScope.$broadcast('alert', "分享成功");
-            };
-            var failCallback = function(reason) {
-                $rootScope.$broadcast('alert', reason);
-            };
+                var successCallback = function() {
+                    $rootScope.$broadcast('alert', "分享成功");
+                };
+                var failCallback = function(reason) {
+                    $rootScope.$broadcast('alert', reason);
+                };
 
-            if (index == 0 || index == 1) {
-                window.Wechat.share({
-                    message: {
-                        title: title,
-                        description: description,
-                        thumb: image,
-                        media: {
-                            type: Wechat.Type.LINK,
-                            webpageUrl: url
-                        }
-                    },
-                    scene: index
-                }, successCallback, failCallback);
-            } else if (index == 2) {
-                var args = {};
-                args.url = url;
-                args.title = title;
-                args.description = description;
-                args.imageUrl = image;
-                args.defaultText = "";
-                window.YCWeibo.shareToWeibo(successCallback, failCallback, args);
-            } else if (index == 3) {
-                var args = {};
-                args.url = url;
-                args.title = title;
-                args.description = description;
-                args.imageUrl = image;
-                args.appName = "美比客户端";
-                window.YCQQ.shareToQQ(function() {}, failCallback, args);
+                if (index == 0 || index == 1) {
+                    window.Wechat.share({
+                        message: {
+                            title: title,
+                            description: description,
+                            thumb: image,
+                            media: {
+                                type: Wechat.Type.LINK,
+                                webpageUrl: url
+                            }
+                        },
+                        scene: index
+                    }, successCallback, failCallback);
+                } else if (index == 2) {
+                    var args = {};
+                    args.url = url;
+                    args.title = title;
+                    args.description = description;
+                    args.imageUrl = image;
+                    args.defaultText = "";
+                    window.YCWeibo.shareToWeibo(successCallback, failCallback, args);
+                } else if (index == 3) {
+                    var args = {};
+                    args.url = url;
+                    args.title = title;
+                    args.description = description;
+                    args.imageUrl = image;
+                    args.appName = "美比客户端";
+                    window.YCQQ.shareToQQ(function() {}, failCallback, args);
+                }
+
             }
-
         }
-    }
-}])
+    }])
 
-.factory('Storage', function() {
+    .factory('Storage', function() {
         return {
             set: function(key, data) {
                 return window.localStorage.setItem(key, window.JSON.stringify(data));
@@ -536,7 +552,7 @@ angular.module('maybi.services', [])
 
     }])
 
-.factory('Items', ['ENV', '$http', '$log', '$q', '$rootScope', 'Storage', function(ENV, $http, $log, $q, $rootScope, Storage) {
+    .factory('Items', ['ENV', '$http', '$log', '$q', '$rootScope', 'Storage', function(ENV, $http, $log, $q, $rootScope, Storage) {
         // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
         var items = [];
         var currentTab = '';
@@ -761,7 +777,11 @@ angular.module('maybi.services', [])
     })
     .service('ngCart', ['$rootScope', '$http', 'ngCartItem', 'Storage', 'ENV', function($rootScope, $http, ngCartItem, Storage, ENV) {
 
-        this.attrMap = { 'size': "尺寸", 'color': "颜色", 'style': "样式" };
+        this.attrMap = {
+            'size': "尺寸",
+            'color': "颜色",
+            'style': "样式"
+        };
 
         this.init = function() {
             this.$cart = {
@@ -938,9 +958,7 @@ angular.module('maybi.services', [])
                     cart.items.splice(index, 1);
                 }
             });
-            $http.post(ENV.SERVER_URL + '/api/cart/entry/delete', {
-                'skus': [id]
-            }).success(function(data) {
+            $http.post(ENV.SERVER_URL + '/mall/mashopping/delete?id='+ id).success(function(data) {
                 _self.$loadCart(res.cart);
             }).error(function() {
 
@@ -1185,507 +1203,515 @@ angular.module('maybi.services', [])
 
     }])
 
-.service('fulfilmentNewOrder', ['$rootScope', '$http', 'ngCart', 'ENV', '$injector', function($rootScope, $http, ngCart, ENV, $injector) {
+    .service('fulfilmentNewOrder', ['$rootScope', '$http', 'ngCart', 'ENV', '$injector', function($rootScope, $http, ngCart, ENV, $injector) {
 
-    this.checkout = function(service, settings) {
+        this.checkout = function(service, settings) {
 
-        $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
-        return $http.post(ENV.SERVER_URL + '/api/orders/create_order', {
-            'entries': ngCart.selectedItemsObjects(),
-            'address_id': ngCart.getAddress().id,
-            'coupon_codes': settings.coupon ? [settings.coupon] : [],
-            'logistic_provider': settings.logistic_provider,
-        }).then(function(res) {
+            $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
+            return $http.post(ENV.SERVER_URL + '/api/orders/create_order', {
+                'entries': ngCart.selectedItemsObjects(),
+                'address_id': ngCart.getAddress().id,
+                'coupon_codes': settings.coupon ? [settings.coupon] : [],
+                'logistic_provider': settings.logistic_provider,
+            }).then(function(res) {
+                var provider = $injector.get('fulfilment_' + service);
+                provider.checkout(res.data);
+
+            }, function() {
+                $rootScope.$broadcast('alertEnd');
+                $rootScope.$broadcast('alert', "sorry...something wrong(1)..");
+            });
+        };
+    }])
+
+    .service('fulfilmentExistedOrder', ['$rootScope', '$http', 'ngCart', 'ENV', '$injector', function($rootScope, $http, ngCart, ENV, $injector) {
+
+        this.checkout = function(service, settings) {
+            $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
+
             var provider = $injector.get('fulfilment_' + service);
-            provider.checkout(res.data);
+            return provider.checkout(settings);
+        };
+    }])
 
-        }, function() {
+    .service('fulfilmentTransferOrder', ['$rootScope', '$http', 'ngCart', 'ENV', '$injector', function($rootScope, $http, ngCart, ENV, $injector) {
+
+        this.checkout = function(service, settings) {
+
+            $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
+            return $http.post(ENV.SERVER_URL + '/api/orders/update_transfer_order', {
+                'order_id': settings.order_id,
+                'address_id': ngCart.getAddress().id,
+                'coupon_codes': settings.coupon ? [settings.coupon] : [],
+                'logistic_provider': settings.logistic_provider,
+            }).then(function(res) {
+                var provider = $injector.get('fulfilment_' + service);
+                provider.checkout(res.data);
+
+            }, function() {
+                $rootScope.$broadcast('alertEnd');
+                $rootScope.$broadcast('alert', "sorry...something wrong(1)..");
+            });
+        };
+    }])
+
+    .service('fulfilment_paypal', ['$rootScope', '$http', 'PaypalService', 'ENV', '$state', '$timeout', function($rootScope, $http, PaypalService, ENV, $state, $timeout) {
+
+        this.checkout = function(data) {
             $rootScope.$broadcast('alertEnd');
-            $rootScope.$broadcast('alert', "sorry...something wrong(1)..");
-        });
-    };
-}])
+            var subject = "Maybi Order " + data.order.sid;
+            PaypalService.initPaymentUI().then(function() {
+                PaypalService.makePayment(data.order.final, subject)
+                    .then(function(payment) {
+                        $http.post(ENV.SERVER_URL + '/payment/paypal/notify', {
+                            payment: payment,
+                            order_id: data.order_id,
+                        }).success(function(res) {
+                            if (res.message == "OK") {
+                                $rootScope.$broadcast('alert', "支付成功");
+                                $timeout(function() {
+                                    $state.go('tab.order_detail', {
+                                        order_id: data.order_id
+                                    }, {
+                                        reload: true
+                                    })
+                                }, 1000);
+                            } else {
+                                $rootScope.$broadcast('alert', "支付失败");
+                            }
+                        }).error(function(error) {
+                            $rootScope.$broadcast('alert', "系统好像出问题。。");
+                        });
 
-.service('fulfilmentExistedOrder', ['$rootScope', '$http', 'ngCart', 'ENV', '$injector', function($rootScope, $http, ngCart, ENV, $injector) {
+                    }).catch(function(error) {
+                        $rootScope.$broadcast('alert', error);
+                    })
+            });
 
-    this.checkout = function(service, settings) {
-        $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
 
-        var provider = $injector.get('fulfilment_' + service);
-        return provider.checkout(settings);
-    };
-}])
+        };
+    }])
 
-.service('fulfilmentTransferOrder', ['$rootScope', '$http', 'ngCart', 'ENV', '$injector', function($rootScope, $http, ngCart, ENV, $injector) {
+    .service('fulfilment_wechat', ['$rootScope', '$http', 'ENV', '$state', '$timeout', function($rootScope, $http, ENV, $state, $timeout) {
 
-    this.checkout = function(service, settings) {
+        this.checkout = function(data) {
 
-        $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
-        return $http.post(ENV.SERVER_URL + '/api/orders/update_transfer_order', {
-            'order_id': settings.order_id,
-            'address_id': ngCart.getAddress().id,
-            'coupon_codes': settings.coupon ? [settings.coupon] : [],
-            'logistic_provider': settings.logistic_provider,
-        }).then(function(res) {
-            var provider = $injector.get('fulfilment_' + service);
-            provider.checkout(res.data);
+            $http.post(ENV.SERVER_URL + '/payment/checkout/sdk/' + data.order_id, {
+                'payment_method': 'wechat',
+            }).then(function(r) {
+                $rootScope.$broadcast('alertEnd');
+                var res = r.data.data;
+                var params = {
+                    mch_id: res.partnerid, // merchant id
+                    prepay_id: res.prepayid, // prepay id
+                    nonce: res.noncestr, // nonce
+                    timestamp: res.timestamp, // timestamp
+                    sign: res.sign, // signed string
+                };
 
-        }, function() {
-            $rootScope.$broadcast('alertEnd');
-            $rootScope.$broadcast('alert', "sorry...something wrong(1)..");
-        });
-    };
-}])
+                Wechat.sendPaymentRequest(params, function() {
+                    $rootScope.$broadcast('alert', "支付成功");
+                    $timeout(function() {
+                        $state.go('tab.order_detail', {
+                            order_id: data.order_id
+                        }, {
+                            reload: true
+                        })
+                    }, 1000);
+                }, function(reason) {
+                    $rootScope.$broadcast('alert', "Failed: " + reason);
+                });
 
-.service('fulfilment_paypal', ['$rootScope', '$http', 'PaypalService', 'ENV', '$state', '$timeout', function($rootScope, $http, PaypalService, ENV, $state, $timeout) {
+            }, function() {
+                $rootScope.$broadcast('alertEnd');
+                $rootScope.$broadcast('alert', "oppps...something wrong(2)..");
+            });
 
-    this.checkout = function(data) {
-        $rootScope.$broadcast('alertEnd');
-        var subject = "Maybi Order " + data.order.sid;
-        PaypalService.initPaymentUI().then(function() {
-            PaypalService.makePayment(data.order.final, subject)
-                .then(function(payment) {
-                    $http.post(ENV.SERVER_URL + '/payment/paypal/notify', {
-                        payment: payment,
-                        order_id: data.order_id,
-                    }).success(function(res) {
-                        if (res.message == "OK") {
-                            $rootScope.$broadcast('alert', "支付成功");
-                            $timeout(function() {
-                                $state.go('tab.order_detail', { order_id: data.order_id }, { reload: true })
-                            }, 1000);
-                        } else {
-                            $rootScope.$broadcast('alert', "支付失败");
-                        }
-                    }).error(function(error) {
-                        $rootScope.$broadcast('alert', "系统好像出问题。。");
+        };
+    }])
+
+    .factory('PaypalService', ['$q', '$ionicPlatform', 'paypalSettings', '$filter', '$timeout', function($q, $ionicPlatform, paypalSettings, $filter, $timeout) {
+
+        var init_defer;
+        /**
+         * Service object
+         * @type object
+         */
+        var service = {
+            initPaymentUI: initPaymentUI,
+            createPayment: createPayment,
+            configuration: configuration,
+            onPayPalMobileInit: onPayPalMobileInit,
+            makePayment: makePayment
+        };
+
+
+        /**
+         * @ngdoc method
+         * @name initPaymentUI
+         * @methodOf app.PaypalService
+         * @description
+         * Inits the payapl ui with certain envs.
+         *
+         *
+         * @returns {object} Promise paypal ui init done
+         */
+        function initPaymentUI() {
+
+            init_defer = $q.defer();
+            $ionicPlatform.ready().then(function() {
+
+                var clientIDs = {
+                    "PayPalEnvironmentProduction": paypalSettings.PAYPAL_LIVE_CLIENT_ID,
+                    "PayPalEnvironmentSandbox": paypalSettings.PAYPAL_SANDBOX_CLIENT_ID
+                };
+                PayPalMobile.init(clientIDs, onPayPalMobileInit);
+            });
+
+            return init_defer.promise;
+
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name createPayment
+         * @methodOf app.PaypalService
+         * @param {string|number} total total sum. Pattern 12.23
+         * @param {string} name name of the item in paypal
+         * @description
+         * Creates a paypal payment object
+         *
+         *
+         * @returns {object} PayPalPaymentObject
+         */
+        function createPayment(total, name) {
+
+            // "Sale  == >  immediate payment
+            // "Auth" for payment authorization only, to be captured separately at a later time.
+            // "Order" for taking an order, with authorization and capture to be done separately at a later time.
+            var payment = new PayPalPayment("" + total, "USD", "" + name, "Sale");
+            return payment;
+        }
+
+        /**
+         * @ngdoc method
+         * @name configuration
+         * @methodOf app.PaypalService
+         * @description
+         * Helper to create a paypal configuration object
+         *
+         *
+         * @returns {object} PayPal configuration
+         */
+        function configuration() {
+            // for more options see `paypal-mobile-js-helper.js`
+            var config = new PayPalConfiguration({
+                merchantName: paypalSettings.ShopName,
+                merchantPrivacyPolicyURL: paypalSettings.MerchantPrivacyPolicyURL,
+                merchantUserAgreementURL: paypalSettings.MerchantUserAgreementURL
+            });
+            return config;
+        }
+
+        function onPayPalMobileInit() {
+            $ionicPlatform.ready().then(function() {
+                // must be called
+                // use PayPalEnvironmentNoNetwork mode to get look and feel of the flow
+                PayPalMobile.prepareToRender(paypalSettings.ENV, configuration(), function() {
+
+                    $timeout(function() {
+                        init_defer.resolve();
                     });
 
-                }).catch(function(error) {
-                    $rootScope.$broadcast('alert', error);
-                })
-        });
-
-
-    };
-}])
-
-.service('fulfilment_wechat', ['$rootScope', '$http', 'ENV', '$state', '$timeout', function($rootScope, $http, ENV, $state, $timeout) {
-
-    this.checkout = function(data) {
-
-        $http.post(ENV.SERVER_URL + '/payment/checkout/sdk/' + data.order_id, {
-            'payment_method': 'wechat',
-        }).then(function(r) {
-            $rootScope.$broadcast('alertEnd');
-            var res = r.data.data;
-            var params = {
-                mch_id: res.partnerid, // merchant id
-                prepay_id: res.prepayid, // prepay id
-                nonce: res.noncestr, // nonce
-                timestamp: res.timestamp, // timestamp
-                sign: res.sign, // signed string
-            };
-
-            Wechat.sendPaymentRequest(params, function() {
-                $rootScope.$broadcast('alert', "支付成功");
-                $timeout(function() {
-                    $state.go('tab.order_detail', { order_id: data.order_id }, { reload: true })
-                }, 1000);
-            }, function(reason) {
-                $rootScope.$broadcast('alert', "Failed: " + reason);
-            });
-
-        }, function() {
-            $rootScope.$broadcast('alertEnd');
-            $rootScope.$broadcast('alert', "oppps...something wrong(2)..");
-        });
-
-    };
-}])
-
-.factory('PaypalService', ['$q', '$ionicPlatform', 'paypalSettings', '$filter', '$timeout', function($q, $ionicPlatform, paypalSettings, $filter, $timeout) {
-
-    var init_defer;
-    /**
-     * Service object
-     * @type object
-     */
-    var service = {
-        initPaymentUI: initPaymentUI,
-        createPayment: createPayment,
-        configuration: configuration,
-        onPayPalMobileInit: onPayPalMobileInit,
-        makePayment: makePayment
-    };
-
-
-    /**
-     * @ngdoc method
-     * @name initPaymentUI
-     * @methodOf app.PaypalService
-     * @description
-     * Inits the payapl ui with certain envs.
-     *
-     *
-     * @returns {object} Promise paypal ui init done
-     */
-    function initPaymentUI() {
-
-        init_defer = $q.defer();
-        $ionicPlatform.ready().then(function() {
-
-            var clientIDs = {
-                "PayPalEnvironmentProduction": paypalSettings.PAYPAL_LIVE_CLIENT_ID,
-                "PayPalEnvironmentSandbox": paypalSettings.PAYPAL_SANDBOX_CLIENT_ID
-            };
-            PayPalMobile.init(clientIDs, onPayPalMobileInit);
-        });
-
-        return init_defer.promise;
-
-    }
-
-
-    /**
-     * @ngdoc method
-     * @name createPayment
-     * @methodOf app.PaypalService
-     * @param {string|number} total total sum. Pattern 12.23
-     * @param {string} name name of the item in paypal
-     * @description
-     * Creates a paypal payment object
-     *
-     *
-     * @returns {object} PayPalPaymentObject
-     */
-    function createPayment(total, name) {
-
-        // "Sale  == >  immediate payment
-        // "Auth" for payment authorization only, to be captured separately at a later time.
-        // "Order" for taking an order, with authorization and capture to be done separately at a later time.
-        var payment = new PayPalPayment("" + total, "USD", "" + name, "Sale");
-        return payment;
-    }
-
-    /**
-     * @ngdoc method
-     * @name configuration
-     * @methodOf app.PaypalService
-     * @description
-     * Helper to create a paypal configuration object
-     *
-     *
-     * @returns {object} PayPal configuration
-     */
-    function configuration() {
-        // for more options see `paypal-mobile-js-helper.js`
-        var config = new PayPalConfiguration({
-            merchantName: paypalSettings.ShopName,
-            merchantPrivacyPolicyURL: paypalSettings.MerchantPrivacyPolicyURL,
-            merchantUserAgreementURL: paypalSettings.MerchantUserAgreementURL
-        });
-        return config;
-    }
-
-    function onPayPalMobileInit() {
-        $ionicPlatform.ready().then(function() {
-            // must be called
-            // use PayPalEnvironmentNoNetwork mode to get look and feel of the flow
-            PayPalMobile.prepareToRender(paypalSettings.ENV, configuration(), function() {
-
-                $timeout(function() {
-                    init_defer.resolve();
-                });
-
-            });
-        });
-    }
-
-    /**
-     * @ngdoc method
-     * @name makePayment
-     * @methodOf app.PaypalService
-     * @param {string|number} total total sum. Pattern 12.23
-     * @param {string} name name of the item in paypal
-     * @description
-     * Performs a paypal single payment
-     *
-     *
-     * @returns {object} Promise gets resolved on successful payment, rejected on error
-     */
-    function makePayment(total, name) {
-
-        var defer = $q.defer();
-        total = $filter('number')(total, 2);
-        $ionicPlatform.ready().then(function() {
-            PayPalMobile.renderSinglePaymentUI(createPayment(total, name), function(result) {
-                $timeout(function() {
-                    defer.resolve(result);
-                });
-            }, function(error) {
-                $timeout(function() {
-                    defer.reject(error);
                 });
             });
-        });
+        }
 
-        return defer.promise;
-    }
+        /**
+         * @ngdoc method
+         * @name makePayment
+         * @methodOf app.PaypalService
+         * @param {string|number} total total sum. Pattern 12.23
+         * @param {string} name name of the item in paypal
+         * @description
+         * Performs a paypal single payment
+         *
+         *
+         * @returns {object} Promise gets resolved on successful payment, rejected on error
+         */
+        function makePayment(total, name) {
 
-    return service;
-}])
+            var defer = $q.defer();
+            total = $filter('number')(total, 2);
+            $ionicPlatform.ready().then(function() {
+                PayPalMobile.renderSinglePaymentUI(createPayment(total, name), function(result) {
+                    $timeout(function() {
+                        defer.resolve(result);
+                    });
+                }, function(error) {
+                    $timeout(function() {
+                        defer.reject(error);
+                    });
+                });
+            });
 
-.factory("appUpdateService", ['$ionicPopup', '$timeout', '$ionicLoading', function($ionicPopup, $timeout, $ionicLoading) {
-    var version;
-    var deploy = new Ionic.Deploy();
+            return defer.promise;
+        }
 
-    /**
-     * 检查更新
-     */
-    function checkUpdate() {
-        $ionicLoading.show({
-            template: '正在检查更新...',
-            animation: 'fade-in',
-            showBackdrop: true,
-            duration: 3000,
-            showDelay: 0
-        });
+        return service;
+    }])
 
-        deploy.check().then(function(hasUpdate) {
+    .factory("appUpdateService", ['$ionicPopup', '$timeout', '$ionicLoading', function($ionicPopup, $timeout, $ionicLoading) {
+        var version;
+        var deploy = new Ionic.Deploy();
 
-            if (hasUpdate) {
-                showUpdateConfirm();
-            } else {
-                console.log('already nb');
-            }
-        }, function(err) {
-            console.log(err);
-
-        });
-    }
-
-    function showUpdateConfirm() {
-        $ionicLoading.hide();
-        var confirmPopup = $ionicPopup.confirm({
-            title: '版本升级',
-            cssClass: 'text-center',
-            template: "有新的版本了,是否要升级?",
-            cancelText: '取消',
-            okText: '升级'
-        });
-        confirmPopup.then(function(res) {
+        /**
+         * 检查更新
+         */
+        function checkUpdate() {
             $ionicLoading.show({
-                template: '正在更新...',
+                template: '正在检查更新...',
                 animation: 'fade-in',
                 showBackdrop: true,
-                //duration: 2000,
+                duration: 3000,
                 showDelay: 0
             });
 
-            if (res) {
-                deploy.update().then(function(res) {
-                    $ionicLoading.hide();
-                    $ionicLoading.show({
-                        template: '更新成功!',
-                        animation: 'fade-in',
-                        showBackdrop: true,
-                        duration: 2000,
-                        showDelay: 0
-                    });
-                }, function(err) {
-                    $ionicLoading.hide();
-                    $ionicLoading.show({
-                        template: '更新失败!' + err,
-                        animation: 'fade-in',
-                        showBackdrop: true,
-                        duration: 2000,
-                        showDelay: 0
-                    });
-                }, function(prog) {
-                    $ionicLoading.show({
-                        template: "已经下载：" + parseInt(prog) + "%"
-                    });
+            deploy.check().then(function(hasUpdate) {
+
+                if (hasUpdate) {
+                    showUpdateConfirm();
+                } else {
+                    console.log('already nb');
+                }
+            }, function(err) {
+                console.log(err);
+
+            });
+        }
+
+        function showUpdateConfirm() {
+            $ionicLoading.hide();
+            var confirmPopup = $ionicPopup.confirm({
+                title: '版本升级',
+                cssClass: 'text-center',
+                template: "有新的版本了,是否要升级?",
+                cancelText: '取消',
+                okText: '升级'
+            });
+            confirmPopup.then(function(res) {
+                $ionicLoading.show({
+                    template: '正在更新...',
+                    animation: 'fade-in',
+                    showBackdrop: true,
+                    //duration: 2000,
+                    showDelay: 0
                 });
-            } else {
-                $ionicLoading.hide();
-            }
-        });
-    };
 
-    function getAppVersion() {
-
-        deploy.info().then(function(data) {
-            var binaryVersion = data.binary_version;
-            var deployUuid = data.deploy_uuid;
-            version = deployUuid != 'NO_DEPLOY_LABEL' ? deployUuid : binaryVersion;
-        });
-    }
-
-
-
-    return {
-        getVersions: function() {
-            getAppVersion();
-            return version;
-        },
-        checkUpdate: function() {
-            checkUpdate();
-        },
-
-        update: function() {
-            showUpdateConfirm();
-        }
-    }
-}])
-
-.factory('Notification', ['ENV', '$http', '$log', '$q', '$rootScope', 'Storage', function(ENV, $http, $log, $q, $rootScope, Storage) {
-    // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
-    var notices = [];
-    var hasNextPage = true;
-    var perPage = 20;
-    var page = 0;
-    var isEmpty = false;
-
-    return {
-        getNotices: function(page) {
-            var deferred = $q.defer();
-            hasNextPage = true;
-            isEmpty = false;
-
-            $http.get(ENV.SERVER_URL + '/api/post/activities', {
-                params: {
-                    page: page,
-                    per_page: perPage,
-                }
-            }).success(function(r, status) {
-                if (status === 200 && r.message == "OK") {
-                    if (r.notices.length < perPage) {
-                        hasNextPage = false;
-                    }
-                    if (page == 0 && r.notices.length === 0) {
-                        isEmpty = true;
-                    }
-                    deferred.resolve(r);
+                if (res) {
+                    deploy.update().then(function(res) {
+                        $ionicLoading.hide();
+                        $ionicLoading.show({
+                            template: '更新成功!',
+                            animation: 'fade-in',
+                            showBackdrop: true,
+                            duration: 2000,
+                            showDelay: 0
+                        });
+                    }, function(err) {
+                        $ionicLoading.hide();
+                        $ionicLoading.show({
+                            template: '更新失败!' + err,
+                            animation: 'fade-in',
+                            showBackdrop: true,
+                            duration: 2000,
+                            showDelay: 0
+                        });
+                    }, function(prog) {
+                        $ionicLoading.show({
+                            template: "已经下载：" + parseInt(prog) + "%"
+                        });
+                    });
                 } else {
-                    deferred.reject();
+                    $ionicLoading.hide();
                 }
-            }).error(function(data) {
-                deferred.reject();
             });
-            return deferred.promise;
-        },
+        };
 
-        hasNextPage: function() {
-            return hasNextPage;
-        },
+        function getAppVersion() {
 
-        isEmpty: function() {
-            return isEmpty;
-        },
+            deploy.info().then(function(data) {
+                var binaryVersion = data.binary_version;
+                var deployUuid = data.deploy_uuid;
+                version = deployUuid != 'NO_DEPLOY_LABEL' ? deployUuid : binaryVersion;
+            });
+        }
 
-    };
-}])
 
-.factory('Board', ['ENV', '$http', '$log', '$q', '$rootScope', 'Storage', function(ENV, $http, $log, $q, $rootScope, Storage) {
-    // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
-    var notices = [];
-    var hasNextPage = true;
-    var perPage = 5;
-    var page = 0;
-    var isEmpty = false;
 
-    return {
-        getBoards: function(page) {
-            var deferred = $q.defer();
-            hasNextPage = true;
-            isEmpty = false;
+        return {
+            getVersions: function() {
+                getAppVersion();
+                return version;
+            },
+            checkUpdate: function() {
+                checkUpdate();
+            },
 
-            $http.get(ENV.SERVER_URL + '/api/boards', {
-                params: {
-                    page: page,
-                    per_page: perPage,
-                }
-            }).success(function(r, status) {
-                if (status === 200 && r.message == "OK") {
-                    if (r.boards.length < perPage) {
-                        hasNextPage = false;
+            update: function() {
+                showUpdateConfirm();
+            }
+        }
+    }])
+
+    .factory('Notification', ['ENV', '$http', '$log', '$q', '$rootScope', 'Storage', function(ENV, $http, $log, $q, $rootScope, Storage) {
+        // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
+        var notices = [];
+        var hasNextPage = true;
+        var perPage = 20;
+        var page = 0;
+        var isEmpty = false;
+
+        return {
+            getNotices: function(page) {
+                var deferred = $q.defer();
+                hasNextPage = true;
+                isEmpty = false;
+
+                $http.get(ENV.SERVER_URL + '/api/post/activities', {
+                    params: {
+                        page: page,
+                        per_page: perPage,
                     }
-                    if (page == 0 && r.boards.length === 0) {
-                        isEmpty = true;
+                }).success(function(r, status) {
+                    if (status === 200 && r.message == "OK") {
+                        if (r.notices.length < perPage) {
+                            hasNextPage = false;
+                        }
+                        if (page == 0 && r.notices.length === 0) {
+                            isEmpty = true;
+                        }
+                        deferred.resolve(r);
+                    } else {
+                        deferred.reject();
                     }
-                    deferred.resolve(r);
+                }).error(function(data) {
+                    deferred.reject();
+                });
+                return deferred.promise;
+            },
+
+            hasNextPage: function() {
+                return hasNextPage;
+            },
+
+            isEmpty: function() {
+                return isEmpty;
+            },
+
+        };
+    }])
+
+    .factory('Board', ['ENV', '$http', '$log', '$q', '$rootScope', 'Storage', function(ENV, $http, $log, $q, $rootScope, Storage) {
+        // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
+        var notices = [];
+        var hasNextPage = true;
+        var perPage = 5;
+        var page = 0;
+        var isEmpty = false;
+
+        return {
+            getBoards: function(page) {
+                var deferred = $q.defer();
+                hasNextPage = true;
+                isEmpty = false;
+
+                $http.get(ENV.SERVER_URL + '/api/boards', {
+                    params: {
+                        page: page,
+                        per_page: perPage,
+                    }
+                }).success(function(r, status) {
+                    if (status === 200 && r.message == "OK") {
+                        if (r.boards.length < perPage) {
+                            hasNextPage = false;
+                        }
+                        if (page == 0 && r.boards.length === 0) {
+                            isEmpty = true;
+                        }
+                        deferred.resolve(r);
+                    } else {
+                        deferred.reject();
+                    }
+                }).error(function(data) {
+                    deferred.reject();
+                });
+                return deferred.promise;
+            },
+
+            hasNextPage: function() {
+                return hasNextPage;
+            },
+
+            isEmpty: function() {
+                return isEmpty;
+            },
+
+        };
+    }])
+
+    .factory('JPush', ['ENV', '$http', '$log', '$q', '$rootScope', 'appUpdateService', function(ENV, $http, $log, $q, $rootScope, appUpdateService) {
+        return {
+            onOpenNotification: onOpenNotification,
+            onReceiveNotification: onReceiveNotification,
+            onReceiveMessage: onReceiveMessage
+        }
+
+        // push notification callback
+        function onOpenNotification(event) {
+            try {
+                var alertContent;
+                if (ionic.Platform.platform() == "Android") {
+                    alertContent = window.plugins.jPushPlugin.openNotification.alert;
                 } else {
-                    deferred.reject();
+                    alertContent = event.aps.alert;
                 }
-            }).error(function(data) {
-                deferred.reject();
-            });
-            return deferred.promise;
-        },
-
-        hasNextPage: function() {
-            return hasNextPage;
-        },
-
-        isEmpty: function() {
-            return isEmpty;
-        },
-
-    };
-}])
-
-.factory('JPush', ['ENV', '$http', '$log', '$q', '$rootScope', 'appUpdateService', function(ENV, $http, $log, $q, $rootScope, appUpdateService) {
-    return {
-        onOpenNotification: onOpenNotification,
-        onReceiveNotification: onReceiveNotification,
-        onReceiveMessage: onReceiveMessage
-    }
-
-    // push notification callback
-    function onOpenNotification(event) {
-        try {
-            var alertContent;
-            if (ionic.Platform.platform() == "Android") {
-                alertContent = window.plugins.jPushPlugin.openNotification.alert;
-            } else {
-                alertContent = event.aps.alert;
+                console.log("open Notificaiton:" + alertContent);
+            } catch (exception) {
+                console.log("JPushPlugin:onOpenNotification" + exception);
             }
-            console.log("open Notificaiton:" + alertContent);
-        } catch (exception) {
-            console.log("JPushPlugin:onOpenNotification" + exception);
         }
-    }
 
-    function onReceiveNotification(event) {
-        try {
-            var alertContent;
-            if (ionic.Platform.platform() == "Android") {
-                alertContent = window.plugins.jPushPlugin.receiveNotification.alert;
-            } else {
-                alertContent = event.aps.alert;
+        function onReceiveNotification(event) {
+            try {
+                var alertContent;
+                if (ionic.Platform.platform() == "Android") {
+                    alertContent = window.plugins.jPushPlugin.receiveNotification.alert;
+                } else {
+                    alertContent = event.aps.alert;
+                }
+                console.log("receive Notificaiton:" + alertContent);
+            } catch (exeption) {
+                console.log(exception)
             }
-            console.log("receive Notificaiton:" + alertContent);
-        } catch (exeption) {
-            console.log(exception)
         }
-    }
 
-    function onReceiveMessage(event) {
-        try {
-            var message;
-            if (ionic.Platform.platform() == "Android") {
-                message = window.plugins.jPushPlugin.receiveMessage.message;
-            } else {
-                message = event.content;
+        function onReceiveMessage(event) {
+            try {
+                var message;
+                if (ionic.Platform.platform() == "Android") {
+                    message = window.plugins.jPushPlugin.receiveMessage.message;
+                } else {
+                    message = event.content;
+                }
+                console.log("receive message:" + message);
+                if (message == 'update') {
+                    appUpdateService.checkUpdate();
+                }
+            } catch (exception) {
+                console.log("JPushPlugin:onReceiveMessage-->" + exception);
             }
-            console.log("receive message:" + message);
-            if (message == 'update') {
-                appUpdateService.checkUpdate();
-            }
-        } catch (exception) {
-            console.log("JPushPlugin:onReceiveMessage-->" + exception);
         }
-    }
 
-}])
+    }])
