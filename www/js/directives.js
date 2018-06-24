@@ -95,7 +95,7 @@ angular.module('maybi.directives', [])
     };
 })
 
-.directive('ngcartCheckout', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet){
+.directive('ngcartCheckout', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state){
     return {
         restrict : 'E',
         link: function(scope, element, attrs){
@@ -120,6 +120,9 @@ angular.module('maybi.directives', [])
                 fulfilmentProvider.setSettings(scope.settings);
                 fulfilmentProvider.checkout()
               }
+            };
+            scope.goToOrder = function () {
+              $state.go('tab.order');
             };
 
         },

@@ -795,6 +795,7 @@ angular.module('maybi.services', [])
                 id: undefined,
                 data: {},
             };
+            $scope.$express = {}
         };
 
         this.setAddress = function(addr) {
@@ -814,6 +815,13 @@ angular.module('maybi.services', [])
             }
             return this.$addr;
 
+        };
+        this.setExpress = function(express) {
+            this.$express = express;
+        };
+
+        this.getExpress = function() {
+            return this.$express;
         };
 
         this.addItem = function(id, name, price, quantity, data) {
