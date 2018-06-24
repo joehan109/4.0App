@@ -795,7 +795,10 @@ angular.module('maybi.services', [])
                 id: undefined,
                 data: {},
             };
-            $scope.$express = {}
+            this.$express = {
+                name: '普通快递',
+                id:'0'
+            }
         };
 
         this.setAddress = function(addr) {
@@ -1165,49 +1168,38 @@ angular.module('maybi.services', [])
         };
         return item;
     })
-    .service('fulfilmentProvider', function(ngCart, $rootScope, fulfilmentNewOrder,
-        fulfilmentTransferOrder, fulfilmentExistedOrder) {
+    .service('fulfilmentProvider', function(ngCart, $rootScope, $ionicLoading, utils, $http, ENV) {
 
-        this._obj = {
-            service: undefined,
-            settings: undefined
+
+        this.checkout = function(data,cb) {
+          $http.post(ENV.SERVER_URL + '/mall/maorder/save' + utils.formatGetParams(data)).success(function(data) {
+            $ionicLoading.show({
+                template: '订单生成成功',
+                duration: 1000,
+            });
+            alipayCheckout();
+          }).error(function() {
+            $ionicLoading.show({
+                template: '订单生成失败，请咨询供应商',
+                duration: 3000,
+            });
+          }).finally(function () {
+            alipayCheckout();
+          });
         };
-
-        this.setService = function(service) {
-            this._obj.service = service;
-        };
-
-        this.setSettings = function(settings) {
-            this._obj.settings = settings;
-        };
-
-        this.checkout = function() {
-            if (this._obj.settings.order_type == 'new') {
-                if (ngCart.getAddress().id === undefined) {
-                    $rootScope.$broadcast('ngCart:change', "请添加地址");
-                    return;
-                }
-                if (this._obj.settings.logistic_provider === undefined) {
-                    $rootScope.$broadcast('ngCart:change', "请选择运输方式");
-                    return;
-                }
-                var provider = fulfilmentNewOrder;
-            } else if (this._obj.settings.order_type == 'transfer') {
-                if (ngCart.getAddress().id === undefined) {
-                    $rootScope.$broadcast('ngCart:change', "请添加地址");
-                    return;
-                }
-                if (this._obj.settings.logistic_provider === undefined) {
-                    $rootScope.$broadcast('ngCart:change', "请选择运输方式");
-                    return;
-                }
-
-                var provider = fulfilmentTransferOrder;
-            } else if (this._obj.settings.order_type == 'existed') {
-                var provider = fulfilmentExistedOrder;
-            }
-            return provider.checkout(this._obj.service, this._obj.settings);
-        };
+        function alipayCheckout(){
+          cordova.plugins.alipay.payment(payInfo,function success(e){},function error(e){});
+          console.log(1)
+           //e.resultStatus  状态代码  e.result  本次操作返回的结果数据 e.memo 提示信息
+           //e.resultStatus  9000  订单支付成功 ;8000 正在处理中  调用function success
+           //e.resultStatus  4000  订单支付失败 ;6001  用户中途取消 ;6002 网络连接出错  调用function error
+           //当e.resultStatus为9000时，请去服务端验证支付结果
+                      /**
+                       * 同步返回的结果必须放置到服务端进行验证（验证的规则请看https://doc.open.alipay.com/doc2/
+                       * detail.htm?spm=0.0.0.0.xdvAU6&treeId=59&articleId=103665&
+                       * docType=1) 建议商户依赖异步通知
+                       */
+          }
 
     })
 
@@ -1338,7 +1330,7 @@ angular.module('maybi.services', [])
         };
     })
 
-    .factory('PaypalService', function($q, $ionicPlatform, paypalSettings, $filter, $timeout) {
+    .factory('AlipayService', function($q, $ionicPlatform, paypalSettings, $filter, $timeout) {
 
         var init_defer;
         /**

@@ -1705,10 +1705,26 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         $rootScope.hideTabs = 'tabs-item-hide';
     });
 
-    FetchData.get('/api/orders/get/' + $stateParams.order_id).then(function(data) {
-        $scope.ngCart = ngCart;
-        $scope.order = data.order;
-    });
+    $scope.ngCart = ngCart;
+
+    if ($stateParams.order_id) {
+      FetchData.get('/mall/maorder/query?code='+$stateParams.order_id+'&status=').then(function(data) {
+          $scope.order = data.data;
+      });
+    } else {
+      var data = $scope.ngCart.getAddress().data;
+      $scope.order = {
+        items:$scope.ngCart.getSelectedItems(),
+        trackingType:$scope.ngCart.getExpress().id,
+        status:'0',
+        receiptId:data.id,
+        receiptName:data.name,
+        receiptPhone:data.phone,
+        receiptPostcode:data.postcode,
+        receiptDetail:data.detail,
+        receiptName:data.name
+      }
+    }
 
     // A confirm dialog
     $scope.cancelOrder = function() {
@@ -1789,6 +1805,7 @@ function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData
     $scope.selectPartner = function(provider) {
         $scope.selectedProvider = provider;
         $scope.providersShown = !$scope.providersShown;
+        ngCart.setExpress(provider);
 
         FetchData.post('/api/orders/cal_order_price', {
             'order_id': $scope.order.id,
@@ -2120,7 +2137,7 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
     $scope.selectPartner = function(provider) {
         $scope.selectedProvider = provider;
         $scope.providersShown = !$scope.providersShown;
-
+        ngCart.setExpress(provider);
         // FetchData.post('/api/orders/cal_entries_price', {
         //     'entries': ngCart.selectedItemsObjects(),
         //     'address_id': ngCart.getAddress().id,
