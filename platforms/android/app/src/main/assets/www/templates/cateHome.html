@@ -21,8 +21,16 @@
     </div>
 
     <ion-content class="has-header has-subheader homepage" overflow-scroll="true">
-        <ion-slide-box class="cateHomeSlide" on-slide-changed="slideHasChanged2($index)" auto-play="true" does-continue="true" slide-interval=2000 show-pager="true" pager-click="pageClick(index)" active-slide="model.activeIndex" delegate-handle="delegateHandler2"
-            ng-click="coverFlowClick()">
+        <ion-slide-box
+          class="cateHomeSlide"
+          on-slide-changed="slideHasChanged2($index)"
+          auto-play="true"
+          does-continue="true"
+          slide-interval=2000
+          show-pager="true"
+          pager-click="pageClick(index)"
+          active-slide="model.activeIndex"
+          delegate-handle="delegateHandler2">
             <ion-slide ng-repeat="item in tuijian track by $index">
                 <div class="box" ng-click="goItem(item.maProId)">
                     <img ng-src="{{item.detailUrl}}">

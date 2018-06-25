@@ -5,15 +5,16 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
-        'angularMoment', 'templates', 'ionic-native-transitions',
-        'ion-BottomSheet', 'ion-affix', 'ion-photo',  'ion-geo',
-        'maybi.controllers', 'maybi.services', 'maybi.directives', 'maybi.photogram',
-        'maybi.constants', 'maybi.filters', 'tag-select'])
+angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
+    'angularMoment', 'templates', 'ionic-native-transitions',
+    'ion-BottomSheet', 'ion-affix', 'ion-photo', 'ion-geo',
+    'maybi.controllers', 'maybi.services', 'maybi.directives', 'maybi.photogram',
+    'maybi.constants', 'maybi.filters', 'tag-select'
+])
 
 .run(function($ionicPlatform, $rootScope, $state, JPush,
-            $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast,
-            amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate, $cordovaBarcodeScanner) {
+    $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast,
+    amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate, $cordovaBarcodeScanner) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -26,7 +27,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
             // org.apache.cordova.statusbar required
             StatusBar.styleDefault();
         }
-
+        // alert(cordova.plugins.AliPay,'Alipay')
         // Wechat.isInstalled(function (installed) {
         //     $rootScope.IsWechatInstalled = installed;
         // }, function (reason) {
@@ -51,14 +52,14 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
     amMoment.changeLocale('zh-cn');
 
     // ngCart
-    $rootScope.$on('ngCart:change', function(event, msg){
+    $rootScope.$on('ngCart:change', function(event, msg) {
         ngCart.$save();
         if (window.cordova) {
             $cordovaToast.show(msg, 'short', 'center');
         } else {
             $ionicLoading.show({
-              template: msg,
-              duration: 1000,
+                template: msg,
+                duration: 1000,
             });
         }
     });
@@ -76,10 +77,10 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
     // }
     ngCart.init();
     FetchData.get('/mall/mashopping/getAll').then(function(data) {
-      ngCart.$loadCart(data.data);
-    },function(err){
-      Storage.remove('user');
-      $rootScope.authDialog.show();
+        ngCart.$loadCart(data.data);
+    }, function(err) {
+        Storage.remove('user');
+        $rootScope.authDialog.show();
     });
 
     $ionicModal.fromTemplateUrl('auth.html', {
@@ -92,11 +93,11 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
         $rootScope.authDialog.show();
     };
 
-    $rootScope.closeAuthBox= function() {
+    $rootScope.closeAuthBox = function() {
         $rootScope.authDialog.hide();
     };
 
-    $rootScope.$on('$stateChangeStart', function (event, next) {
+    $rootScope.$on('$stateChangeStart', function(event, next) {
 
         if (AuthService.isLoggedIn() === false) {
             var token = Storage.get('access_token');
@@ -140,199 +141,209 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
         }
     });
 
-    if(Storage.get('introPage') !== 'alreadyShow'){
-        $state.go('intro');
-    }
+    // if (Storage.get('introPage') !== 'alreadyShow') {
+    //     $state.go('intro');
+    // }
 })
 
 .config(function($httpProvider, $stateProvider, $urlRouterProvider, $ionicConfigProvider,
-            $ionicNativeTransitionsProvider){
+    $ionicNativeTransitionsProvider) {
 
-  //$ionicConfigProvider.scrolling.jsScrolling(false);
-  $ionicConfigProvider.views.maxCache(5);
+    //$ionicConfigProvider.scrolling.jsScrolling(false);
+    $ionicConfigProvider.views.maxCache(5);
 
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
-  $stateProvider
+    // Ionic uses AngularUI Router which uses the concept of states
+    // Learn more here: https://github.com/angular-ui/ui-router
+    // Set up the various states which the app can be in.
+    // Each state's controller can be found in controllers.js
+    $stateProvider
 
-  // setup an abstract state for the tabs directive
-  .state('tab', {
-    url: '',
-    abstract: true,
-    templateUrl: 'tabs.html',
-    controller: 'tabsCtrl',
-  })
-
-  .state('shopTab', {
-    url: '/shopTab',
-    abstract: true,
-    templateUrl: 'shopTabs.html',
-    controller: 'shopTabsCtrl',
-  })
-
-  // Each tab has its own nav history stack:
-  .state('intro', {
-      url: '/intro',
-      templateUrl: 'intro.html',
-      controller: 'introCtrl'
+    // setup an abstract state for the tabs directive
+        .state('tab', {
+        url: '',
+        abstract: true,
+        templateUrl: 'tabs.html',
+        controller: 'tabsCtrl',
     })
 
-  .state('appIndex', {
-    url: '/appIndex',
-    controller: 'appIndexCtrl',
-    templateUrl: 'appIndex.html',
-    loginRequired: true
-  })
-  .state('tab.home', {
-    url: '/home',
-    nativeTransitions: null,
-    views: {
-      'tab-cateHome': {
-        controller: 'homeCtrl',
-        templateUrl: 'home.html',
-      }
-    },
-    loginRequired: true,
-  })
+    .state('shopTab', {
+        url: '/shopTab',
+        abstract: true,
+        templateUrl: 'shopTabs.html',
+        controller: 'shopTabsCtrl',
+    })
 
-  .state('shopTab.cateHome', {
-    url: '/cateHome',
-    nativeTransitions: null,
-    views: {
-      'shopTab-cateHome': {
-        controller: 'cateHomeCtrl',
-        templateUrl: 'cateHome.html',
-      }
-    },
-    loginRequired: true,
-  })
+    // Each tab has its own nav history stack:
+    .state('intro', {
+        url: '/intro',
+        templateUrl: 'intro.html',
+        controller: 'introCtrl'
+    })
 
-  .state('tab.noti', {
-    url: '/notification',
-    nativeTransitions: null,
-    views: {
-      'tab-noti': {
-        controller: 'notificationCtrl',
-        templateUrl: 'notification.html',
-      }
-    },
-    loginRequired: true,
-  })
+    .state('appIndex', {
+            url: '/appIndex',
+            controller: 'appIndexCtrl',
+            templateUrl: 'appIndex.html',
+            loginRequired: true
+        })
+        .state('tab.home', {
+            url: '/home',
+            nativeTransitions: null,
+            views: {
+                'tab-cateHome': {
+                    controller: 'homeCtrl',
+                    templateUrl: 'home.html',
+                }
+            },
+            loginRequired: true,
+        })
+        .state('scan', {
+            url: '/scan',
+            controller: 'scanCtrl',
+            templateUrl: 'scan.html',
+            loginRequired: true,
+        })
+
+    .state('shopTab.cateHome', {
+        url: '/cateHome',
+        nativeTransitions: null,
+        views: {
+            'shopTab-cateHome': { //对应ion-view的name
+                controller: 'cateHomeCtrl',
+                templateUrl: 'cateHome.html',
+            }
+        },
+        loginRequired: true,
+    })
+
+    .state('tab.noti', {
+        url: '/notification',
+        nativeTransitions: null,
+        views: {
+            'tab-noti': {
+                controller: 'notificationCtrl',
+                templateUrl: 'notification.html',
+            }
+        },
+        loginRequired: true,
+    })
 
 
-  .state('logout', {
-    url: "/logout",
-    controller: 'logoutCtrl',
-  })
+    .state('logout', {
+        url: "/logout",
+        controller: 'logoutCtrl',
+    })
 
-  .state('tab.explore', {
-      url: '/explore',
-      nativeTransitions: null,
-      views: {
-        'tab-explore': {
-          templateUrl: 'photogram/home.html',
-          controller: 'exploreCtrl'
+    .state('tab.explore', {
+        url: '/explore',
+        nativeTransitions: null,
+        views: {
+            'tab-explore': {
+                templateUrl: 'photogram/home.html',
+                controller: 'exploreCtrl'
+            }
+        },
+        loginRequired: true,
+    })
+
+    .state('tab.postDetail', {
+        url: '/postDetail/:postID',
+        views: {
+            'tab-explore': {
+                templateUrl: 'photogram/postDetail.html',
+                controller: 'postDetailCtrl'
+            }
         }
-      },
-      loginRequired: true,
     })
 
-  .state('tab.postDetail', {
-      url: '/postDetail/:postID',
-      views: {
-        'tab-explore': {
-          templateUrl: 'photogram/postDetail.html',
-          controller: 'postDetailCtrl'
+    .state('tab.userDetail', {
+            url: '/userDetail/:userID',
+            views: {
+                'tab-explore': {
+                    templateUrl: 'userDetail.html',
+                    controller: 'userDetailCtrl'
+                }
+            }
+        })
+        .state('tab.accountUserDetail', {
+            url: '/userDetail/:userID',
+            views: {
+                'tab-account': {
+                    templateUrl: 'userDetail.html',
+                    controller: 'userDetailCtrl'
+                }
+            }
+        })
+
+    .state('tab.userList', {
+        url: '/userList/:userID/:userType',
+        views: {
+            'tab-explore': {
+                templateUrl: 'userList.html',
+                controller: 'userListCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.userDetail', {
-      url: '/userDetail/:userID',
-      views: {
-          'tab-explore': {
-              templateUrl: 'userDetail.html',
-              controller: 'userDetailCtrl'
-          }
-      }
-  })
-  .state('tab.accountUserDetail', {
-      url: '/userDetail/:userID',
-      views: {
-          'tab-account': {
-              templateUrl: 'userDetail.html',
-              controller: 'userDetailCtrl'
-          }
-      }
-  })
-
-  .state('tab.userList', {
-      url: '/userList/:userID/:userType',
-      views: {
-          'tab-explore': {
-              templateUrl: 'userList.html',
-              controller: 'userListCtrl'
-          }
-      }
-  })
-
-  .state('tab.myuserList', {
-      url: '/myuserList/:userID/:userType',
-      views: {
-          'tab-account': {
-              templateUrl: 'userList.html',
-              controller: 'userListCtrl'
-          }
-      }
-  })
-
-  .state('account', {
-      url: '/account',
-      templateUrl: 'account.html',
-      controller: 'accountCtrl'
-    })
-
-  .state('tab.coupons', {
-      url: '/coupons',
-      views: {
-        'tab-account@tab': {
-          templateUrl: 'coupons.html',
-          controller: 'couponsCtrl'
+    .state('tab.myuserList', {
+        url: '/myuserList/:userID/:userType',
+        views: {
+            'tab-account': {
+                templateUrl: 'userList.html',
+                controller: 'userListCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.settings', {
-      url: '/settings',
-      views: {
-        'tab-account@tab': {
-          templateUrl: 'settings.html',
-          controller: 'settingsCtrl'
+    .state('shopTab.account', {
+        url: '/account',
+        views: {
+            'shopTab-account': {
+                templateUrl: 'account.html',
+                controller: 'accountCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.profile', {
-      url: '/account/profile',
-      views: {
-        'tab-account': {
-          templateUrl: 'profile.html',
-          controller: 'profileCtrl'
+    .state('tab.coupons', {
+        url: '/coupons',
+        views: {
+            'tab-account@tab': {
+                templateUrl: 'coupons.html',
+                controller: 'couponsCtrl'
+            }
         }
-      }
+    })
+
+    .state('tab.settings', {
+        url: '/settings',
+        views: {
+            'tab-account@tab': {
+                templateUrl: 'settings.html',
+                controller: 'settingsCtrl'
+            }
+        }
+    })
+
+    .state('tab.profile', {
+        url: '/account/profile',
+        views: {
+            'tab-account': {
+                templateUrl: 'profile.html',
+                controller: 'profileCtrl'
+            }
+        }
     })
 
 
-  .state('tab.about', {
-      url: '/about',
-      views: {
-        'tab-account@tab': {
-          templateUrl: 'about.html',
-          controller: 'aboutCtrl'
+    .state('tab.about', {
+        url: '/about',
+        views: {
+            'tab-account@tab': {
+                templateUrl: 'about.html',
+                controller: 'aboutCtrl'
+            }
         }
-      }
     })
 
 
@@ -340,278 +351,278 @@ angular.module('maybi', ['ionic', 'ionic.service.core','ngCordova',
         url: '/cart',
         templateUrl: 'cart.html',
         controller: 'cartCtrl'
-      })
+    })
 
     .state('checkout', {
-      url: '/checkout',
-      templateUrl: 'checkout.html',
-      controller: 'checkoutCtrl'
+        url: '/checkout',
+        templateUrl: 'checkout.html',
+        controller: 'checkoutCtrl'
     })
 
-  .state('tab.categories', {
-      url: '/categories',
-      views: {
-        'tab-cateHome': {
-          templateUrl: 'category.html',
-          controller: 'categoryCtrl'
+    .state('tab.categories', {
+        url: '/categories',
+        views: {
+            'tab-cateHome': {
+                templateUrl: 'category.html',
+                controller: 'categoryCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.category', {
-      url: '/category/:en/:cn',
-      views: {
-        'tab-cateHome': {
-          templateUrl: 'item/items.html',
-          controller: 'itemsCtrl'
+    .state('tab.category', {
+        url: '/category/:en/:cn',
+        views: {
+            'tab-cateHome': {
+                templateUrl: 'item/items.html',
+                controller: 'itemsCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.search', {
-      url: '/search/:query',
-      views: {
-        'tab-cateHome': {
-          templateUrl: 'item/items.html',
-          controller: 'itemsCtrl'
+    .state('tab.search', {
+        url: '/search/:query',
+        views: {
+            'tab-cateHome': {
+                templateUrl: 'item/items.html',
+                controller: 'itemsCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.payment.success', {
-      url: '/payment/success',
-      views: {
-        'tab-cateHome': {
-          controller: 'paymentSuccessCtrl'
+    .state('tab.payment.success', {
+        url: '/payment/success',
+        views: {
+            'tab-cateHome': {
+                controller: 'paymentSuccessCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.payment.cancel', {
-      url: '/payment/cancel',
-      views: {
-        'tab-cateHome': {
-          controller: 'paymentCancelCtrl'
+    .state('tab.payment.cancel', {
+        url: '/payment/cancel',
+        views: {
+            'tab-cateHome': {
+                controller: 'paymentCancelCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.item', {
-      url: '/item/:id',
-      views: {
-        'tab-cateHome': {
-          templateUrl: 'item.html',
-          controller: 'itemCtrl',
+    .state('tab.item', {
+        url: '/item/:id',
+        views: {
+            'tab-cateHome': {
+                templateUrl: 'item.html',
+                controller: 'itemCtrl',
+            }
         }
-      }
     })
 
-  .state('tab.board', {
-      url: '/board/:boardID',
-      views: {
-        'tab-cateHome': {
-          templateUrl: 'board.html',
-          controller: 'boardCtrl'
+    .state('tab.board', {
+        url: '/board/:boardID',
+        views: {
+            'tab-cateHome': {
+                templateUrl: 'board.html',
+                controller: 'boardCtrl'
+            }
         }
-      }
     })
 
-  .state('address', {
-      url: '/address',
-      cache: false,
-      templateUrl: 'address.html',
-      controller: 'addressCtrl'
+    .state('address', {
+        url: '/address',
+        cache: false,
+        templateUrl: 'address.html',
+        controller: 'addressCtrl'
     })
 
-  .state('address_list', {
-      url: '/address/list',
-      cache: false,
-      templateUrl: 'address_list.html',
-      controller: 'addressCtrl'
+    .state('address_list', {
+        url: '/address/list',
+        cache: false,
+        templateUrl: 'address_list.html',
+        controller: 'addressCtrl'
     })
 
-  .state('tab.orders', {
-      url: '/orders',
-      views: {
-        'tab-account': {
-          templateUrl: 'orders.html',
-          controller: 'ordersCtrl'
+    .state('tab.orders', {
+        url: '/orders',
+        views: {
+            'tab-account': {
+                templateUrl: 'orders.html',
+                controller: 'ordersCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.order_detail', {
-      url: '/order/:order_id',
-      views: {
-        'tab-account': {
-          templateUrl: 'order.html',
-          controller: 'orderDetailCtrl'
+    .state('tab.order_detail', {
+        url: '/order/:order_id',
+        views: {
+            'tab-account': {
+                templateUrl: 'order.html',
+                controller: 'orderDetailCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.order_logistic', {
-      url: '/order/logistics/:order_id',
-      views: {
-        'tab-account': {
-          templateUrl: 'logistics.html',
-          controller: 'logisticsDetailCtrl'
+    .state('tab.order_logistic', {
+        url: '/order/logistics/:order_id',
+        views: {
+            'tab-account': {
+                templateUrl: 'logistics.html',
+                controller: 'logisticsDetailCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.order_transfer', {
-      url: '/order/transfer/:order_id',
-      views: {
-        'tab-account': {
-          templateUrl: 'transfer_logistics.html',
-          controller: 'logisticsDetailCtrl'
+    .state('tab.order_transfer', {
+        url: '/order/transfer/:order_id',
+        views: {
+            'tab-account': {
+                templateUrl: 'transfer_logistics.html',
+                controller: 'logisticsDetailCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.express', {
-      url: '/express',
-      views: {
-        'tab-cateHome': {
-          templateUrl: 'expressForm.html',
-          controller: 'expressCtrl'
+    .state('tab.express', {
+        url: '/express',
+        views: {
+            'tab-cateHome': {
+                templateUrl: 'expressForm.html',
+                controller: 'expressCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.express_add', {
-      url: '/express/add',
-      views: {
-          'tab-cateHome': {
-              templateUrl: 'expressItem_add.html',
-              controller: 'expressItemAddCtrl'
-          }
-      }
-  })
-
-  .state('tab.order_entry', {
-      url: '/order/entry/:itemID',
-      views: {
-        'tab-account': {
-          templateUrl: 'item.html',
-          controller: 'itemCtrl',
+    .state('tab.express_add', {
+        url: '/express/add',
+        views: {
+            'tab-cateHome': {
+                templateUrl: 'expressItem_add.html',
+                controller: 'expressItemAddCtrl'
+            }
         }
-      }
     })
 
-
-  .state('tab.calculate', {
-      url: '/calculate',
-      views: {
-        'tab-cateHome': {
-          templateUrl: 'calFee.html',
-          controller: 'calculateCtrl'
+    .state('tab.order_entry', {
+        url: '/order/entry/:itemID',
+        views: {
+            'tab-account': {
+                templateUrl: 'item.html',
+                controller: 'itemCtrl',
+            }
         }
-      }
     })
 
-  .state('favors', {
-      url: '/favors',
-      templateUrl: 'favors.html',
-      controller: 'favorCtrl'
-    })
 
-  .state('tab.like_posts', {
-      url: '/like_posts',
-      views: {
-        'tab-account': {
-          templateUrl: 'photogram/like_posts.html',
-          controller: 'likePostsCtrl'
+    .state('tab.calculate', {
+        url: '/calculate',
+        views: {
+            'tab-cateHome': {
+                templateUrl: 'calFee.html',
+                controller: 'calculateCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.myPostDetail', {
-      url: '/myPostDetail/:postID',
-      views: {
-        'tab-account': {
-          templateUrl: 'photogram/postDetail.html',
-          controller: 'postDetailCtrl'
+    .state('favors', {
+        url: '/favors',
+        templateUrl: 'favors.html',
+        controller: 'favorCtrl'
+    })
+
+    .state('tab.like_posts', {
+        url: '/like_posts',
+        views: {
+            'tab-account': {
+                templateUrl: 'photogram/like_posts.html',
+                controller: 'likePostsCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.my_posts', {
-      url: '/my_posts',
-      views: {
-        'tab-account': {
-          templateUrl: 'photogram/my_posts.html',
-          controller: 'myPostsCtrl'
+    .state('tab.myPostDetail', {
+        url: '/myPostDetail/:postID',
+        views: {
+            'tab-account': {
+                templateUrl: 'photogram/postDetail.html',
+                controller: 'postDetailCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.faq', {
-      url: '/faq',
-      views: {
-        'tab-account': {
-          templateUrl: 'faq.html',
-          controller: 'faqCtrl'
+    .state('tab.my_posts', {
+        url: '/my_posts',
+        views: {
+            'tab-account': {
+                templateUrl: 'photogram/my_posts.html',
+                controller: 'myPostsCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.limit', {
-      url: '/limit',
-      views: {
-        'tab-cateHome': {
-          templateUrl: 'limit.html',
-          controller: 'faqCtrl'
+    .state('tab.faq', {
+        url: '/faq',
+        views: {
+            'tab-account': {
+                templateUrl: 'faq.html',
+                controller: 'faqCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.cs', {
-      url: '/customer-service',
-      views: {
-        'tab-account': {
-          templateUrl: 'cs.html',
-          controller: 'csCtrl'
+    .state('tab.limit', {
+        url: '/limit',
+        views: {
+            'tab-cateHome': {
+                templateUrl: 'limit.html',
+                controller: 'faqCtrl'
+            }
         }
-      }
     })
 
-  .state('tab.feedback', {
-      url: '/feedback',
-      views: {
-        'tab-account': {
-          templateUrl: 'feedback.html',
-          controller: 'feedbackCtrl'
+    .state('tab.cs', {
+        url: '/customer-service',
+        views: {
+            'tab-account': {
+                templateUrl: 'cs.html',
+                controller: 'csCtrl'
+            }
         }
-      }
     })
 
-  ;
+    .state('tab.feedback', {
+        url: '/feedback',
+        views: {
+            'tab-account': {
+                templateUrl: 'feedback.html',
+                controller: 'feedbackCtrl'
+            }
+        }
+    })
 
-  // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/appIndex');
-  $httpProvider.interceptors.push('timeoutHttpIntercept');
-  $httpProvider.defaults.withCredentials = true;
-  $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
-  $httpProvider.defaults.transformRequest.push(function(data) {
-          var requestStr;
-          if (data) {
-              data = JSON.parse(data);
-              for (var key in data) {
-                  if (requestStr) {
-                      requestStr += "&" + key + "=" + data[key];
-                  } else {
-                      requestStr = key + "=" + data[key];
-                  }
-              }
-          }
-          return requestStr;
-      });
-  AWS.config.update({
-      accessKeyId: 'AKIAI4JD55P3DQLOXQKQ',
-      secretAccessKey: '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'
-  });
-  AWS.config.region = 'us-west-1';
+    ;
+
+    // if none of the above states are matched, use this as the fallback
+    $urlRouterProvider.otherwise('/appIndex');
+    $httpProvider.interceptors.push('timeoutHttpIntercept');
+    $httpProvider.defaults.withCredentials = true;
+    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+    $httpProvider.defaults.transformRequest.push(function(data) {
+        var requestStr;
+        if (data) {
+            data = JSON.parse(data);
+            for (var key in data) {
+                if (requestStr) {
+                    requestStr += "&" + key + "=" + data[key];
+                } else {
+                    requestStr = key + "=" + data[key];
+                }
+            }
+        }
+        return requestStr;
+    });
+    AWS.config.update({
+        accessKeyId: 'AKIAI4JD55P3DQLOXQKQ',
+        secretAccessKey: '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'
+    });
+    AWS.config.region = 'us-west-1';
 
 });

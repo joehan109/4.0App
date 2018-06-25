@@ -5,14 +5,12 @@ in ionic's _variables.scss file.
 
 For example, you might change some of the default colors:
 
-$light:                           #fff !default;
 $stable:                          #f8f8f8 !default;
 $positive:                        #387ef5 !default;
 $calm:                            #11c1f3 !default;
 $balanced:                        #33cd5f !default;
 $assertive:                       #ef473a !default;
 $royal:                           #886aea !default;
-$dark:                            #444 !default;
 */
 /*!
   Ionicons, v2.0.1
@@ -14616,6 +14614,9 @@ input.ion-google-place[readonly] {
         top: 15px;
         color: #fff !important; }
 
+.button-energized {
+  background-color: #ff3000; }
+
 .loginTab {
   display: flex;
   justify-content: center;
@@ -14665,6 +14666,40 @@ input.ion-google-place[readonly] {
 
 .addressForm .input-label {
   width: 75px; }
+
+.item-bottom-bar {
+  padding: 0;
+  display: flex; }
+  .item-bottom-bar .only-btn {
+    margin: 0 10px; }
+  .item-bottom-bar i.icon {
+    font-size: 24px;
+    display: block;
+    text-align: center; }
+  .item-bottom-bar span {
+    font-size: 6px; }
+  .item-bottom-bar .item-bar-icon {
+    flex: 1;
+    text-align: center;
+    color: #fff;
+    line-height: 44px;
+    font-size: 14px; }
+  .item-bottom-bar .add-to-cart {
+    background-color: #aaa; }
+  .item-bottom-bar .buy-rightnow {
+    background-color: #ff3000; }
+
+.assertive {
+  color: #6fd6b9; }
+
+.energized {
+  color: #ff3000; }
+
+.dark {
+  color: #444; }
+
+.light {
+  color: #fff; }
 
 @font-face {
   font-family: 'mihei';
@@ -14970,7 +15005,6 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
   .avatar-section .user {
     line-height: 26px;
     text-align: center;
-    color: white;
     font-size: 16px;
     margin-top: 15px; }
   .avatar-section .avatar-wrap {
@@ -15135,7 +15169,7 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
   width: 15%;
   min-width: 60px;
   font-size: 14px;
-  color: #6fd6b9;
+  color: #ff3000;
   text-align: right;
   padding-right: 8px; }
 
@@ -15544,7 +15578,7 @@ span.checklist-icon {
 .footer-price {
   font-size: 16px;
   font-weight: 500;
-  color: #6fd6b9; }
+  color: #ff3000; }
 
 .container-side-menu .button {
   font-size: 14px;

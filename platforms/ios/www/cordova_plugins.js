@@ -1,6 +1,14 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
 module.exports = [
   {
+    "id": "cordova-plugin-alipay-v2.alipay",
+    "file": "plugins/cordova-plugin-alipay-v2/www/alipay.js",
+    "pluginId": "cordova-plugin-alipay-v2",
+    "clobbers": [
+      "cordova.plugins.alipay"
+    ]
+  },
+  {
     "id": "cordova-plugin-camera.Camera",
     "file": "plugins/cordova-plugin-camera/www/CameraConstants.js",
     "pluginId": "cordova-plugin-camera",
@@ -76,6 +84,7 @@ module.exports = [
 module.exports.metadata = 
 // TOP OF METADATA
 {
+  "cordova-plugin-alipay-v2": "0.0.3",
   "cordova-plugin-camera": "4.0.4-dev",
   "cordova-plugin-device": "2.0.2",
   "cordova-plugin-ionic-keyboard": "2.0.5",

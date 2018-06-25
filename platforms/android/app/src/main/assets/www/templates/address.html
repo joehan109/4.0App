@@ -14,7 +14,7 @@
     <div class="address-row"
       ng-repeat="addr in addresses track by $index"
       ng-click="selectAddress(addr)"
-      ng-class="addr.selected? 'address-selected' : ''">
+      ng-class="addr.flag? 'address-selected' : ''">
       <div class="address-info-1">
         <div class="row">
           <div class="col">{{addr.name}}</div>
@@ -26,9 +26,10 @@
       </div>
       <div class="address-operate row">
         <div class="col col-60">
-          <i class="icon ion-ios-circle-outline" ng-if="!addr.selected"></i>
-          <i class="icon ion-ios-checkmark-outline" ng-if="addr.selected"></i>
-          选择该地址
+          <i class="icon ion-ios-circle-outline" ng-if="!addr.flag"></i>
+          <i class="icon ion-ios-checkmark-outline" ng-if="addr.flag"></i>
+          <span ng-if="addr.flag">已选择</span>
+          <span ng-if="!addr.flag">选择该地址</span>
         </div>
         <div class="col">
           <a href address-form addr-id="addr.id" addresses="addresses">修改地址</a>
@@ -53,6 +54,6 @@
   </ion-content>
 
     <ion-footer-bar class="bar-assertive footer-button" ng-click="confirmAddress()" >
-        <div class="title">确定</div>
+        <div class="title" style="text-align:center">确定</div>
     </ion-footer-bar>
 </ion-view>

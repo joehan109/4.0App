@@ -257,11 +257,12 @@ android {
 
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: '*.jar')
+    implementation fileTree(include: '*.jar', dir: 'libs')
     // SUB-PROJECT DEPENDENCIES START
-    implementation(project(path: ":CordovaLib"))
-    compile "com.android.support:support-v4:27.+"
+    implementation project(path: ':CordovaLib')
+    compile 'com.android.support:support-v4:27.+'
     // SUB-PROJECT DEPENDENCIES END
+    implementation files('/Users/hanqiang.han/joe/github/4.0App/platforms/android/libs/alipaySdk-20170725.jar')
 }
 
 def promptForReleaseKeyPassword() {

@@ -3,7 +3,7 @@
         <div ng-if="user.getUser().name" class="avatar-content">
             <div class="avatar-wrap" ng-click="$state.go('tab.profile')">
               <p><img class="avatar" ng-src="{{user.getUser().image}}" alt=""></p>
-              <p ng-if="user.getUser().name" class="user">{{user.getUser().name}}</p>
+              <p ng-if="user.getUser().name" class="user dark">{{user.getUser().name}}</p>
             </div>
         </div>
         <div ng-click="showAuthBox()" ng-if="!user.getUser().name" class="avatar-content">
@@ -38,7 +38,7 @@
         </a>
 
         <a class="item item-icon-left item-icon-right" href="#/address/list">
-          <i class="icon ion-android-locate"></i>
+          <i class="icon ion-pin"> </i>
           地址管理
           <i class="icon ion-ios-arrow-right"></i>
         </a>
@@ -50,22 +50,14 @@
         </a>
       </div>
     </ion-list>
-    <button class="button button-assertive button-large" ng-click="logout()">退出当前登录</button>
+    <div style="margin-top:50px;text-align:center">
+      <button class="button button-assertive"
+        style="padding:0 50px;"
+        ng-click="logout()"
+       >
+         退出当前账户
+       </button>
+    </div>
   </ion-content>
-  <ion-tabs class="maybi-tabs tabs-icon-top tabs-color-active-positive">
 
-    <!-- Home Tab -->
-    <ion-tab title="首页" icon-off="ion-ios-home-outline" icon-on="ion-ios-home" href="#/shopTab/cateHome">
-    </ion-tab>
-
-    <!-- Noti Tab -->
-    <ion-tab title="购物车" icon-off="ion-ios-cart-outline" icon-on="ion-ios-cart" href="#/cart">
-    </ion-tab>
-
-    <!-- Account Tab -->
-    <ion-tab title="我的" icon-off="ion-ios-person-outline" icon-on="ion-ios-person" href="#/account">
-    </ion-tab>
-
-
-  </ion-tabs>
 </ion-view>

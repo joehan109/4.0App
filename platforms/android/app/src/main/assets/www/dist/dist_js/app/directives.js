@@ -95,11 +95,12 @@ angular.module('maybi.directives', [])
     };
 }])
 
-.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet){
+.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state){
     return {
         restrict : 'E',
         link: function(scope, element, attrs){
             scope.ngCart = ngCart;
+
 
             scope.showPaymentMethods = function() {
 
@@ -107,21 +108,29 @@ angular.module('maybi.directives', [])
               sheet.buttonClicked = buttonClicked;
               sheet.buttons = [{
                 text: '<i class="icon fa fa-paypal"></i> 支付宝支付$'
-              }, {
-                text: '<i class="icon fa fa-wechat"></i> 微信支付￥'
               }];
+              sheet.cancelOnStateChange = true;
 
               $ionicActionSheet.show(sheet);
 
               function buttonClicked(index) {
                 var service = { 0: 'alipay', 1: 'wechat'}
-
-                fulfilmentProvider.setService(service[index]);
-                fulfilmentProvider.setSettings(scope.settings);
-                fulfilmentProvider.checkout()
+                var data = scope.ngCart.getAddress().data;
+                var order = {
+                  items:scope.ngCart.getSelectedItems().toString(),
+                  trackingType:scope.ngCart.getExpress().id,
+                  status:'0',
+                  receiptId:data.id,
+                  receiptName:data.name,
+                  receiptPhone:data.phone,
+                  receiptPostcode:data.postcode,
+                  receiptDetail:data.detail
+                }
+                fulfilmentProvider.checkout(order, function(){
+                  $ionicActionSheet.hide();
+                })
               }
             };
-
         },
         scope: {
             settings:'=',

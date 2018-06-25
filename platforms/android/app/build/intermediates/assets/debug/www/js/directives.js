@@ -95,33 +95,42 @@ angular.module('maybi.directives', [])
     };
 })
 
-.directive('ngcartCheckout', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet){
+.directive('ngcartCheckout', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state){
     return {
         restrict : 'E',
         link: function(scope, element, attrs){
             scope.ngCart = ngCart;
+
 
             scope.showPaymentMethods = function() {
 
               var sheet = {};
               sheet.buttonClicked = buttonClicked;
               sheet.buttons = [{
-                text: '<i class="icon fa fa-paypal"></i> Paypal支付$'
-              }, {
-                text: '<i class="icon fa fa-wechat"></i> 微信支付￥'
+                text: '<i class="icon fa fa-paypal"></i> 支付宝支付$'
               }];
+              sheet.cancelOnStateChange = true;
 
               $ionicActionSheet.show(sheet);
 
               function buttonClicked(index) {
-                var service = { 0: 'paypal', 1: 'wechat'}
-
-                fulfilmentProvider.setService(service[index]);
-                fulfilmentProvider.setSettings(scope.settings);
-                fulfilmentProvider.checkout()
+                var service = { 0: 'alipay', 1: 'wechat'}
+                var data = scope.ngCart.getAddress().data;
+                var order = {
+                  items:scope.ngCart.getSelectedItems().toString(),
+                  trackingType:scope.ngCart.getExpress().id,
+                  status:'0',
+                  receiptId:data.id,
+                  receiptName:data.name,
+                  receiptPhone:data.phone,
+                  receiptPostcode:data.postcode,
+                  receiptDetail:data.detail
+                }
+                fulfilmentProvider.checkout(order, function(){
+                  $ionicActionSheet.hide();
+                })
               }
             };
-
         },
         scope: {
             settings:'=',
@@ -360,13 +369,13 @@ angular.module('maybi.directives', [])
             var resizeFactor, blurFactor;
             var scrollContent = $element[0];
             var header = document.body.querySelector('.avatar-section');
-            $scope.$on('userDetailContent.scroll', function(event,scrollView) {
-                var y = scrollView.__scrollTop;
-                if (y >= 0) {
-                  header.style[ionic.CSS.TRANSFORM] = 'translate3d(0, -' + Math.min(148, y) + 'px, 0)';
-                  scrollContent.style.top = Math.max(64, 150 - y) + 'px';
-                }
-            });
+            // $scope.$on('userDetailContent.scroll', function(event,scrollView) {
+            //     var y = scrollView.__scrollTop;
+            //     if (y >= 0) {
+            //       header.style[ionic.CSS.TRANSFORM] = 'translate3d(0, -' + Math.min(148, y) + 'px, 0)';
+            //       scrollContent.style.top = Math.max(64, 150 - y) + 'px';
+            //     }
+            // });
         }
     }
 })

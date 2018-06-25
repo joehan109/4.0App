@@ -4,7 +4,7 @@
             "outputFile": "/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-en-rAU/values-en-rAU.xml",
             "map": [
                 {
-                    "source": "/Users/hanqiang.han/.gradle/caches/transforms-1/files-1.1/support-compat-27.1.1.aar/9e621578eaeb1741ef8248727af813c6/res/values-en-rAU/values-en-rAU.xml",
+                    "source": "/Users/hanqiang.han/.gradle/wrapper/dists/gradle-4.1-all/caches/transforms-1/files-1.1/support-compat-27.1.1.aar/e0079036228fa2d9b66575a6ccf755de/res/values-en-rAU/values-en-rAU.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
