@@ -1645,20 +1645,22 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart) {
     });
 
     $scope.ngCart = ngCart;
-    $scope.orderType = 'COMMODITIES';
-    FetchData.get('/mall/maorder/query?code=&status=').then(function(data) {
-        $scope.orders = data.orders;
+    $scope.orderType = '0';
+    FetchData.get('/mall/maorder/query?code=&status=0').then(function(data) {
+        $scope.orders = data.data.data;
     });
     $scope.setType = function(type) {
+      if(type !== $scope.orderType) {
         $scope.orderType = type;
         FetchData.get('/mall/maorder/query?code=&status=' + type).then(function(data) {
-            $scope.orders = data.orders;
+            $scope.orders = data.data.data;
         });
+      }
     };
 }
 
 function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup) {
-    //商品详情
+    //订单详情
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
@@ -1666,24 +1668,9 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
 
     $scope.ngCart = ngCart;
 
-    if ($stateParams.order_id) {
-      FetchData.get('/mall/maorder/query?code='+$stateParams.order_id+'&status=').then(function(data) {
-          $scope.order = data.data;
-      });
-    } else {
-      var data = $scope.ngCart.getAddress().data;
-      $scope.order = {
-        items:$scope.ngCart.getSelectedItems(),
-        trackingType:$scope.ngCart.getExpress().id,
-        status:'0',
-        receiptId:data.id,
-        receiptName:data.name,
-        receiptPhone:data.phone,
-        receiptPostcode:data.postcode,
-        receiptDetail:data.detail,
-        receiptName:data.name
-      }
-    }
+    FetchData.get('/mall/maorder/query?code='+$stateParams.order_id+'&status=').then(function(data) {
+        $scope.order = data.data.data[0];
+    });
 
     // A confirm dialog
     $scope.cancelOrder = function() {
@@ -2062,6 +2049,7 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
     }];
 
     $scope.ngCart = ngCart;
+    $scope.selectedProvider = {};
     $scope.clearSelectedCart = function() {
         ngCart.emptySelectedItems();
         $scope.$ionicGoBack();
@@ -2070,12 +2058,15 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
         $state.go('address');
     };
 
+    FetchData.get('/mall/syscode/app/get?codeType=express_type').then(function(data) {
+        $scope.provider_prices = data.data;
+
+        // 设置购物车默认快递
+        $scope.selectedProvider = data.data[0];
+        ngCart.setExpress(data.data[0]);
+    });
 
     // provider actions
-    $scope.selectedProvider = {
-      name: '普通快递',
-      id:'0'
-    };
     $scope.providersShown = false;
 
     $scope.showProviderChoices = function() {

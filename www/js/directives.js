@@ -116,9 +116,19 @@ angular.module('maybi.directives', [])
               function buttonClicked(index) {
                 var service = { 0: 'alipay', 1: 'wechat'}
                 var data = scope.ngCart.getAddress().data;
+                var detailList = scope.ngCart.getSelectedItems().map(function (item) {
+                  return {
+                    maProId:item._id,
+                    maProImg:item._data.mainUrl,
+                    maProName:item._name,
+                    num:item._quantity,
+                    dealPrice:item._price
+                  }
+                });
                 var order = {
-                  items:scope.ngCart.getSelectedItems().toString(),
-                  trackingType:scope.ngCart.getExpress().id,
+                  detailList:detailList,
+                  trackingType:scope.ngCart.getExpress().codeKey,
+                  trackingAmount:+scope.ngCart.getExpress().codeDesc,
                   status:'0',
                   receiptId:data.id,
                   receiptName:data.name,
@@ -301,7 +311,7 @@ angular.module('maybi.directives', [])
                     });
                 } else {
                     FetchData.post('/mall/receipt/save'+utils.formatGetParams({
-                      'flag':1,
+                      'flag': 0,
                       'name': scope.addr.name,
                       'detail': scope.addr.detail,
                       'postcode': scope.addr.postcode,
@@ -309,7 +319,6 @@ angular.module('maybi.directives', [])
                     })).then(function(data) {
                         scope.addressModal.hide();
                         $state.transitionTo($state.current, $state.$current.params, { reload: true, inherit: true, notify: true });
-
                     });
 
                 }
