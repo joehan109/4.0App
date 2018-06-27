@@ -1,0 +1,30 @@
+<!-- 商品列表 -->
+<ion-view>
+    <div class="bar bar-header">
+      <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button>
+      <div class="title">收藏商品</div>
+    </div>
+    <ion-content class="has-header homepage">
+        <div class="col col-50 animated fadeIn"
+            collection-repeat="item in items">
+            <div class="item item-image" ng-click="goItem(item.id)">
+                <img ng-src="{{item.mainUrl}}" cache-src>
+            </div>
+            <div class="item item-text-wrap" href="#">
+                <h2 class="product-title" style="overflow: hidden;" ng-click="goItem(item.id)">{{item.name}}</h2>
+                <p class="product-prices">
+                    <span class="curr-price">{{item.price | currency:'￥'}}</span>
+                    <span style="float:right;font-size:16px;">
+                      <i class="icon ion-ios-heart"
+                          ng-class="{'like-icon button-assertive':item.collectFlag, 'button-light':!item.collectFlag}"
+                          ng-click="unfavor(item)"></i>
+                      <i class="icon ion-ios-cart"
+                        ng-click="addToCart(item)"
+                        style="margin-left:5px;"
+                        ></i>
+                    </span>
+              </p>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

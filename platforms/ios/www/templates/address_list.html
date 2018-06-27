@@ -1,0 +1,52 @@
+<!-- 地址栏 -->
+<ion-view>
+  <div class="bar bar-header">
+      <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button>
+      <div class="title">地址管理</div>
+      <button class="button button-clear button-dark icon"
+          ng-class="editShown?'ion-ios-color-wand-outline': 'ion-ios-trash-outline'"
+          ng-click="toggleEditShown()"></button>
+  </div>
+
+  <ion-content class="has-header">
+
+    <section>
+    <div class="address-select-info" ng-show="addresses.length != 0">
+        <div class="address-row"
+          ng-repeat="addr in addresses track by $index"
+          ng-class="addr.flag? 'address-selected' : ''">
+            <div class="address-info-1">
+              <div class="row">
+                <div class="col">{{addr.name}}</div>
+                <div class="col">{{addr.phone}}</div>
+              </div>
+              <div class="row">
+                <div class="col">{{addr.detail}}</div>
+              </div>
+            </div>
+            <div class="address-operate row">
+              <div class="col col-60" ng-click="setDefault(addr.id)">
+                <i class="icon ion-ios-circle-outline" ng-if="!addr.flag"></i>
+                <span ng-if="!addr.flag">设为默认</span>
+                <i class="icon ion-ios-checkmark-outline" ng-if="addr.flag"></i>
+                <span ng-if="addr.flag">默认地址</span>
+              </div>
+              <div class="col">
+                <a href address-form addr-id="addr.id" addresses="addresses">修改地址</a>
+              </div>
+              <div class="col">
+                <span ng-click="removeAddr(addr.id)">删除</span>
+              </div>
+          </div>
+        </div>
+    </div>
+    </section>
+
+
+  </ion-content>
+  <ion-footer-bar class="bar-energized bar bar-footer">
+    <div class="address-add-btn" address-form  addresses="addresses">
+      <div>新增收件地址</div>
+    </div>
+  </ion-footer-bar>
+</ion-view>
