@@ -87,8 +87,8 @@
     <plugin name="phonegap-plugin-barcodescanner" spec="https://github.com/phonegap/phonegap-plugin-barcodescanner.git">
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="27.+" />
     </plugin>
-    <engine name="ios" spec="~4.5.4" />
     <plugin name="cordova-plugin-alipay-v2" spec="0.0.4">
         <variable name="APP_ID" value="2006666666" />
     </plugin>
+    <engine name="ios" spec="^4.5.4" />
 </widget>

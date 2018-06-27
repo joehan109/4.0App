@@ -1657,6 +1657,26 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart) {
         });
       }
     };
+    $scope.orderDone = function (order) {
+      var confirmPopup = $ionicPopup.confirm({
+          title: '确定已收到货?',
+      });
+      confirmPopup.then(function(res) {
+          if (res) {
+              FetchData.get('/mall/maorder/confirm?id=' + $order.code)
+                  .then(function(data) {
+                    if(data.res) {
+                      $scope.$emit("alert", "交易成功！");
+                      $state.go('tab.orders');
+                    } else{
+                      $scope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
+                    }
+                  })
+          } else {
+              console.log('You are not sure');
+          }
+      });
+    }
 }
 
 function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup) {
@@ -1679,10 +1699,14 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         });
         confirmPopup.then(function(res) {
             if (res) {
-                FetchData.get('/api/orders/' + $stateParams.order_id + '/delete')
+                FetchData.get('/mall/maorder/cancel?id=' + $stateParams.order_id)
                     .then(function(data) {
+                      if(data.res) {
                         $scope.$emit("alert", "订单已删除");
                         $state.go('tab.orders');
+                      } else{
+                        $scope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
+                      }
                     })
             } else {
                 console.log('You are not sure');

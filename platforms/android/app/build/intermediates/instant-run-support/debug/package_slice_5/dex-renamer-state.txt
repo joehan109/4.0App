@@ -1,4 +1,4 @@
-#Mon Jun 25 20:24:42 CST 2018
-base.0=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/6
+#Wed Jun 27 11:02:39 CST 2018
+base.0=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/44
 renamed.0=classes.dex
-file.0=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/6/classes.dex
+file.0=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/44/classes.dex

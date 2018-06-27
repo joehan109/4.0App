@@ -214,9 +214,9 @@ angular.module('maybi.services', [])
                             user = data.data;
                             Storage.set('user', data.data);
                             Storage.set('access_token', data.data.name);
-                            if (window.cordova && window.cordova.plugins) {
-                                plugins.jPushPlugin.setAlias(data.user.id);
-                            }
+//                            if (window.cordova && window.cordova.plugins) {
+//                                plugins.jPushPlugin.setAlias(data.user.id);
+//                            }
                             $state.go('appIndex')
                             deferred.resolve();
                         })
