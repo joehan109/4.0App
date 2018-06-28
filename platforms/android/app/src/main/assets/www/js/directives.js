@@ -1,5 +1,3 @@
-"use strict";
-
 angular.module('maybi.directives', [])
 
 .directive('ngcartAddtocart', function(ngCart){

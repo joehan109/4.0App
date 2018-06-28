@@ -73,12 +73,6 @@
             </tr>
             </tbody>
             <tfoot>
-            <tr ng-show="ngCart.getShipping()">
-                <td></td>
-                <td></td>
-                <td>Shipping:</td>
-                <td>{{ ngCart.getShipping() | currency }}</td>
-            </tr>
             <tr>
                 <td class="check-cell">
                 </td>
@@ -93,7 +87,7 @@
   </ion-content>
     <div class="bar bar-subfooter bar-stable" style="bottom:0">
         <a class="button button-clear">
-            总价:  <span class="footer-price"> {{ ngCart.totalCost() |currency}}</span>
+            总价:  <span class="footer-price"> {{ ngCart.totalCost() |currency:'￥'}}</span>
         </a>
         <button class="button button-assertive button-cart pull-right" ng-click="$state.go('checkout')">
             结算({{ngCart.getTotalSelectedItems()}})

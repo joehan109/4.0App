@@ -1,19 +1,19 @@
-#Wed Jun 27 11:04:28 CST 2018
+#Thu Jun 28 20:37:34 CST 2018
 renamed.5=classes6.dex
 renamed.4=classes5.dex
 renamed.3=classes4.dex
 renamed.2=classes3.dex
 renamed.1=classes2.dex
 renamed.0=classes.dex
-base.5=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/50
-base.4=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/55
-base.3=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/51
-base.2=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/52
-base.1=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/53
-base.0=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/54
-file.5=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/50/classes.dex
-file.4=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/55/classes.dex
-file.3=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/51/classes.dex
-file.2=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/52/classes.dex
-file.1=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/53/classes.dex
-file.0=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/54/classes.dex
+base.5=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/150
+base.4=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/148
+base.3=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/145
+base.2=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/149
+base.1=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/147
+base.0=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/146
+file.5=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/150/classes.dex
+file.4=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/148/classes.dex
+file.3=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/145/classes.dex
+file.2=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/149/classes.dex
+file.1=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/147/classes.dex
+file.0=/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/transforms/dexMerger/debug/146/classes.dex

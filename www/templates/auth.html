@@ -26,13 +26,13 @@
     <div class="list list-inset" ng-show="commonLogin">
       <label class="item item-input">
         <i class="icon ion-person placeholder-icon"></i>
-        <input type="text" placeholder="请输入用户名" ng-model="email">
+        <input type="text" placeholder="请输入手机号" ng-model="phone">
       </label>
 
       <div class="item item-input-inset">
         <label class="item-input-wrapper" style="font-size:16px;background-color:white">
           <i class="icon ion-android-lock placeholder-icon"></i>
-          <input type="text" placeholder="请输入验证码" ng-model="password">
+          <input type="text" placeholder="请输入验证码" ng-model="validateCode">
         </label>
         <button class="button" ng-click="getValidateCode()" ng-disabled="sendStatus">
           {{validateTime}}

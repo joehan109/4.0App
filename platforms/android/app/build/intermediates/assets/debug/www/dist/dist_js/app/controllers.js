@@ -1,5 +1,3 @@
-'use strict';
-
 appIndexCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$cordovaToast', 'Photogram', 'PhotoService', '$timeout', 'geoService', 'FetchData', '$ionicSlideBoxDelegate', '$interval', 'Storage'];
 homeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicModal', 'ngCart', '$ionicSlideBoxDelegate', 'Board', 'Items', 'FetchData', 'Categories'];
 cateHomeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicModal', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
@@ -120,7 +118,54 @@ function shopTabsCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
 function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
     Photogram, $ionicPopup, $timeout, geoService, FetchData, $cordovaBarcodeScanner) {
 
-    $scope.confirmOpen = function() {
+    // 每次一进页面就调用照相机
+    $scope.$on('$ionicView.beforeEnter', function() {
+      $scope.showOpen = false;
+      $scope.showCode = false;
+      $scope.alreadyShow = false;
+
+      // $scope.barcodeData = 1;
+      // FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
+      //   if (res.ret) {
+      //     $scope.data = res.data;
+      //     $scope.imgUrl = res.data.proUrl;
+      //     if (res.data.pwdFlag) {
+      //       $scope.showCode = true;
+      //       // $scope.alreadyShow = true;
+      //       $scope.openCode = res.data.sonPwd;
+      //     } else {
+      //       $scope.showOpen = true;
+      //     }
+      //   } else {
+      //     $scope.$emit("alert", res.errmsg);
+      //   }
+      // });
+
+      $cordovaBarcodeScanner
+          .scan()
+          .then(function(barcodeData) {
+            $scope.barcodeData = 1;
+            FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
+              if (res.ret) {
+                $scope.data = res.data;
+                $scope.imgUrl = res.data.proUrl;
+                if (res.data.pwdFlag) {
+                  $scope.showCode = true;
+                  // $scope.alreadyShow = true;
+                  $scope.openCode = res.data.sonPwd;
+                } else {
+                  $scope.showOpen = true;
+                }
+              } else {
+                $scope.$emit("alert", res.errmsg);
+              }
+            });
+          }, function(error) {
+              alert('扫描失败，请稍后重试')
+          });
+    });
+
+    $scope.getCode = function() {
         var confirmPopup = $ionicPopup.confirm({
             title: '是否需要开锁密码？',
             cancelText: '否', // String (默认: 'Cancel')。一个取消按钮的文字。
@@ -138,16 +183,14 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
 
     };
     $scope.scanStart = function() {
-        $cordovaBarcodeScanner
-            .scan()
-            .then(function(barcodeData) {
-                alert(barcodeData);
-                $scope.barcodeData = barcodeData;
-                // Success! Barcode data is here
-            }, function(error) {
-                alert('失败')
-                    // An error occurred
-            });
+      FetchData.get('/mall/mascan/getPwd?id=' + $scope.data.id).then(function(res) {
+        if (res.ret) {
+          $scope.openCode = res.data.split('');
+          $scope.showCode = true;
+        } else {
+          $scope.$emit("alert", res.errmsg);
+        }
+      });
     };
 
 
@@ -1052,7 +1095,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
         if (!$scope.sendStatus) {
             timeRemaining = 10;
             $scope.sendStatus = true;
-            $scope.timeout = $interval(() => {
+            $scope.timeout = $interval(function()  {
                 if (timeRemaining <= 1) {
                     $scope.sendStatus = false;
                     $scope.validateTime = "重新获取";
@@ -1721,8 +1764,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         receiptName:data.name,
         receiptPhone:data.phone,
         receiptPostcode:data.postcode,
-        receiptDetail:data.detail,
-        receiptName:data.name
+        receiptDetail:data.detail
       }
     }
 

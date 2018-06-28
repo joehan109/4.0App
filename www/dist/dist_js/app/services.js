@@ -202,12 +202,13 @@ angular.module('maybi.services', [])
                 }
             },
 
-            login: function(email, password) {
+            login: function(data) {
                 var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/mall/vip/login', {
-                    name: email,
-                    pwd: password
-                }).success(function(data, status) {
+                var url = {
+                  'common':ENV.SERVER_URL + '/mall/vip/login',
+                  'phone':ENV.SERVER_URL + '/mall/vip/login/phone'
+                }[data.type];
+                $http.post(url, data.data).success(function(data, status) {
                     if (status === 200 && data.ret) {
                         isAuthenticated = true;
                         $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
@@ -1198,6 +1199,7 @@ angular.module('maybi.services', [])
             }
             $state.go('tab.orders');
           },function(err) {
+            console.log(err);
             $ionicLoading.show({
                 template: '订单生成失败，请咨询供应商',
                 duration: 3000,

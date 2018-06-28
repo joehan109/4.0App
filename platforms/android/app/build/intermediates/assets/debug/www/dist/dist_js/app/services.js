@@ -1,5 +1,3 @@
-"use strict";
-
 angular.module('maybi.services', [])
 
     .factory('timeoutHttpIntercept', function() {
@@ -1168,17 +1166,36 @@ angular.module('maybi.services', [])
         };
         return item;
     }])
-    .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading', 'utils', '$http', 'ENV', function(ngCart, $rootScope, $ionicLoading, utils, $http, ENV) {
+    .service('fulfilmentProvider', function(ngCart, $rootScope, $ionicLoading,$state, utils, $http, ENV) {
 
 
         this.checkout = function(data,cb) {
-          $http.post(ENV.SERVER_URL + '/mall/maorder/save' + utils.formatGetParams(data)).success(function(data) {
-            $ionicLoading.show({
-                template: '订单生成成功',
-                duration: 1000,
-            });
-            alipayCheckout();
-          }).error(function() {
+          $http({
+            method:'post',
+            url:ENV.SERVER_URL + '/mall/maorder/save',
+            data: JSON.stringify(data),
+            headers : {
+                'Content-Type': 'application/json;charset=utf-8;'
+            },
+            transformRequest: function(data){
+              return data
+            }
+          }).then(function(res) {
+            if (res.data.ret) {
+              $ionicLoading.show({
+                  template: '订单生成成功',
+                  duration: 3000,
+              });
+              alipayCheckout(res.data.data);
+            } else {
+              $ionicLoading.show({
+                  template: res.data.errmsg,
+                  duration: 3000,
+              });
+            }
+            $state.go('tab.orders');
+          },function(err) {
+            console.log(err);
             $ionicLoading.show({
                 template: '订单生成失败，请咨询供应商',
                 duration: 3000,
@@ -1201,7 +1218,8 @@ angular.module('maybi.services', [])
                        */
           }
 
-    }])
+    })
+
 
     .service('fulfilmentNewOrder', ['$rootScope', '$http', 'ngCart', 'ENV', '$injector', function($rootScope, $http, ngCart, ENV, $injector) {
 

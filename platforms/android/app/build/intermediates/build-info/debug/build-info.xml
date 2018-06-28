@@ -6,7 +6,7 @@
     density="420dpi"
     format="10"
     plugin-version="3.0.0"
-    timestamp="1530068702728"
+    timestamp="1530189453303"
     token="484144525310997091"
     verifier="COLD_SWAP_REQUESTED" >
 
@@ -23,58 +23,58 @@
         name="verifier"
         duration="0" />
 
+    <artifact
+        location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/outputs/apk/debug/app-debug.apk"
+        type="SPLIT_MAIN" />
+
     <build
         build-mode="FULL"
-        timestamp="1530068555406"
+        timestamp="1530188444150"
         verifier="COLD_SWAP_REQUESTED" >
         <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/dep/dependencies.apk"
             type="SPLIT" />
         <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_6.apk"
-            type="SPLIT" />
-        <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
-            type="SPLIT" />
-        <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_3.apk"
-            type="SPLIT" />
-        <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_0.apk"
-            type="SPLIT" />
-        <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
-            type="SPLIT" />
-        <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_5.apk"
             type="SPLIT" />
         <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_1.apk"
             type="SPLIT" />
         <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_7.apk"
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_0.apk"
             type="SPLIT" />
         <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_6.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_5.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
             type="SPLIT" />
         <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_8.apk"
             type="SPLIT" />
         <artifact
-            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/outputs/apk/debug/app-debug.apk"
-            type="SPLIT_MAIN" />
-    </build>
-    <build
-        build-mode="COLD"
-        timestamp="1530068667309"
-        verifier="COLD_SWAP_REQUESTED" >
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/intermediates/split-apk/debug/slices/slice_7.apk"
+            type="SPLIT" />
         <artifact
             location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/outputs/apk/debug/app-debug.apk"
             type="SPLIT_MAIN" />
     </build>
     <build
         build-mode="COLD"
-        timestamp="1530068702728"
-        verifier="COLD_SWAP_REQUESTED" />
+        timestamp="1530189453303"
+        verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="/Users/hanqiang.han/joe/github/4.0App/platforms/android/app/build/outputs/apk/debug/app-debug.apk"
+            type="SPLIT_MAIN" />
+    </build>
 
 </instant-run>

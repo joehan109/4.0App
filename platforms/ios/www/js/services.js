@@ -214,9 +214,9 @@ angular.module('maybi.services', [])
                             user = data.data;
                             Storage.set('user', data.data);
                             Storage.set('access_token', data.data.name);
-                            if (window.cordova && window.cordova.plugins) {
-                                plugins.jPushPlugin.setAlias(data.user.id);
-                            }
+                            // if (window.cordova && window.cordova.plugins) {
+                            //     plugins.jPushPlugin.setAlias(data.user.id);
+                            // }
                             deferred.resolve();
                             $state.go('appIndex')
                         })
@@ -1198,6 +1198,7 @@ angular.module('maybi.services', [])
             }
             $state.go('tab.orders');
           },function(err) {
+            console.log(err);
             $ionicLoading.show({
                 template: '订单生成失败，请咨询供应商',
                 duration: 3000,

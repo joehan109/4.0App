@@ -15960,7 +15960,8 @@ span.address-edit {
 
 /* transfer order detail */
 .order-detail {
-  padding: 12px 0; }
+  margin: 10px 10px 0;
+  border: 1px solid #eee; }
 
 .order-bottom {
   padding: 0 12px 12px 12px;

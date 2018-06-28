@@ -1,5 +1,3 @@
-"use strict";
-
 angular.module('maybi.directives', [])
 
 .directive('ngcartAddtocart', ['ngCart', function(ngCart){
@@ -95,7 +93,7 @@ angular.module('maybi.directives', [])
     };
 }])
 
-.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state){
+.directive('ngcartCheckout', ['ngCart', 'fulfilment', '$timeout', '$ionicActionSheet', '$state', function(ngCart, fulfilment, $timeout, $ionicActionSheet, $state){
     return {
         restrict : 'E',
         link: function(scope, element, attrs){
@@ -126,7 +124,7 @@ angular.module('maybi.directives', [])
                   receiptPostcode:data.postcode,
                   receiptDetail:data.detail
                 }
-                fulfilmentProvider.checkout(order, function(){
+                fulfilment.checkout(order, function(){
                   $ionicActionSheet.hide();
                 })
               }

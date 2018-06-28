@@ -54,14 +54,10 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
     // ngCart
     $rootScope.$on('ngCart:change', function(event, msg) {
         ngCart.$save();
-        if (window.cordova) {
-            $cordovaToast.show(msg, 'short', 'center');
-        } else {
-            $ionicLoading.show({
-                template: msg,
-                duration: 1000,
-            });
-        }
+        $ionicLoading.show({
+            template: msg,
+            duration: 1000,
+        });
     });
 
     $rootScope.$state = $state;
@@ -128,17 +124,13 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
     });
 
     $rootScope.$on('alert', function(event, msg, options) {
-        if (window.cordova) {
-            $cordovaToast.show(msg, 'short', 'center');
-        } else {
-            var o = options || {};
-            angular.extend(o, {
-                template: msg || '<ion-spinner icon="spiral"></ion-spinner>',
-                duration: 1000,
-            });
+      var o = options || {};
+      angular.extend(o, {
+          template: msg || '<ion-spinner icon="spiral"></ion-spinner>',
+          duration: 1000,
+      });
 
-            $ionicLoading.show(o);
-        }
+      $ionicLoading.show(o);
     });
 
     // if (Storage.get('introPage') !== 'alreadyShow') {
@@ -749,7 +741,38 @@ function shopTabsCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
 function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
     Photogram, $ionicPopup, $timeout, geoService, FetchData, $cordovaBarcodeScanner) {
 
-    $scope.confirmOpen = function() {
+    // 每次一进页面就调用照相机
+    $scope.$on('$ionicView.beforeEnter', function() {
+      $scope.showOpen = false;
+      $scope.showCode = false;
+      $scope.alreadyShow = false;
+
+      $cordovaBarcodeScanner
+          .scan()
+          .then(function(barcodeData) {
+            $scope.barcodeData = 1;
+            FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
+              if (res.ret) {
+                $scope.data = res.data;
+                $scope.imgUrl = res.data.proUrl;
+                if (res.data.pwdFlag) {
+                  $scope.showCode = true;
+                  // $scope.alreadyShow = true;
+                  $scope.openCode = res.data.sonPwd;
+                } else {
+                  $scope.showOpen = true;
+                }
+              } else {
+                $scope.$emit("alert", res.errmsg);
+              }
+            });
+          }, function(error) {
+              alert('扫描失败，请稍后重试');
+              $state.go('appIndex');
+          });
+    });
+
+    $scope.getCode = function() {
         var confirmPopup = $ionicPopup.confirm({
             title: '是否需要开锁密码？',
             cancelText: '否', // String (默认: 'Cancel')。一个取消按钮的文字。
@@ -767,16 +790,15 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
 
     };
     $scope.scanStart = function() {
-        $cordovaBarcodeScanner
-            .scan()
-            .then(function(barcodeData) {
-                alert(barcodeData);
-                $scope.barcodeData = barcodeData;
-                // Success! Barcode data is here
-            }, function(error) {
-                alert('失败')
-                    // An error occurred
-            });
+      FetchData.get('/mall/mascan/getPwd?id=' + $scope.data.id).then(function(res) {
+        if (res.ret) {
+          $scope.openCode = res.data.split('');
+          $scope.showOpen = false;
+          $scope.showCode = true;
+        } else {
+          $scope.$emit("alert", res.errmsg);
+        }
+      });
     };
 
 
@@ -1681,7 +1703,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
         if (!$scope.sendStatus) {
             timeRemaining = 10;
             $scope.sendStatus = true;
-            $scope.timeout = $interval(() => {
+            $scope.timeout = $interval(function() {
                 if (timeRemaining <= 1) {
                     $scope.sendStatus = false;
                     $scope.validateTime = "重新获取";
@@ -1696,7 +1718,6 @@ function authCtrl($rootScope, $scope, FetchData, $state,
     $scope.login = function() {
         $scope.error = false;
         $scope.disabled = true;
-
         AuthService.login($scope.email, $scope.password)
             .then(function() {
                 $rootScope.authDialog.hide()
@@ -2291,7 +2312,11 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
     //我的喜欢
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
+        FetchData.get('/mall/macollect/getAll').then(function(data) {
+            $scope.items = data.data;
+        });
     });
+    $scope.items = [];
 
     FetchData.get('/mall/macollect/getAll').then(function(data) {
         $scope.items = data.data;
@@ -2301,10 +2326,17 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
         FetchData.get('/mall/macollect/delete?maProId=' + item.id).then(function(data) {
             item.collectFlag = false;
         })
+        $scope.items = $scope.items.map(function (child) {
+          return child.id !== item.id
+        })
     };
     $scope.addToCart = function(item) {
         ngCart.addItem(item.id, item.name, item.price, 1, item);
+        // $scope.$emit("alert", "成功添加到购物车！");
     }
+    $scope.goItem = function(id) {
+        $state.go('tab.item', { id: id });
+    };
 }
 
 function ordersCtrl($rootScope, $scope, FetchData, ngCart) {
@@ -2312,31 +2344,54 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart) {
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
+        FetchData.get('/mall/maorder/query?code=&status=0').then(function(data) {
+            $scope.orders = data.data.data;
+        });
     });
 
     $scope.ngCart = ngCart;
-    $scope.orderType = 'COMMODITIES';
-    FetchData.get('/mall/maorder/query?code=&status=').then(function(data) {
-        $scope.orders = data.orders;
-    });
+    $scope.orderType = '0';
     $scope.setType = function(type) {
+      if(type !== $scope.orderType) {
         $scope.orderType = type;
         FetchData.get('/mall/maorder/query?code=&status=' + type).then(function(data) {
-            $scope.orders = data.orders;
+            $scope.orders = data.data.data;
         });
+      }
     };
+    $scope.orderDone = function (order) {
+      var confirmPopup = $ionicPopup.confirm({
+          title: '确定已收到货?',
+      });
+      confirmPopup.then(function(res) {
+          if (res) {
+              FetchData.get('/mall/maorder/confirm?id=' + $order.code)
+                  .then(function(data) {
+                    if(data.res) {
+                      $scope.$emit("alert", "交易成功！");
+                      $state.go('tab.orders');
+                    } else{
+                      $scope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
+                    }
+                  })
+          } else {
+              console.log('You are not sure');
+          }
+      });
+    }
 }
 
 function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup) {
-    //商品详情
+    //订单详情
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
     });
 
-    FetchData.get('/api/orders/get/' + $stateParams.order_id).then(function(data) {
-        $scope.ngCart = ngCart;
-        $scope.order = data.order;
+    $scope.ngCart = ngCart;
+
+    FetchData.get('/mall/maorder/query?code='+$stateParams.order_id+'&status=').then(function(data) {
+        $scope.order = data.data.data[0];
     });
 
     // A confirm dialog
@@ -2346,10 +2401,14 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         });
         confirmPopup.then(function(res) {
             if (res) {
-                FetchData.get('/api/orders/' + $stateParams.order_id + '/delete')
+                FetchData.get('/mall/maorder/cancel?id=' + $scope.order.id)
                     .then(function(data) {
+                      if(data.ret) {
                         $scope.$emit("alert", "订单已删除");
                         $state.go('tab.orders');
+                      } else{
+                        $scope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
+                      }
                     })
             } else {
                 console.log('You are not sure');
@@ -2418,6 +2477,7 @@ function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData
     $scope.selectPartner = function(provider) {
         $scope.selectedProvider = provider;
         $scope.providersShown = !$scope.providersShown;
+        ngCart.setExpress(provider);
 
         FetchData.post('/api/orders/cal_order_price', {
             'order_id': $scope.order.id,
@@ -2715,6 +2775,7 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
     }];
 
     $scope.ngCart = ngCart;
+    $scope.selectedProvider = {};
     $scope.clearSelectedCart = function() {
         ngCart.emptySelectedItems();
         $scope.$ionicGoBack();
@@ -2723,12 +2784,15 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
         $state.go('address');
     };
 
+    FetchData.get('/mall/syscode/app/get?codeType=express_type').then(function(data) {
+        $scope.provider_prices = data.data;
+
+        // 设置购物车默认快递
+        $scope.selectedProvider = data.data[0];
+        ngCart.setExpress(data.data[0]);
+    });
 
     // provider actions
-    $scope.selectedProvider = {
-      name: '普通快递',
-      id:'0'
-    };
     $scope.providersShown = false;
 
     $scope.showProviderChoices = function() {
@@ -2749,7 +2813,7 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
     $scope.selectPartner = function(provider) {
         $scope.selectedProvider = provider;
         $scope.providersShown = !$scope.providersShown;
-
+        ngCart.setExpress(provider);
         // FetchData.post('/api/orders/cal_entries_price', {
         //     'entries': ngCart.selectedItemsObjects(),
         //     'address_id': ngCart.getAddress().id,
@@ -3321,11 +3385,11 @@ angular.module('maybi.services', [])
                             user = data.data;
                             Storage.set('user', data.data);
                             Storage.set('access_token', data.data.name);
-                            if (window.cordova && window.cordova.plugins) {
-                                plugins.jPushPlugin.setAlias(data.user.id);
-                            }
-                            $state.go('appIndex')
+                            // if (window.cordova && window.cordova.plugins) {
+                            //     plugins.jPushPlugin.setAlias(data.user.id);
+                            // }
                             deferred.resolve();
+                            $state.go('appIndex')
                         })
                     } else {
                         isAuthenticated = false;
@@ -3902,6 +3966,10 @@ angular.module('maybi.services', [])
                 id: undefined,
                 data: {},
             };
+            this.$express = {
+                name: '普通快递',
+                id:'0'
+            }
         };
 
         this.setAddress = function(addr) {
@@ -3921,6 +3989,14 @@ angular.module('maybi.services', [])
             }
             return this.$addr;
 
+        };
+        this.setExpress = function(express) {
+            this.$express = express;
+            this.$cart.shipping = +express.codeDesc;
+        };
+
+        this.getExpress = function() {
+            return this.$express;
         };
 
         this.addItem = function(id, name, price, quantity, data) {
@@ -4054,7 +4130,7 @@ angular.module('maybi.services', [])
         };
 
         this.totalCost = function() {
-            return +parseFloat(this.getSubTotal() + this.getShipping() + this.getTax()).toFixed(2);
+            return +parseFloat(this.getSubTotal() + this.getShipping()).toFixed(2);
         };
 
         this.removeItemById = function(id) {
@@ -4264,49 +4340,57 @@ angular.module('maybi.services', [])
         };
         return item;
     }])
-    .service('fulfilmentProvider', ['ngCart', '$rootScope', 'fulfilmentNewOrder', 'fulfilmentTransferOrder', 'fulfilmentExistedOrder', function(ngCart, $rootScope, fulfilmentNewOrder,
-        fulfilmentTransferOrder, fulfilmentExistedOrder) {
+    .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading', '$state', 'utils', '$http', 'ENV', function(ngCart, $rootScope, $ionicLoading,$state, utils, $http, ENV) {
 
-        this._obj = {
-            service: undefined,
-            settings: undefined
-        };
 
-        this.setService = function(service) {
-            this._obj.service = service;
-        };
-
-        this.setSettings = function(settings) {
-            this._obj.settings = settings;
-        };
-
-        this.checkout = function() {
-            if (this._obj.settings.order_type == 'new') {
-                if (ngCart.getAddress().id === undefined) {
-                    $rootScope.$broadcast('ngCart:change', "请添加地址");
-                    return;
-                }
-                if (this._obj.settings.logistic_provider === undefined) {
-                    $rootScope.$broadcast('ngCart:change', "请选择运输方式");
-                    return;
-                }
-                var provider = fulfilmentNewOrder;
-            } else if (this._obj.settings.order_type == 'transfer') {
-                if (ngCart.getAddress().id === undefined) {
-                    $rootScope.$broadcast('ngCart:change', "请添加地址");
-                    return;
-                }
-                if (this._obj.settings.logistic_provider === undefined) {
-                    $rootScope.$broadcast('ngCart:change', "请选择运输方式");
-                    return;
-                }
-
-                var provider = fulfilmentTransferOrder;
-            } else if (this._obj.settings.order_type == 'existed') {
-                var provider = fulfilmentExistedOrder;
+        this.checkout = function(data,cb) {
+          $http({
+            method:'post',
+            url:ENV.SERVER_URL + '/mall/maorder/save',
+            data: JSON.stringify(data),
+            headers : {
+                'Content-Type': 'application/json;charset=utf-8;'
+            },
+            transformRequest: function(data){
+              return data
             }
-            return provider.checkout(this._obj.service, this._obj.settings);
+          }).then(function(res) {
+            if (res.data.ret) {
+              $ionicLoading.show({
+                  template: '订单生成成功',
+                  duration: 3000,
+              });
+              alipayCheckout(res.data.data);
+            } else {
+              $ionicLoading.show({
+                  template: res.data.errmsg,
+                  duration: 3000,
+              });
+            }
+            $state.go('tab.orders');
+          },function(err) {
+            console.log(err);
+            $ionicLoading.show({
+                template: '订单生成失败，请咨询供应商',
+                duration: 3000,
+            });
+          }).finally(function () {
+            alipayCheckout();
+          });
         };
+        function alipayCheckout(){
+          cordova.plugins.alipay.payment(payInfo,function success(e){},function error(e){});
+          console.log(1)
+           //e.resultStatus  状态代码  e.result  本次操作返回的结果数据 e.memo 提示信息
+           //e.resultStatus  9000  订单支付成功 ;8000 正在处理中  调用function success
+           //e.resultStatus  4000  订单支付失败 ;6001  用户中途取消 ;6002 网络连接出错  调用function error
+           //当e.resultStatus为9000时，请去服务端验证支付结果
+                      /**
+                       * 同步返回的结果必须放置到服务端进行验证（验证的规则请看https://doc.open.alipay.com/doc2/
+                       * detail.htm?spm=0.0.0.0.xdvAU6&treeId=59&articleId=103665&
+                       * docType=1) 建议商户依赖异步通知
+                       */
+          }
 
     }])
 
@@ -4437,7 +4521,7 @@ angular.module('maybi.services', [])
         };
     }])
 
-    .factory('PaypalService', ['$q', '$ionicPlatform', 'paypalSettings', '$filter', '$timeout', function($q, $ionicPlatform, paypalSettings, $filter, $timeout) {
+    .factory('AlipayService', ['$q', '$ionicPlatform', 'paypalSettings', '$filter', '$timeout', function($q, $ionicPlatform, paypalSettings, $filter, $timeout) {
 
         var init_defer;
         /**
@@ -4920,11 +5004,12 @@ angular.module('maybi.directives', [])
     };
 }])
 
-.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet){
+.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state){
     return {
         restrict : 'E',
         link: function(scope, element, attrs){
             scope.ngCart = ngCart;
+
 
             scope.showPaymentMethods = function() {
 
@@ -4932,21 +5017,39 @@ angular.module('maybi.directives', [])
               sheet.buttonClicked = buttonClicked;
               sheet.buttons = [{
                 text: '<i class="icon fa fa-paypal"></i> 支付宝支付$'
-              }, {
-                text: '<i class="icon fa fa-wechat"></i> 微信支付￥'
               }];
+              sheet.cancelOnStateChange = true;
 
               $ionicActionSheet.show(sheet);
 
               function buttonClicked(index) {
                 var service = { 0: 'alipay', 1: 'wechat'}
-
-                fulfilmentProvider.setService(service[index]);
-                fulfilmentProvider.setSettings(scope.settings);
-                fulfilmentProvider.checkout()
+                var data = scope.ngCart.getAddress().data;
+                var detailList = scope.ngCart.getSelectedItems().map(function (item) {
+                  return {
+                    maProId:item._id,
+                    maProImg:item._data.mainUrl,
+                    maProName:item._name,
+                    num:item._quantity,
+                    dealPrice:item._price
+                  }
+                });
+                var order = {
+                  detailList:detailList,
+                  trackingType:scope.ngCart.getExpress().codeKey,
+                  trackingAmount:+scope.ngCart.getExpress().codeDesc,
+                  status:'0',
+                  receiptId:data.id,
+                  receiptName:data.name,
+                  receiptPhone:data.phone,
+                  receiptPostcode:data.postcode,
+                  receiptDetail:data.detail
+                }
+                fulfilmentProvider.checkout(order, function(){
+                  $ionicActionSheet.hide();
+                })
               }
             };
-
         },
         scope: {
             settings:'=',
@@ -5117,7 +5220,7 @@ angular.module('maybi.directives', [])
                     });
                 } else {
                     FetchData.post('/mall/receipt/save'+utils.formatGetParams({
-                      'flag':1,
+                      'flag': 0,
                       'name': scope.addr.name,
                       'detail': scope.addr.detail,
                       'postcode': scope.addr.postcode,
@@ -5125,7 +5228,6 @@ angular.module('maybi.directives', [])
                     })).then(function(data) {
                         scope.addressModal.hide();
                         $state.transitionTo($state.current, $state.$current.params, { reload: true, inherit: true, notify: true });
-
                     });
 
                 }
@@ -5282,15 +5384,15 @@ $templateCache.put("auth.html","<ion-modal-view>\n  <ion-header-bar>\n    <butto
 $templateCache.put("bindEmail.html","<ion-modal-view>\n  <ion-header-bar>\n    <div class=\"buttons\">\n      <button class=\"button button-clear icon ion-ios-arrow-back button-dark\" ng-click=\"closeBindEmailBox()\"></button>\n    </div>\n    <div class=\"title\">绑定邮箱</div>\n  </ion-header-bar>\n  <ion-content class=\"login-page overlay-content\" scroll=\"false\" ng-controller=\"bindEmailCtrl\">\n    <div class=\"list list-inset\">\n      <label class=\"item item-input\">\n        <input type=\"email\" placeholder=\"邮箱地址\" ng-model=\"bindEmailForm.email\">\n      </label>\n    </div>\n\n    <button class=\"button button-block login-btn\" ng-click=\"bind()\">绑定</button>\n\n  </ion-content>\n</ion-modal-view>\n");
 $templateCache.put("board.html","<ion-view>\n    <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">{{::board.title}}</div>\n    </div>\n\n    <ion-content class=\"has-header homepage\">\n        <div class=\"item item-banner-image\">\n            <img ng-src=\"{{::board.image}}\">\n        </div>\n\n        <ion-item class=\"item board-desc\" style=\"border-left: 3px solid #ea004f;\">\n            {{::board.desc}}\n        </ion-item>\n\n        <div class=\"col col-50 \"\n             style=\"display: inline-block\"\n             ng-repeat=\"item in board.items track by $index\" ng-click=\"goItem(item.item_id)\">\n            <div class=\"item item-image\">\n                <img ng-src=\"{{::item.thumbnail}}\" cache-src>\n            </div>\n            <div class=\"item item-text-wrap\" href=\"#\">\n                <h2 class=\"product-title\" style=\"overflow: hidden;\">{{::item.title}}</h2>\n                <p class=\"product-prices\">\n                    <span class=\"curr-price\">{{::item.price | currency}}</span>\n                    <del class=\"orig-price\">{{::item.orig_price | currency}}</del>\n                </p>\n            </div>\n        </div>\n\n\n\n\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("calFee.html","<!-- 运费估算 -->\n<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">运费估算</div>\n  </div>\n\n  <ion-content class=\"has-header\">\n\n<section>\n<form name=\"queryForm\" ng-submit=\"queryFee()\">\n    <div class=\"list\">\n        <label class=\"item item-input item-select\">\n           <div class=\"input-label\" ng-class=\"{\'warning\': queryForm.country.$error.required && !queryForm.country.$pristine}\">\n                国家\n            </div>\n            <select placeholder=\"请选择寄往国家\" ng-model=\"query.country\" name=\"country\"\n                ng-options=\"country for country in COUNTRIES\" required>\n            </select>\n        </label>\n        <label class=\"item item-input\">\n            <div class=\"input-label\" ng-class=\"{\'warning\': queryForm.weight.$error.required && !queryForm.weight.$pristine}\">\n               重量\n            </div>\n            <input style=\"margin-right: 12px\" class=\"text-right\" placeholder=\"请输入商品重量\" type=\"number\" ng-model=\"query.weight\" name=\"weight\" required /><span class=\"cal-unit\">克</span>\n       </label>\n    </div>\n    <div class=\"padding\">\n        <button class=\"button button-block button-assertive button-cart\">费用估算</button>\n    </div>\n</form>\n</section>\n\n<section>\n<div class=\"address-select-info\">\n    <div class=\"address-row\" ng-repeat=\"provider in provider_prices track by $index\">\n        <div class=\"address-info provider\">\n            <div class=\"info-header\">{{provider.name}}\n                ({{provider.service_intro.duration}})</div>\n            <div class=\"desc\">首重{{provider.init_weight}}g/${{provider.init_price}}，\n                续重{{provider.continued_weight}}g/${{provider.continued_price}}</div>\n            <div class=\"desc\">{{provider.rule_desc}}</div>\n        </div>\n        <div>\n            <span class=\"provider-price\">\n                {{provider.cn_shipping | currency }}\n            </span>\n        </div>\n    </div>\n</div>\n</section>\n\n  </ion-content>\n</ion-view>\n");
-$templateCache.put("cart.html","<!-- 购物车 -->\n\n<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear button-dark icon ion-ios-arrow-back\"  ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">购物车</div>\n      <button class=\"button button-clear button-dark icon\" ng-class=\"editShown?\'ion-ios-color-wand-outline\': \'ion-ios-trash-outline\'\"  ng-click=\"toggleEditShown()\"></button>\n\n  </div>\n  <ion-content class=\"has-header has-footer has-subfooter\">\n\n    <div class=\"center-ico\"  ng-show=\"ngCart.getTotalItems() === 0\">\n        <i class=\"icon ion-ios-cart-outline\"></i>\n        <h1 >购物车为空\n        </h1>\n    </div>\n\n    <div ng-show=\"ngCart.getTotalItems() > 0\">\n\n        <table class=\"table ngCart cart-table\">\n            <thead>\n            <tr>\n                <td class=\"check-cell\" ng-click=\"selectAllEntries()\">\n                    <i class=\"icon select-icon\"\n                        ng-class=\" isSelectedAll? \'ion-ios-checkmark selected\':\'ion-ios-circle-outline\'\"\n                        ng-hide=\"editShown\">\n                    </i>\n                </td>\n\n                <td></td>\n                <td></td>\n                <td></td>\n            </tr>\n            </thead>\n\n            <tbody>\n            <tr ng-repeat=\"item in ngCart.getCart().items track by $index\">\n                <td class=\"check-cell\">\n                    <span class=\"close-icon\" ng-show=\"editShown\" ng-click=\"ngCart.removeItemById(item.getId())\">\n                    </span>\n                    <i class=\"icon select-icon\"\n                        ng-class=\" ngCart.getSelectedItemById(item.getId())? \'ion-ios-checkmark selected\':\'ion-ios-circle-outline\'\"\n                        ng-hide=\"editShown\"\n                        ng-click=\"selectEntry(item.getId())\">\n                    </i>\n\n                </td>\n\n                <td class=\"img-cell\">\n                    <div>\n                        <a ng-href=\"#/item/{{item.getId()}}\">\n                            <img ng-src=\"{{item.getData().mainUrl}}\">\n                        </a>\n                    </div>\n                </td>\n                <td class=\"info-cell\">\n                    <div>{{ item.getName() }}</div>\n                    <div>\n                        <span ng-repeat=\"(k, v) in item.getData().spec.attributes\">\n                            {{ngCart.attrMap[k]}}: {{v}}\n                        </span>\n                    </div>\n                    <div class=\"btn-group\">\n                        <button class=\"btn del-num\"\n                            ng-class=\"{\'disabled\':item.getQuantity()==1}\"\n                            ng-click=\"setQuantity(item, -1, true)\">-</button>\n                        <button class=\"btn num\">{{ item.getQuantity() | number }}</button>\n                        <button class=\"btn add-num\"\n                            ng-click=\"setQuantity(item, 1, true)\">+</button>\n                    </div>\n                </td>\n                <td class=\"price-cell\">{{ item.getTotal() | currency:\'￥\' }}</td>\n            </tr>\n            </tbody>\n            <tfoot>\n            <tr ng-show=\"ngCart.getShipping()\">\n                <td></td>\n                <td></td>\n                <td>Shipping:</td>\n                <td>{{ ngCart.getShipping() | currency }}</td>\n            </tr>\n            <tr>\n                <td class=\"check-cell\">\n                </td>\n                <td></td>\n                <td colspan=\"2\" class=\"total\">商品总价: {{ ngCart.totalCost() | currency:\'￥\' }}</td>\n            </tr>\n            </tfoot>\n\n        </table>\n    </div>\n\n  </ion-content>\n    <div class=\"bar bar-subfooter bar-stable\" style=\"bottom:0\">\n        <a class=\"button button-clear\">\n            总价:  <span class=\"footer-price\"> {{ ngCart.totalCost() |currency}}</span>\n        </a>\n        <button class=\"button button-assertive button-cart pull-right\" ng-click=\"$state.go(\'checkout\')\">\n            结算({{ngCart.getTotalSelectedItems()}})\n\n        </button>\n    </div>\n\n</ion-view>\n");
-$templateCache.put("cateHome.html","<ion-view>\n    <form>\n        <div class=\"bar bar-header item-input-inset\">\n            <a href=\"#/appIndex\" class=\"button button-icon icon ion-ios-arrow-back\"></a>\n            <label class=\"item-input-wrapper\">\n        <i class=\"icon ion-ios-search placeholder-icon\" style=\"font-size:18px;\"></i>\n        <input type=\"search\" placeholder=\"搜索商品，种类\" ng-model=\"searchQuery\">\n        <input type=\"submit\" ng-click=\"searchItem(searchQuery)\" style=\"position: absolute; left: -9999px; width: 1px; height: 1px;\"/>\n      </label>\n            <span class=\"cart-num\">{{ ngCart.getTotalItems() }}</span>\n            <a href=\"#/cart\" class=\"button button-icon icon ion-ios-cart\"></a>\n        </div>\n    </form>\n    <div class=\"bar bar-subheader\">\n        <ion-scroll direction=\"x\" scrollbar-x=\"false\" id=\"category-scroll\" delegate-handle=\"cateScroll\">\n            <div class=\"cate-scroll-row\">\n\n                <a href class=\"main-cate-tab\" ng-repeat=\"v in banners track by $index\" ng-class=\"{\'active\': currentTab==v.codeKey}\" ng-click=\"changeTab(v, $index)\">{{v.codeVal}}</a>\n            </div>\n        </ion-scroll>\n    </div>\n\n    <ion-content class=\"has-header has-subheader homepage\" overflow-scroll=\"true\">\n        <ion-slide-box\n          class=\"cateHomeSlide\"\n          on-slide-changed=\"slideHasChanged2($index)\"\n          auto-play=\"true\"\n          does-continue=\"true\"\n          slide-interval=2000\n          show-pager=\"true\"\n          pager-click=\"pageClick(index)\"\n          active-slide=\"model.activeIndex\"\n          delegate-handle=\"delegateHandler2\">\n            <ion-slide ng-repeat=\"item in tuijian track by $index\">\n                <div class=\"box\" ng-click=\"goItem(item.maProId)\">\n                    <img ng-src=\"{{item.detailUrl}}\">\n                </div>\n            </ion-slide>\n        </ion-slide-box>\n\n        <ion-slide-box show-pager=\"false\" on-slide-changed=\"slideHasChanged($index)\" active-slide=\"currentIndex\" delegate-handle=\"delegateHandler\">\n            <ion-slide ng-repeat=\"v in banners\">\n                <div ng-if=\"currentTab==v.codeKey\" style=\"width:100%\">\n                    <!-- <ion-refresher\n                        pulling-text=\"下拉刷新...\"\n                        on-refresh=\"doRefresh()\"\n                        spinner=\"spiral\">\n                    </ion-refresher> -->\n\n                    <div class=\"col col-50 \" style=\"display: inline-block\" ng-repeat=\"item in items track by $index\" ng-click=\"goItem(item.id)\">\n                        <div class=\"item item-image\">\n                            <img ng-src=\"{{item.mainUrl}}\">\n                        </div>\n                        <div class=\"item item-text-wrap\" href=\"#\">\n                            <h2 class=\"product-title\" style=\"overflow: hidden;\">{{item.name}}</h2>\n                            <p class=\"product-prices\">\n                                <span class=\"curr-price\">{{::item.price | currency:\'￥\'}}</span>\n                            </p>\n                        </div>\n                    </div>\n\n                    <div class=\"center-ico\" ng-if=\"isEmpty()\">\n                        <i class=\"icon ion-ios-grid-view-outline\"></i>\n\n                        <h1>暂无此类商品</h1>\n                    </div>\n\n                    <ion-infinite-scroll ng-if=\"moreDataCanBeLoaded()\" on-infinite=\"loadMore()\" distance=\"1\" spinner=\'spiral\'>\n                    </ion-infinite-scroll>\n\n                </div>\n                <div ng-if=\"currentTab!=v.codeKey\">\n                    <div style=\"background:#f9f9f9;padding-top:100%;height:0\"></div>\n                </div>\n\n\n\n            </ion-slide>\n        </ion-slide-box>\n\n\n    </ion-content>\n</ion-view>\n");
+$templateCache.put("cart.html","<!-- 购物车 -->\n\n<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear button-dark icon ion-ios-arrow-back\"  ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">购物车</div>\n      <button class=\"button button-clear button-dark icon\" ng-class=\"editShown?\'ion-ios-color-wand-outline\': \'ion-ios-trash-outline\'\"  ng-click=\"toggleEditShown()\"></button>\n\n  </div>\n  <ion-content class=\"has-header has-footer has-subfooter\">\n\n    <div class=\"center-ico\"  ng-show=\"ngCart.getTotalItems() === 0\">\n        <i class=\"icon ion-ios-cart-outline\"></i>\n        <h1 >购物车为空\n        </h1>\n    </div>\n\n    <div ng-show=\"ngCart.getTotalItems() > 0\">\n\n        <table class=\"table ngCart cart-table\">\n            <thead>\n            <tr>\n                <td class=\"check-cell\" ng-click=\"selectAllEntries()\">\n                    <i class=\"icon select-icon\"\n                        ng-class=\" isSelectedAll? \'ion-ios-checkmark selected\':\'ion-ios-circle-outline\'\"\n                        ng-hide=\"editShown\">\n                    </i>\n                </td>\n\n                <td></td>\n                <td></td>\n                <td></td>\n            </tr>\n            </thead>\n\n            <tbody>\n            <tr ng-repeat=\"item in ngCart.getCart().items track by $index\">\n                <td class=\"check-cell\">\n                    <span class=\"close-icon\" ng-show=\"editShown\" ng-click=\"ngCart.removeItemById(item.getId())\">\n                    </span>\n                    <i class=\"icon select-icon\"\n                        ng-class=\" ngCart.getSelectedItemById(item.getId())? \'ion-ios-checkmark selected\':\'ion-ios-circle-outline\'\"\n                        ng-hide=\"editShown\"\n                        ng-click=\"selectEntry(item.getId())\">\n                    </i>\n\n                </td>\n\n                <td class=\"img-cell\">\n                    <div>\n                        <a ng-href=\"#/item/{{item.getId()}}\">\n                            <img ng-src=\"{{item.getData().mainUrl}}\">\n                        </a>\n                    </div>\n                </td>\n                <td class=\"info-cell\">\n                    <div>{{ item.getName() }}</div>\n                    <div>\n                        <span ng-repeat=\"(k, v) in item.getData().spec.attributes\">\n                            {{ngCart.attrMap[k]}}: {{v}}\n                        </span>\n                    </div>\n                    <div class=\"btn-group\">\n                        <button class=\"btn del-num\"\n                            ng-class=\"{\'disabled\':item.getQuantity()==1}\"\n                            ng-click=\"setQuantity(item, -1, true)\">-</button>\n                        <button class=\"btn num\">{{ item.getQuantity() | number }}</button>\n                        <button class=\"btn add-num\"\n                            ng-click=\"setQuantity(item, 1, true)\">+</button>\n                    </div>\n                </td>\n                <td class=\"price-cell\">{{ item.getTotal() | currency:\'￥\' }}</td>\n            </tr>\n            </tbody>\n            <tfoot>\n            <tr>\n                <td class=\"check-cell\">\n                </td>\n                <td></td>\n                <td colspan=\"2\" class=\"total\">商品总价: {{ ngCart.totalCost() | currency:\'￥\' }}</td>\n            </tr>\n            </tfoot>\n\n        </table>\n    </div>\n\n  </ion-content>\n    <div class=\"bar bar-subfooter bar-stable\" style=\"bottom:0\">\n        <a class=\"button button-clear\">\n            总价:  <span class=\"footer-price\"> {{ ngCart.totalCost() |currency:\'￥\'}}</span>\n        </a>\n        <button class=\"button button-assertive button-cart pull-right\" ng-click=\"$state.go(\'checkout\')\">\n            结算({{ngCart.getTotalSelectedItems()}})\n\n        </button>\n    </div>\n\n</ion-view>\n");
+$templateCache.put("cateHome.html","<ion-view>\n    <form>\n        <div class=\"bar bar-header item-input-inset\">\n            <a href=\"#/appIndex\" class=\"button button-icon icon ion-ios-arrow-back\"></a>\n            <label class=\"item-input-wrapper\">\n        <i class=\"icon ion-ios-search placeholder-icon\" style=\"font-size:18px;\"></i>\n        <input type=\"search\" placeholder=\"搜索商品，种类\" ng-model=\"searchQuery\">\n        <input type=\"submit\" ng-click=\"searchItem(searchQuery)\" style=\"position: absolute; left: -9999px; width: 1px; height: 1px;\"/>\n      </label>\n            <span class=\"cart-num\">{{ ngCart.getTotalItems() }}</span>\n            <a href=\"#/cart\" class=\"button button-icon icon ion-ios-cart\"></a>\n        </div>\n    </form>\n    <div class=\"bar bar-subheader\">\n        <ion-scroll direction=\"x\" scrollbar-x=\"false\" id=\"category-scroll\" delegate-handle=\"cateScroll\">\n            <div class=\"cate-scroll-row\">\n\n                <a href class=\"main-cate-tab\" ng-repeat=\"v in banners track by $index\" ng-class=\"{\'active\': currentTab==v.codeKey}\" ng-click=\"changeTab(v, $index)\">{{v.codeVal}}</a>\n            </div>\n        </ion-scroll>\n    </div>\n\n    <ion-content class=\"has-header has-subheader homepage\" overflow-scroll=\"true\">\n        <ion-slide-box\n          class=\"cateHomeSlide\"\n          on-slide-changed=\"slideHasChanged2($index)\"\n          auto-play=\"true\"\n          does-continue=\"true\"\n          slide-interval=2000\n          show-pager=\"true\"\n          pager-click=\"pageClick(index)\"\n          active-slide=\"model.activeIndex\"\n          delegate-handle=\"delegateHandler2\">\n            <ion-slide ng-repeat=\"item in tuijian track by $index\">\n                <div class=\"box\" ng-click=\"goItem(item.maProId)\">\n                    <img ng-src=\"{{item.detailUrl}}\">\n                </div>\n            </ion-slide>\n        </ion-slide-box>\n\n        <!-- <ion-slide-box show-pager=\"false\" on-slide-changed=\"slideHasChanged($index)\" active-slide=\"currentIndex\" delegate-handle=\"delegateHandler\">\n        </ion-slide-box> -->\n        <div ng-repeat=\"v in banners\">\n            <div ng-if=\"currentIndex==v.codeKey\" style=\"width:100%\">\n                <!-- <ion-refresher\n                    pulling-text=\"下拉刷新...\"\n                    on-refresh=\"doRefresh()\"\n                    spinner=\"spiral\">\n                </ion-refresher> -->\n\n                <div class=\"col col-50 \" style=\"display: inline-block\" ng-repeat=\"item in items track by $index\" ng-click=\"goItem(item.id)\">\n                    <div class=\"item item-image\">\n                        <img ng-src=\"{{item.mainUrl}}\">\n                    </div>\n                    <div class=\"item item-text-wrap\" href=\"#\">\n                        <h2 class=\"product-title\" style=\"overflow: hidden;\">{{item.name}}</h2>\n                        <p class=\"product-prices\">\n                            <span class=\"curr-price\">{{::item.price | currency:\'￥\'}}</span>\n                        </p>\n                    </div>\n                </div>\n\n                <div class=\"center-ico\" ng-if=\"isEmpty()\">\n                    <i class=\"icon ion-ios-grid-view-outline\"></i>\n\n                    <h1>暂无此类商品</h1>\n                </div>\n\n                <ion-infinite-scroll ng-if=\"moreDataCanBeLoaded()\" on-infinite=\"loadMore()\" distance=\"1\" spinner=\'spiral\'>\n                </ion-infinite-scroll>\n\n            </div>\n            <!-- <div ng-if=\"currentTab!=v.codeKey\">\n                <div style=\"background:#f9f9f9;padding-top:100%;height:0\"></div>\n            </div> -->\n\n\n\n        </div>\n\n\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("category.html","<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">商品类目</div>\n  </div>\n  <ion-content class=\"has-header categories\">\n        <div class=\"cate-row\" ng-repeat=\"cate in categories\">\n            <ion-item class=\"main\">{{cate.cn}}</ion-item>\n            <div class=\"sub-list\">\n                <div class=\"sub\" ng-repeat=\"sub in cate.sub_list\">\n                    <a ng-href=\"#/category/{{sub.en}}/{{sub.cn}}\">{{sub.cn}}</a>\n                </div>\n            </div>\n        </div>\n  </ion-content>\n</ion-view>\n");
-$templateCache.put("checkout.html","<!-- 购物车 -->\n<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back button-dark\"\n          ng-click=\"clearSelectedCart()\"></button>\n\n      <div class=\"title\">结算</div>\n  </div>\n  <ion-content class=\"has-header has-footer\">\n\n<section>\n<div class=\"checkout-info\" ng-click=\"gotoAddress()\">\n    <div ng-show=\"addr.id\">\n        <div class=\"address-info-1\">\n            <div class=\"row\">\n              <div class=\"col\">收货人：{{addr.data.name}}</div>\n              <div class=\"col\" style=\"text-align:right\">{{addr.data.phone}}</div>\n            </div>\n            <div class=\"row\">\n              <div class=\"col\">收货地址：{{addr.data.detail}}</div>\n            </div>\n          </div>\n        <div class=\"select-arrow address\"></div>\n    </div>\n    <div ng-hide=\"addr.id\">\n        <div class=\"address-info-1\">\n            <div class=\"\">新增收件地址</div>\n        </div>\n        <div class=\"go-add\">+</div>\n    </div>\n</div>\n</section>\n\n<section class=\"clearfix\" ng-cloak>\n<div class=\"\" ng-show=\"ngCart.getTotalSelectedItems() > 0\">\n\n    <table class=\"table ngCart cart-table\">\n        <tbody>\n        <tr ng-repeat=\"item in ngCart.getCart().selectedItems track by $index\">\n            <td class=\"img-cell\">\n                <div>\n                    <a ng-href=\"#/item/{{item.getData().id}}\">\n                        <img ng-src=\"{{item.getData().mainUrl}}\">\n                    </a>\n                </div>\n            </td>\n            <td class=\"info-cell\">\n                <div>{{ item.getName() }}</div>\n            </td>\n            <td class=\"price-cell\">\n              {{ item.getPrice() | currency:\'￥\' }}\n              <div class=\"btn-group cart-btn\">\n                  <span style=\"color:#000\">x {{ item.getQuantity() | number }}</span>\n              </div>\n            </td>\n        </tr>\n        </tbody>\n    </table>\n</div>\n</section>\n\n<section>\n<div class=\"checkout-info\">\n    <div class=\"partner-info-1\" ng-click=\"showProviderChoices()\">\n\n        <div class=\"selected-partner\">请选择运输方式</div>\n    </div>\n</div>\n<div class=\"checkout-choices\">\n    <div class=\"select-row row\" ng-repeat=\"provider in provider_prices\"\n        ng-click=\"selectPartner(provider)\">\n        <div class=\"checkout-choice col-80\">\n            {{provider.name}}\n        </div>\n        <i class=\"icon col ion-ios-circle-outline\"\n         ng-if=\"selectedProvider.name !== provider.name\"></i>\n        <i class=\"icon col ion-ios-checkmark-outline selected\"\n          ng-if=\"selectedProvider.name == provider.name\"></i>\n    </div>\n</div>\n</section>\n\n<!-- <section>\n<div class=\"checkout-info\">\n    <div class=\"item-info-table\">\n        <dl class=\"item-info-field\">\n            <dt class=\"\">实付: </dt>\n            <dd class=\"detail-price\">{{item.getTotal() | currency:\'￥\' }}</dd>\n        </dl>\n        <dl class=\"item-info-field\">\n            <dt class=\"\">运费: </dt>\n            <dd class=\"detail-price\">{{order.cn_shipping | currency }}</dd>\n        </dl>\n        <dl class=\"item-info-field\">\n            <dt class=\"\">税费: </dt>\n            <dd class=\"detail-price\">0</dd>\n        </dl>\n    </div>\n\n</div>\n</section> -->\n  </ion-content>\n\n  <ion-footer-bar align-title=\"left\" class=\"bar-stable\">\n    <a class=\"button button-clear\">\n        总计: <span class=\"footer-price\"> {{ ngCart.getSubTotal() |currency:\'￥\'}}</span>\n    </a>\n    <h1 class=\"title\"></h1>\n    <ngcart-checkout settings=\"{ coupon: coupon_codes.code,\n                        logistic_provider: selectedProvider.name,\n                        order_type: \'new\'}\">\n                        去付款</ngcart-checkout>\n  </ion-footer-bar>\n</ion-view>\n");
+$templateCache.put("checkout.html","<!-- 购物车 -->\n<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back button-dark\"\n          ng-click=\"clearSelectedCart()\"></button>\n\n      <div class=\"title\">结算</div>\n  </div>\n  <ion-content class=\"has-header has-footer\">\n\n<section>\n<div class=\"checkout-info\" ng-click=\"gotoAddress()\">\n    <div ng-show=\"addr.id\">\n        <div class=\"address-info-1\">\n          <div class=\"row\">\n            <div class=\"col\">收货人：{{addr.data.name}}</div>\n            <div class=\"col\" style=\"text-align:right\">{{addr.data.phone}}</div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col\">收货地址：{{addr.data.detail}}</div>\n          </div>\n        </div>\n        <div class=\"select-arrow address\"></div>\n    </div>\n    <div ng-hide=\"addr.id\">\n        <div class=\"address-info-1\">\n            <div class=\"\">新增收件地址</div>\n        </div>\n        <div class=\"go-add\">+</div>\n    </div>\n</div>\n</section>\n\n<section class=\"clearfix\" ng-cloak>\n<div class=\"\" ng-show=\"ngCart.getTotalSelectedItems() > 0\">\n\n    <table class=\"table ngCart cart-table\">\n        <tbody>\n        <tr ng-repeat=\"item in ngCart.getCart().selectedItems track by $index\">\n            <td class=\"img-cell\">\n                <div>\n                    <a ng-href=\"#/item/{{item.getData().id}}\">\n                        <img ng-src=\"{{item.getData().mainUrl}}\">\n                    </a>\n                </div>\n            </td>\n            <td class=\"info-cell\">\n                <div>{{ item.getName() }}</div>\n            </td>\n            <td class=\"price-cell\">\n              {{ item.getPrice() | currency:\'￥\' }}\n              <div class=\"cart-btn\">\n                  <span style=\"color:#000\">x {{ item.getQuantity() | number }}</span>\n              </div>\n            </td>\n        </tr>\n        </tbody>\n    </table>\n</div>\n</section>\n\n<section>\n<div class=\"checkout-info\">\n    <div class=\"partner-info-1\" ng-click=\"showProviderChoices()\">\n\n        <div class=\"selected-partner\">请选择运输方式 ：</div>\n    </div>\n</div>\n<div class=\"checkout-choices\">\n    <div class=\"select-row row\" ng-repeat=\"provider in provider_prices\"\n        ng-click=\"selectPartner(provider)\">\n        <div class=\"checkout-choice col-80\">\n            {{provider.codeVal}} -（{{provider.codeDesc}}元）\n        </div>\n        <i class=\"icon col ion-ios-circle-outline\"\n         ng-if=\"selectedProvider.codeKey !== provider.codeKey\"></i>\n        <i class=\"icon col ion-ios-checkmark-outline selected\"\n          ng-if=\"selectedProvider.codeKey == provider.codeKey\"></i>\n    </div>\n</div>\n</section>\n\n<!-- <section>\n<div class=\"checkout-info\">\n    <div class=\"item-info-table\">\n        <dl class=\"item-info-field\">\n            <dt class=\"\">实付: </dt>\n            <dd class=\"detail-price\">{{item.getTotal() | currency:\'￥\' }}</dd>\n        </dl>\n        <dl class=\"item-info-field\">\n            <dt class=\"\">运费: </dt>\n            <dd class=\"detail-price\">{{order.cn_shipping | currency }}</dd>\n        </dl>\n        <dl class=\"item-info-field\">\n            <dt class=\"\">税费: </dt>\n            <dd class=\"detail-price\">0</dd>\n        </dl>\n    </div>\n\n</div>\n</section> -->\n  </ion-content>\n\n  <ion-footer-bar align-title=\"left\" class=\"bar-stable\">\n    <a class=\"button button-clear\">\n        总计: <span class=\"footer-price\"> {{ ngCart.totalCost() |currency:\'￥\'}}</span>\n    </a>\n    <h1 class=\"title\"></h1>\n    <ngcart-checkout settings=\"{ coupon: coupon_codes.code,\n                        logistic_provider: selectedProvider.name,\n                        order_type: \'new\'}\">\n                        去付款</ngcart-checkout>\n  </ion-footer-bar>\n</ion-view>\n");
 $templateCache.put("coupons.html","<ion-view>\n    <ion-header-bar>\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">折扣券</div>\n    </ion-header-bar>\n\n    <ion-content class=\"has-header has-footer\">\n\n        <ion-list>\n            <ion-item class=\"item\" ng-repeat=\"c in user.getUser().consumable_coupons\">\n                {{c.description}}  {{c.number}}张\n                <span class=\"item-note\">\n                    有效期 {{c.expire_date}}\n                </span>\n\n            </ion-item>\n        </ion-list>\n        <div class=\"center-ico\" ng-if=\"notices.==0\">\n            <i class=\"icon ion-ios-camera\"></i>\n\n            <h1 >暂无动态</h1>\n        </div>\n\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("explore.html","<ion-view view-title=\"Chats\">\n  <ion-content>\n    <ion-list>\n      <ion-item class=\"item-remove-animate item-avatar item-icon-right\" ng-repeat=\"chat in chats\" type=\"item-text-wrap\" href=\"#/tab/chats/{{chat.id}}\">\n        <img ng-src=\"{{chat.face}}\">\n        <h2>{{chat.name}}</h2>\n        <p>{{chat.lastText}}</p>\n        <i class=\"icon ion-chevron-right icon-accessory\"></i>\n\n        <ion-option-button class=\"button-assertive\" ng-click=\"remove(chat)\">\n          Delete\n        </ion-option-button>\n      </ion-item>\n    </ion-list>\n  </ion-content>\n</ion-view>\n");
 $templateCache.put("expressForm.html","<!-- 代寄出国 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$state.go(\'tab.home\')\">首页</button>\n        <div class=\"title\">代寄出国</div>\n    </div>\n\n    <ion-content class=\"has-header\">\n        <div class=\"logistic-row\">\n            <ul class=\"progress-indicator\">\n                <li class=\"completed\">\n                    <span class=\"bubble\"></span>\n                    <div class=\"logistic-status\">核验清单</div>\n                </li>\n                <li ng-repeat=\"status in STATUES\">\n                    <span class=\"bubble\"></span>\n                    <div class=\"logistic-status\">{{status}}</div>\n                </li>\n            </ul>\n        </div>\n        <div class=\"checkout-info\" ng-click=\"gotoAddress()\">\n            <div ng-show=\"addr.id\">\n                <span class=\"addr-icon\"></span>\n                <div class=\"address-info\">\n                    <p class=\"addr-header\">寄往收货人信息: </p>\n                    <div class=\"\">{{addr.data.receiver}}</div>\n                    <div class=\"\">{{addr.data.street1}}</div>\n                    <div class=\"\">{{addr.data.street2}}</div>\n                    <div class=\"\">{{addr.data.city}}, {{addr.data.state}}</div>\n                    <div class=\"\">{{addr.data.country}}, {{addr.data.postcode}}</div>\n                </div>\n                <div class=\"select-arrow address\"></div>\n            </div>\n            <div ng-hide=\"addr.id\">\n                <span class=\"addr-icon\"></span>\n                <div class=\"address-info\">\n                    <div class=\"\">填写收件人信息</div>\n                </div>\n                <div class=\"go-add\">+</div>\n            </div>\n        </div>\n        <div class=\"\">\n            <table class=\"table ngCart cart-table express\">\n                <thead>\n                <tr>\n                    <td class=\"title\">\n                        <span>物品名称</span>\n                    </td>\n                    <td class=\"cate\">\n                        <span><a href=\"\" onclick=\"window.open(\'http://may.bi/#/limit\', \'_blank\', \'location=no,toolbarposition=top,closebuttoncaption=关闭\')\">敏感物品</a></span>\n                    </td>\n                    <td class=\"quantity\">\n                        <span>数量</span>\n                    </td>\n                    <td class=\"value\">\n                        <span>申报价值</span>\n                    </td>\n                    <td class=\"note\">\n                        <span>备注</span>\n                    </td>\n                    <td class=\"ico\"></td>\n                </tr>\n                </thead>\n\n                <tbody>\n                <tr ng-repeat=\"entry in entries track by $index\">\n                    <td class=\"title\">\n                        {{ entry.title }}\n                    </td>\n                    <td class=\"cate\">\n                        {{ entry.main_category==\'special\'? \'是\': \'否\' }}\n                    </td>\n                    <td class=\"quantity\">\n                        {{ entry.quantity }}\n                    </td>\n                    <td class=\"value\">\n                        ￥{{ entry.amount }}\n                    </td>\n                    <td class=\"note\">\n                        {{ entry.remark }}\n                    </td>\n                    <td class=\"ico\">\n                        <span class=\"close-icon\" ng-click=\"removeEntry(entry)\">\n                        </span>\n                    </td>\n                </tr>\n                </tbody>\n            </table>\n\n            <button class=\"button button-block\" ng-click=\"addEntry()\">\n                <i class=\"ion-ios-plus-outline\"></i>\n                添加代寄物品\n            </button>\n        </div>\n        <div class=\"express-noti\">\n\n            <p class=\"notice\">下单须知: </p>\n\n            <p>1. 提交清单后，美比工作人员会先核实，核实通过后订单进入“跟踪快递”。</p>\n\n            <p>2. “跟踪快递”状态后，用户把待寄物品寄到美比仓库收货地址，并尽快填写包裹的快递单号。</p>\n\n            <p>3. 包裹到达仓库之后，进入“入库称重”，用户根据称得重量，选择运输方式后交付运费。</p>\n\n            <p>4. 交付运费后，订单进入\"支付运费\"。仓库人员将24小时内提交运输。</p>\n\n        </div>\n    </ion-content>\n    <ion-footer-bar class=\"bar-stable item-button-right\">\n        <button class=\"button button-assertive button-cart\" ng-click=\"submit()\">提交清单</button>\n    </ion-footer-bar>\n</ion-view>\n");
 $templateCache.put("expressItem_add.html","<!-- 添加代寄物品 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">添加代寄物品</div>\n        <button class=\"button button-clear button-dark\" ng-click=\"addItem()\">保存</button>\n    </div>\n\n    <ion-content class=\"has-header\">\n        <div class=\"list\">\n            <label class=\"item item-input\">\n                <span class=\"input-label\">物品名称</span>\n                <input type=\"text\" ng-model=\"item.title\">\n            </label>\n            <label class=\"item item-toggle\">\n                敏感物品\n                <label class=\"toggle toggle-assertive\">\n                    <input type=\"checkbox\" ng-model=\"item.main_category\">\n                    <div class=\"track\">\n                        <div class=\"handle\"></div>\n                    </div>\n                </label>\n            </label>\n            <label class=\"item item-input\">\n                <span class=\"input-label\">数量</span>\n                <input type=\"number\" ng-model=\"item.quantity\">\n            </label>\n            <label class=\"item item-input\">\n                <span class=\"input-label\">申报价值(￥)</span>\n                <input type=\"number\" ng-model=\"item.amount\">\n            </label>\n            <label class=\"item item-input\">\n                <span class=\"input-label\">备注</span>\n                <input type=\"text\" placeholder=\"如颜色，尺寸\" ng-model=\"item.remark\">\n            </label>\n        </div>\n    </ion-content>\n</ion-view>\n");
-$templateCache.put("favors.html","<!-- 商品列表 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">收藏商品</div>\n    </div>\n    <ion-content class=\"has-header homepage\">\n        <div class=\"col col-50 animated fadeIn\"\n            collection-repeat=\"item in items\">\n            <div class=\"item item-image\" ng-click=\"goItem(item.id)\">\n                <img ng-src=\"{{item.mainUrl}}\" cache-src>\n            </div>\n            <div class=\"item item-text-wrap\" href=\"#\">\n                <h2 class=\"product-title\" style=\"overflow: hidden;\" ng-click=\"goItem(item.id)\">{{item.name}}</h2>\n                <p class=\"product-prices\">\n                    <span class=\"curr-price\">{{item.price | currency:\'￥\'}}</span>\n                    <span style=\"float:right;font-size:16px;\">\n                      <i class=\"icon ion-ios-heart\"\n                          ng-class=\"{\'like-icon button-assertive\':item.collectFlag, \'button-light\':!item.collectFlag}\"\n                          ng-click=\"unfavor(item)\"></i>\n                      <i class=\"icon ion-ios-cart\"\n                        ng-click=\"addToCart(item)\"\n                        style=\"margin-left:5px;\"\n                        ></i>\n                    </span>\n              </p>\n            </div>\n        </div>\n    </ion-content>\n</ion-view>\n");
+$templateCache.put("favors.html","<!-- 商品列表 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">收藏商品</div>\n    </div>\n    <ion-content class=\"has-header homepage\">\n        <div class=\"col col-50 animated fadeIn\"\n            collection-repeat=\"item in items\">\n            <div class=\"item item-image\" ng-click=\"goItem(item.id)\">\n                <img ng-src=\"{{item.mainUrl}}\" cache-src>\n            </div>\n            <div class=\"item item-text-wrap\" href=\"#\">\n                <h2 class=\"product-title\" style=\"overflow: hidden;\" ng-click=\"goItem(item.id)\">{{item.name}}</h2>\n                <p class=\"product-prices\">\n                    <span class=\"curr-price\">{{item.price | currency:\'￥\'}}</span>\n                    <span style=\"float:right;font-size:16px;\">\n                      <i class=\"icon ion-ios-heart\"\n                          ng-class=\"{\'like-icon energized\':item.collectFlag, \'light\':!item.collectFlag}\"\n                          ng-click=\"unfavor(item)\"></i>\n                      <i class=\"icon ion-ios-cart\"\n                        ng-click=\"addToCart(item)\"\n                        style=\"margin-left:5px;\"\n                        ></i>\n                    </span>\n              </p>\n            </div>\n        </div>\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("feedback.html","<!-- 意见反馈 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">意见反馈</div>\n    </div>\n\n    <ion-content class=\"has-header\">\n        <div class=\"faq-row\">\n            <div class=\"faq-title\">\n                意见反馈:\n            </div>\n            <div class=\"faq-desc\">\n                <textarea ng-model=\"text\" class=\"ng-pristine ng-untouched ng-valid\"></textarea>\n                <button ng-click=\"feedback()\" class=\"button button-assertive pull-right button\">提交</button>\n            </div>\n        </div>\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("forgotPassword.html","<ion-modal-view>\n  <ion-header-bar>\n    <div class=\"buttons\">\n      <button class=\"button button-clear icon ion-ios-arrow-back button-dark\" ng-click=\"closeForgotPWBox()\"></button>\n    </div>\n    <div class=\"title\">忘记密码</div>\n  </ion-header-bar>\n  <ion-content class=\"login-page overlay-content\" scroll=\"false\" ng-controller=\"forgotPWCtrl\">\n    <div class=\"list list-inset\">\n      <label class=\"item item-input\">\n        <input type=\"email\" placeholder=\"邮箱地址\" ng-model=\"forgotPWForm.email\">\n      </label>\n    </div>\n\n    <button class=\"button button-block login-btn\" ng-click=\"submit()\">提交</button>\n\n  </ion-content>\n</ion-modal-view>\n");
 $templateCache.put("home.html","<ion-view>\n    <form>\n    <div class=\"bar bar-header item-input-inset\">\n      <a href=\"#/cateHome\" class=\"button button-icon icon ion-grid\"></a>\n      <label class=\"item-input-wrapper\">\n        <i class=\"icon ion-ios-search placeholder-icon\"></i>\n        <input type=\"search\" placeholder=\"搜索商品，种类\" ng-model=\"searchQuery\">\n        <input type=\"submit\" ng-click=\"searchItem(searchQuery)\" style=\"position: absolute; left: -9999px; width: 1px; height: 1px;\"/>\n      </label>\n      <span class=\"cart-num\">{{ ngCart.getTotalItems() }}</span>\n      <a href=\"#/cart\" class=\"button button-icon icon ion-ios-cart\"></a>\n    </div>\n    </form>\n    <ion-content class=\"has-header homepage\"  overflow-scroll=\"true\">\n        <ion-slide-box delegate-handle=\"image-viewer\">\n            <!--ng-style=\"{\'height\':(banners?\'auto\':\'0px\'),\'padding-top\':(banners?\'0\':\'42.1875%\')}\">-->\n            <ion-slide ng-repeat=\"banner in banners track by $index\" >\n                <img ng-src=\"{{ ::banner.img }}\" ng-click=\"redirectTo(banner)\">\n            </ion-slide>\n        </ion-slide-box>\n\n        <div class=\"row intro-box\">\n            <div class=\"col col-25\">\n                <a href=\"#/categories\">\n                    <i class=\"icon category\"></i>\n                    <p>商品分类</p>\n                </a>\n\n            </div>\n            <div class=\"col col-25\">\n                <a href=\"#/calculate\">\n                    <i class=\"icon calculate\"></i>\n                    <p>运费估算</p>\n                </a>\n            </div>\n            <div class=\"col col-25\">\n                <a href=\"#/express\">\n                    <i class=\"icon send\"></i>\n                    <p>待寄出国</p>\n                </a>\n\n            </div>\n            <div class=\"col col-25\">\n                <a href=\"#/limit\">\n                    <i class=\"icon limit\"></i>\n                    <p>邮寄限制</p>\n                </a>\n            </div>\n        </div>\n\n        <ion-item class=\"item\" style=\"border-left: 3px solid #ea004f;\">\n            美周专题\n        </ion-item>\n\n\n        <ion-refresher\n            pulling-text=\"下拉刷新...\"\n            on-refresh=\"doRefresh()\"\n            spinner=\"spiral\">\n        </ion-refresher>\n\n        <div class=\"animated fadeIn\" ng-repeat=\"board in boards track by $index\" >\n            <div class=\"item item-banner-image\">\n                <div class=\"tri\"></div>\n                <img ng-src=\"{{ ::board.image }}\" ng-click=\"goBoard(board.id)\">\n            </div>\n            <item-carousel board=\"board\"></item-carousel>\n            <div class=\"item item-divider\"></div>\n        </div>\n        <ion-infinite-scroll\n            on-infinite=\"loadMore()\"\n            distance=\"1\"\n            spinner=\'spiral\'\n            ng-if=\"moreDataCanBeLoaded()\">\n        </ion-infinite-scroll>\n\n\n    </ion-content>\n</ion-view>\n");
@@ -5300,10 +5402,10 @@ $templateCache.put("itemCarousel.html","<ion-scroll direction=\"x\" scrollbar-x=
 $templateCache.put("limit.html","<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">邮寄限制</div>\n    </div>\n\n\n    <ion-content class=\"has-header homepage\">\n<div class=\"faq-row\">\n    <div class=\"faq-title\">普通商品:</div>\n    <div class=\"faq-desc\">\n    衣物类、书箱、鞋帽类、围巾类、床上用品类、窗帘类、玩具类、各种背包、提包与行李箱类、女生用品（纸巾、卫生棉等）、文具类、餐具类、厨房用品类、各种石头类工艺品、画框类、电器及其它电子产品（不带电池）、其它不需要海关检验检疫的物品;\n    </div>\n</div>\n\n<div class=\"faq-row\">\n    <div class=\"faq-title\">敏感商品:</div>\n    <div class=\"faq-desc\">\n    地方小吃、干货、茶叶、各种零食饼干、常用药品（感冒药、消炎药、肠胃药、清火去湿及其它非精神类或带有麻醉性质的药品）、光碟、带有电池的电子产品、国际品牌的全新物品、化妆品等；\n    </div>\n</div>\n\n\n<div class=\"faq-row\">\n    <div class=\"faq-title\">禁运商品:</div>\n    <div class=\"faq-desc\">\n    液体类、粉末类、文物古玩类、来自疫区的食品药品、易燃易爆品、各种管制刀具（包括菜刀）、枪枝、鲜活类、毒品、化学品、色情及政治内容的阅读物、世界各国流通货币、有价证券、邮票等海关明令禁止运输的物品;\n    </div>\n</div>\n</section>\n\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("logistics.html","<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">物流详情</div>\n  </div>\n\n  <ion-content class=\"has-header\">\n\n<section class=\"clearfix\" ng-cloak>\n<div class=\"logistic-row\">\n    <span class=\"\">\n        包裹编号：{{logistic.partner_tracking_no}}\n    </span>\n    <span class=\"pull-right\">\n        <ul class=\"logistic-nav\">\n            <li class=\"\"\n                ng-repeat=\"lo in order.logistics track by $index\"\n                ng-if=\"order.logistics.length > 1\"\n                ng-class=\"{\'current\': currTab==$index}\"\n                ng-click=\"goTab($index, lo)\">\n                包裹{{$index+1}}</li>\n        </ul>\n    </span>\n</div>\n<div class=\"\">\n    <table class=\"table ngCart cart-table\">\n        <tbody>\n        <tr ng-repeat=\"entry in logistic.entries track by $index\">\n            <td class=\"img-cell\">\n                <div>\n                    <img ng-src=\"{{entry.spec.images[0]}}\">\n                </div>\n            </td>\n            <td class=\"info-cell\">\n                <div>{{ entry.item.title }}</div>\n                <div>\n                    <span ng-repeat=\"(k, v) in entry.spec.attributes\">\n                        {{ngCart.attrMap[k]}}: {{v}}\n                    </span>\n                </div>\n                <div class=\"btn-group cart-btn\">\n                    <span>数量: {{ entry.quantity | number }}</span>\n                </div>\n            </td>\n            <td class=\"price-cell\">{{ entry.amount_usd | currency }}</td>\n        </tr>\n    </table>\n</div>\n\n<div class=\"logistic-row\">\n    <ul class=\"progress-indicator\">\n        <li ng-class=\"{\'completed\': allStatus.indexOf(logistic.current_status) >= $index}\"\n             ng-repeat=\"status in logistic.all_status\">\n            <span class=\"bubble\"></span>\n            <div class=\"logistic-status\">{{status.desc}}</div>\n        </li>\n    </ul>\n</div>\n<div class=\"logistic-row\">\n    <ul class=\"tracking\">\n        <li ng-repeat=\"h in logistic.history | reverse\">\n            <div class=\"\">{{h.desc}}</div>\n            <div class=\"time\">{{h.time}}</div>\n        </li>\n    </ul>\n</div>\n</section>\n\n  </ion-content>\n</ion-view>\n");
 $templateCache.put("notification.html","<ion-view class=\"view-post\">\n    <ion-header-bar>\n        <div class=\"title\">通知</div>\n    </ion-header-bar>\n\n    <ion-content class=\"has-header\">\n\n    <ion-refresher\n        pulling-text=\"下拉刷新...\"\n        on-refresh=\"doRefresh()\"\n        spinner=\"spiral\">\n    </ion-refresher>\n\n    <div class=\"list card notice\" ng-repeat=\"notice in notices track by $index\">\n        <div class=\"item item-avatar\">\n            <img  ng-src=\"{{::notice.user.avatar_thumb}}\" ng-click=\"zoom(notice.user.avatar_url)\">\n            <h2>{{::notice.user.name}}\n                <div class=\"post-type notice\">\n                    {{::notice.sub_title}}\n                </div>\n                <span class=\"item-note\">{{::notice.created_at | amTimeAgo}}</span>\n            </h2>\n            <p class=\"post-body\" ng-bind-html=\"notice.content | nl2br\">\n        </div>\n    </div>\n    <div class=\"center-ico\" ng-if=\"isEmpty()\">\n        <i class=\"icon ion-ios-camera\"></i>\n\n        <h1 >暂无动态</h1>\n    </div>\n    <ion-infinite-scroll\n        on-infinite=\"loadMore()\"\n        distance=\"1\"\n        spinner=\'spiral\'\n        ng-if=\"moreDataCanBeLoaded()\">\n    </ion-infinite-scroll>\n\n    </ion-content>\n</ion-view>\n");
-$templateCache.put("order.html","<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$state.go(\'tab.orders\')\"></button>\n      <div class=\"title\">订单详情</div>\n  </div>\n\n  <ion-content class=\"has-header\">\n\n<section class=\"orders\">\n<div class=\"checkout-info\">\n    <span class=\"addr-icon\"></span>\n    <div class=\"address-info\">\n        <p class=\"addr-header\">收货人信息: </p>\n        <div class=\"\">{{order.address.receiver}}</div>\n        <div class=\"\">{{order.address.street1}}</div>\n        <div class=\"\">{{order.address.street2}}</div>\n        <div class=\"\">{{order.address.city}}, {{order.address.state}}</div>\n        <div class=\"\">{{order.address.country}}, {{order.address.postcode}}</div>\n    </div>\n</div>\n</section>\n\n<section class=\"clearfix\" ng-cloak>\n<div class=\"\">\n    <table class=\"table ngCart cart-table\">\n        <tbody>\n        <tr ng-repeat=\"entry in order.entries track by $index\">\n            <td class=\"img-cell\">\n                <div>\n                    <img ng-src=\"{{entry.spec.images[0]}}\">\n                </div>\n            </td>\n            <td class=\"info-cell\">\n                <div>{{ entry.item.title }}</div>\n                <div>\n                    <span ng-repeat=\"(k, v) in entry.spec.attributes\">\n                        {{ngCart.attrMap[k]}}: {{v}}\n                    </span>\n                </div>\n                <div class=\"btn-group cart-btn\">\n                    <span>数量: {{ entry.quantity | number }}</span>\n                </div>\n            </td>\n            <td class=\"price-cell\">{{ entry.amount_usd | currency }}</td>\n        </tr>\n    </table>\n</div>\n</section>\n<section>\n<div class=\"checkout-info\">\n    <div class=\"icon partner-icon address\"></div>\n    <div class=\"partner-info\">\n        <div class=\"selected-partner\">{{order.provider.display_name}} ({{order.provider.service_intro.duration}}):\n            <span class=\"detail-price pull-right\">{{order.cn_shipping | currency }}</span>\n        </div>\n    </div>\n</div>\n</section>\n\n<section>\n<div class=\"checkout-info\">\n    <div class=\"icon coupon-icon address\"></div>\n    <div class=\"coupon-info\">\n        <div ng-show=\"order.discount.length==1\" class=\"\">{{order.discount[0].desc}}\n            <span class=\"detail-price pull-right\">- {{order.discount[0].value | currency }}</span>\n        </div>\n        <div ng-show=\"order.discount.length==0\" class=\"\">\n            不使用\n        </div>\n    </div>\n</div>\n</section>\n\n\n<section>\n<div class=\"checkout-info\">\n    <div class=\"item-info-table\">\n        <dl class=\"item-info-field\">\n            <dt class=\"\">商品总价: </dt>\n            <dd class=\"detail-price\">{{order.amount_usd | currency }}</dd>\n        </dl>\n        <dl class=\"item-info-field\">\n            <dt class=\"\">运费: </dt>\n            <dd class=\"detail-price\">{{order.cn_shipping | currency }}</dd>\n        </dl>\n        <dl class=\"item-info-field\">\n            <dt class=\"\">税费: </dt>\n            <dd class=\"detail-price\">0</dd>\n        </dl>\n    </div>\n</div>\n<div class=\"order-bottom\">\n    <div class=\"\">\n        订单号：{{order.short_id}}\n    </div>\n    <div class=\"\">\n        创建时间: {{order.created_at}}\n    </div>\n</div>\n</section>\n  </ion-content>\n  <ion-footer-bar align-title=\"left\" class=\"bar-stable\">\n    <a class=\"button button-clear\">\n        总计: <span class=\"footer-price\"> {{ order.final |currency}}</span>\n    </a>\n    <h1 class=\"title\"></h1>\n    <div class=\"buttons\">\n        <ngcart-checkout ng-if=\"order.payment_status==\'UNPAID\'\" settings=\"{ order_id: order.id , order_type: \'existed\'}\">\n            去付款\n        </ngcart-checkout>\n        <button class=\"button button-clear\" ng-disabled=\"order.payment_status==\'PAID\'\"\n            ng-if=\"order.payment_status==\'PAID\'\">\n            已付款\n        </button>\n        <button class=\"button button-default\"\n            ng-click=\"cancelOrder()\"\n            ng-if=\"order.payment_status==\'UNPAID\'\">\n            取消订单\n        </button>\n    </div>\n  </ion-footer-bar>\n</ion-view>\n");
-$templateCache.put("orders.html","<!-- 商品详情 -->\n<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">我的订单</div>\n  </div>\n\n  <ion-content class=\"has-header\">\n\n<section>\n<div class=\"order-btn-row\">\n    <div class=\"btn-group cart-btn row\">\n      <button class=\"btn order-btn col-25\"\n          ng-class=\"{\'active\': orderType == \'0\'}\"\n          ng-click=\"setType(\'0\')\">待付款</button>\n      <button class=\"btn order-btn col-25\"\n          ng-class=\"{\'active\': orderType == \'1\'}\"\n          ng-click=\"setType(\'1\')\">待收货</button>\n      <button class=\"btn order-btn col-25\"\n          ng-class=\"{\'active\': orderType == \'2\'}\"\n          ng-click=\"setType(\'2\')\">已完成</button>\n      <button class=\"btn order-btn col-25\"\n          ng-class=\"{\'active\': orderType == \'3\'}\"\n          ng-click=\"setType(\'3\')\">已取消</button>\n    </div>\n</div>\n<div class=\"order-detail\" ng-repeat=\"order in orders track by $index\">\n    <table ng-if=\"orderType==\'COMMODITIES\'\" class=\"table ngCart cart-table\">\n        <thead>\n        <tr>\n            <td class=\"padding  first-cell\" colspan=\"2\">\n                <button class=\"button button-clear button-dark button-small\">\n                    订单号: {{order.short_id}}\n                </button>\n                <button class=\"button button-default button-small\">\n                    状态:  {{order.current_status}}\n                </button>\n            </td>\n            <td class=\"detail-cell\">\n                <a class=\"button button-stable button-small\" ng-href=\"#/order/{{order.id}}\">详情 <i class=\"icon ion-ios-arrow-right\"></i></a>\n            </td>\n        </tr>\n        </thead>\n\n        <tbody>\n        <tr ng-repeat=\"entry in order.entries track by $index\">\n\n            <td class=\"img-cell\">\n                <div>\n                    <a ng-href=\"#/order/entry/{{entry.item.item_id}}\">\n                        <img ng-src=\"{{entry.spec.images[0]}}\">\n                    </a>\n                </div>\n            </td>\n            <td class=\"info-cell\">\n                <div>{{ entry.item.title }}</div>\n                <div>\n                    <span ng-repeat=\"(k, v) in entry.spec.attributes\">\n                        {{ngCart.attrMap[k]}}: {{v}}\n                    </span>\n                </div>\n                <div class=\"btn-group cart-btn\">\n                    <span>数量: {{ entry.quantity | number }}</span>\n                </div>\n            </td>\n            <td class=\"price-cell\">{{ entry.amount_usd | currency }}</td>\n        </tr>\n        </tbody>\n\n        <tfoot>\n        <tr>\n            <td class=\"status-cell\" ng-if=\"order.payment_status==\'PAID\'\">\n                <a class=\"button button-default  button-small\"\n                    ng-href=\"#/order/logistics/{{order.id}}\">\n                    查看物流\n                </a>\n            </td>\n\n            <td class=\"status-cell\" ng-if=\"order.payment_status==\'UNPAID\'\">\n                <a class=\"button button-asseritive button-cart button-small\"\n                    ng-href=\"#/order/{{order.id}}\">\n                    去付款\n                </a>\n            </td>\n            <td colspan=\"2\" class=\"fee-cell\">运费:\n                <span class=\"price-cell\">{{ order.cn_shipping | currency }}</span>\n                总计:\n                <span class=\"price-cell\">{{ order.final | currency }}</span>\n            </td>\n        </tr>\n        </tfoot>\n    </table>\n\n    <table ng-if=\"orderType==\'TRANSFER\'\" class=\"table ngCart cart-table express\">\n        <thead>\n        <tr>\n            <td class=\"padding first-cell\" colspan=\"5\">\n                <button class=\"button button-clear  button-dark button-small\">\n                    订单号: {{order.short_id}}\n                </button>\n                <button class=\"button button-default button-small\">\n                    状态:  {{order.current_status}}\n                </button>\n                <span class=\"pull-right\">\n                    <a class=\"button button-default  button-small\"\n                        ng-href=\"#/order/transfer/{{order.id}}\">\n                        查看物流\n                    </a>\n                </span>\n            </td>\n\n        </tr>\n        <tr>\n            <td class=\"title1\">\n                <span>商品名称:</span>\n            </td>\n            <td class=\"cate\">\n                <span>类型:</span>\n            </td>\n            <td class=\"quantity1\">\n                <span>数量:</span>\n            </td>\n            <td class=\"value\">\n                <span>申报价值:</span>\n            </td>\n            <td class=\"note\">\n                <span>备注:</span>\n            </td>\n        </tr>\n        </thead>\n\n        <tbody>\n        <tr ng-repeat=\"entry in order.entries track by $index\">\n            <td class=\"title1\">\n                {{ entry.title }}\n            </td>\n            <td class=\"cate\">\n                {{ entry.main_category }}\n            </td>\n            <td class=\"quantity1\">\n                {{ entry.quantity }}\n            </td>\n            <td class=\"value\">\n                ￥{{ entry.amount }}\n            </td>\n            <td class=\"note\">\n                {{ entry.remark }}\n            </td>\n        </tr>\n        </tbody>\n\n        <tfoot>\n        <tr>\n            <td class=\"status-cell\" ng-if=\"order.payment_status==\'PAID\'\">\n                <a class=\"button button-default  button-small\"\n                    ng-href=\"#/order/logistics/{{order.id}}\">\n                    查看物流\n                </a>\n            </td>\n\n            <td class=\"status-cell\" ng-if=\"order.payment_status==\'UNPAID\' && order.status ==\'WAREHOUSE_IN\'\">\n                <a class=\"button button-asseritive button-cart button-small\"\n                    ng-href=\"#/order/transfer/{{order.id}}\">\n                    去付款\n                </a>\n            </td>\n            <td colspan=\"4\" class=\"fee-cell\">运费:\n                <span class=\"price-cell\">{{ order.cn_shipping | currency }}</span>\n                总计:\n                <span class=\"price-cell\">{{ order.final | currency }}</span>\n            </td>\n        </tr>\n        </tfoot>\n    </table>\n\n</div>\n</section>\n  </ion-content>\n</ion-view>\n");
+$templateCache.put("order.html","<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$state.go(\'tab.orders\')\"></button>\n      <div class=\"title\">订单详情</div>\n  </div>\n\n  <ion-content class=\"has-header\">\n\n<section class=\"orders\">\n<div class=\"checkout-info\">\n    <div class=\"address-info-1\">\n      <div class=\"row\">\n        <div class=\"col\">收货人：{{order.receiptName}}</div>\n        <div class=\"col\" style=\"text-align:right\">{{order.receiptPhone}}</div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col\">收货地址：{{order.receiptDetail}}</div>\n      </div>\n    </div>\n</div>\n</section>\n\n<section class=\"clearfix\" ng-cloak>\n<div class=\"\">\n    <table class=\"table ngCart cart-table\">\n        <tbody>\n        <tr ng-repeat=\"entry in order.detailList track by $index\">\n            <td class=\"img-cell\">\n                <div>\n                    <img ng-src=\"{{entry.maProImg}}\">\n                </div>\n            </td>\n            <td class=\"info-cell\">\n                <div>{{ entry.maProName }}</div>\n                <div>\n                    <span ng-repeat=\"(k, v) in entry.spec.attributes\">\n                        {{ngCart.attrMap[k]}}: {{v}}\n                    </span>\n                </div>\n                <div class=\"btn-group cart-btn\">\n                    <span>数量: {{ entry.num | number }}</span>\n                </div>\n            </td>\n            <td class=\"price-cell\">{{ entry.dealPrice | currency:\"￥\" }}</td>\n        </tr>\n    </table>\n</div>\n</section>\n<section>\n<div class=\"checkout-info\">\n    <div class=\"partner-info\" style=\"margin-left: 8px;\">\n        <div class=\"selected-partner\">快递方式:{{order.trackingName}}\n            <span class=\"detail-price pull-right\">{{order.trackingAmount | currency:\'￥\' }}</span>\n        </div>\n    </div>\n</div>\n</section>\n\n<section>\n<div class=\"checkout-info\">\n    <div class=\"item-info-table\">\n        <dl class=\"item-info-field\">\n            <dt class=\"\">商品总价: </dt>\n            <dd class=\"detail-price\">{{order.totalAmount | currency:\'￥\' }}</dd>\n        </dl>\n        <dl class=\"item-info-field\">\n            <dt class=\"\">运费: </dt>\n            <dd class=\"detail-price\">{{order.trackingAmount | currency:\'￥\' }}</dd>\n        </dl>\n    </div>\n</div>\n<div class=\"order-bottom\">\n    <div class=\"\">\n        订单号：{{order.code}}\n    </div>\n    <div class=\"\">\n        创建时间: {{order.createTime}}\n    </div>\n</div>\n</section>\n  </ion-content>\n  <ion-footer-bar align-title=\"left\" class=\"bar-stable\">\n    <a class=\"button button-clear\">\n        总计: <span class=\"footer-price\"> {{ order.totalAmount |currency:\'￥\'}}</span>\n    </a>\n    <h1 class=\"title\"></h1>\n    <div class=\"buttons\">\n        <ngcart-checkout ng-if=\"order.status==\'0\'\" settings=\"{ order_id: order.id , order_type: \'existed\'}\">\n            去付款\n        </ngcart-checkout>\n        <button class=\"button button-clear\" ng-disabled=\"order.payment_status==\'PAID\'\"\n            ng-if=\"order.status==\'1\' || order.status==\'2\'\">\n            已付款\n        </button>\n        <button class=\"button button-default\"\n            ng-click=\"cancelOrder()\"\n            ng-if=\"order.status==\'0\'\">\n            取消订单\n        </button>\n    </div>\n  </ion-footer-bar>\n</ion-view>\n");
+$templateCache.put("orders.html","<!-- 商品详情 -->\n<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">我的订单</div>\n  </div>\n\n  <ion-content class=\"has-header\">\n\n<section>\n<div class=\"order-btn-row\">\n    <div class=\"btn-group cart-btn row\">\n      <button class=\"btn order-btn col-25\"\n          ng-class=\"{\'active\': orderType == \'0\'}\"\n          ng-click=\"setType(\'0\')\">待付款</button>\n      <button class=\"btn order-btn col-25\"\n          ng-class=\"{\'active\': orderType == \'1\'}\"\n          ng-click=\"setType(\'1\')\">待收货</button>\n      <button class=\"btn order-btn col-25\"\n          ng-class=\"{\'active\': orderType == \'2\'}\"\n          ng-click=\"setType(\'2\')\">已完成</button>\n      <button class=\"btn order-btn col-25\"\n          ng-class=\"{\'active\': orderType == \'3\'}\"\n          ng-click=\"setType(\'3\')\">已取消</button>\n    </div>\n</div>\n<div class=\"order-detail\" ng-repeat=\"order in orders track by $index\">\n    <table class=\"table ngCart cart-table\">\n        <thead>\n        <tr>\n            <td class=\"first-cell\" colspan=\"2\">\n                <button class=\"button button-clear button-dark button-small\">\n                    订单号: {{order.code}}\n                </button>\n            </td>\n            <td class=\"detail-cell\">\n                <a class=\"button button-stable button-small\" ng-href=\"#/order/{{order.code}}\">详情 <i class=\"icon ion-ios-arrow-right\"></i></a>\n            </td>\n        </tr>\n        </thead>\n\n        <tbody>\n        <tr\n          ng-repeat=\"entry in order.detailList track by $index\"\n          style=\"border:0 none; background-color:#f9f9f9\">\n\n            <td class=\"img-cell\">\n                <div>\n                    <a ng-href=\"#/item/{{entry.maProId}}\">\n                        <img ng-src=\"{{entry.maProImg}}\">\n                    </a>\n                </div>\n            </td>\n            <td class=\"info-cell\">\n                <div>{{ entry.maProName }}</div>\n                <div>\n                    <span ng-repeat=\"(k, v) in entry.spec.attributes\">\n                        {{ngCart.attrMap[k]}}: {{v}}\n                    </span>\n                </div>\n                <div class=\"btn-group cart-btn\">\n                    <span>数量: {{ entry.num | number }}</span>\n                </div>\n            </td>\n            <td class=\"price-cell\">{{ entry.dealPrice | currency:\'￥\' }}</td>\n        </tr>\n        </tbody>\n\n        <tfoot>\n          <tr>\n            <td colspan=\"3\" class=\"fee-cell\">运费:\n                <span class=\"price-cell\">{{ order.trackingAmount | currency:\"￥\" }}</span>\n                总计:\n                <span class=\"price-cell\">{{ order.totalAmount | currency:\"￥\" }}</span>\n            </td>\n          </tr>\n          <tr style=\"height:40px\">\n            <td colspan=\"3\" class=\"status-cell\" style=\"text-align:right;padding-right:10px;\">\n                <a class=\"button button-default button-small\"\n                  ng-href=\"#/order/logistics/{{order.code}}\">\n                    查看物流\n                </a>\n                <a class=\"button button-energized button-small\"\n                  ng-if=\"order.status==\'0\'\"\n                  ng-href=\"#/order/{{order.code}}\">\n                    去付款\n                </a>\n                <a class=\"button button-energized button-small\"\n                  ng-if=\"order.status==\'1\' || order.status==\'2\'\"\n                  ng-click=\"orderDone(order)\">\n                    确认收货\n                </a>\n            </td>\n          </tr>\n        </tfoot>\n    </table>\n\n</div>\n</section>\n  </ion-content>\n</ion-view>\n");
 $templateCache.put("profile.html","<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">个人资料</div>\n  </div>\n  <ion-content class=\"has-header account\">\n    <ion-list>\n\n      <ion-item class=\"item-divider\">\n      </ion-item>\n\n      <ion-item class=\"item item-icon-right\" ng-click=\"togglePhotoModal()\">\n          上传头像\n          <i class=\"icon ion-ios-arrow-right\"></i>\n      </ion-item>\n      <ion-item class=\"item item-icon-right\"  ng-click=\"setUsername()\">\n          用户名\n          <span class=\"item-note\">\n              {{user.getUser().name}}\n          </span>\n          <i class=\"icon ion-ios-arrow-right\"></i>\n      </ion-item>\n    </ion-list>\n  </ion-content>\n</ion-view>\n");
-$templateCache.put("scan.html","<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">扫码开锁</div>\n    </div>\n    <ion-content class=\"has-header account\">\n        <div>\n            <img style=\"width:100%\" src=\"http://www.guandongphoto.com/data/attachment/forum/201804/27/023630bpyfwaljwpwpenny.jpg\" alt=\"\">\n        </div>\n        <div style=\"margin-top:50px;text-align:center\">\n            <button class=\"button button-assertive\" ng-click=\"confirmOpen()\" style=\"width:60%\">\n             获取开锁密码\n           </button>\n        </div>\n    </ion-content>\n</ion-view>");
+$templateCache.put("scan.html","<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">扫码开锁</div>\n    </div>\n    <ion-content class=\"has-header account\">\n        <div>\n            <img style=\"height:150px\" ng-src=\"{{imgUrl}}\" alt=\"\">\n        </div>\n        <div style=\"margin-top:50px;text-align:center\">\n            <button\n              class=\"button button-assertive\"\n              ng-if=\"showOpen\"\n              ng-click=\"getCode()\"\n              style=\"width:60%\">\n                获取开锁密码\n           </button>\n\n           <div ng-if=\"showCode\">\n             <p style=\"font-size:18px;letter-spacing:10px\">开锁密码</p>\n             <div>\n               <button class=\"button button-assertive\">{{openCode[0]}}</button>\n               <button class=\"button button-assertive\">{{openCode[1]}}</button>\n               <button class=\"button button-assertive\">{{openCode[2]}}</button>\n               <button class=\"button button-assertive\">{{openCode[3]}}</button>\n             </div>\n           </div>\n\n           <div ng-if=\"alreadyShow\">\n             <p>您已获取过开锁密码</p>\n             <p>开锁密码为：{{password}}</p>\n           </div>\n        </div>\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("settings.html","<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">设置</div>\n  </div>\n  <ion-content class=\"has-header account\">\n    <ion-list>\n      <ion-item class=\"item-divider\"></ion-item>\n      <ion-item class=\"item item-icon-left item-icon-right\" ng-click=\"$state.go(\'tab.like_posts\')\">\n          <i class=\"icon ion-ios-grid-view-outline\"></i>\n          赞过帖子\n          <i class=\"icon ion-ios-arrow-right\"></i>\n      </ion-item>\n      <ion-item class=\"item item-icon-left item-icon-right\" ng-click=\"$state.go(\'tab.favors\')\">\n          <i class=\"icon ion-ios-heart-outline\"></i>\n          收藏商品\n          <i class=\"icon ion-ios-arrow-right\"></i>\n      </ion-item>\n      <ion-item class=\"item-divider\"></ion-item>\n\n      <ion-item class=\"item item-icon-left item-icon-right\" ng-click=\"$state.go(\'tab.profile\')\">\n          <i class=\"icon ion-ios-person-outline\"></i>\n          个人资料\n          <i class=\"icon ion-ios-arrow-right\"></i>\n      </ion-item>\n\n      <ion-item class=\"item item-icon-left item-icon-right\" ng-click=\"$state.go(\'tab.address_list\')\">\n          <i class=\"icon ion-ios-location\"></i>\n          收货地址\n          <i class=\"icon ion-ios-arrow-right\"></i>\n      </ion-item>\n\n      <ion-item class=\"item-divider\"></ion-item>\n\n      <ion-item class=\"item item-icon-right\" ng-click=\"$state.go(\'tab.about\')\">\n          关于我们\n          <i class=\"icon ion-ios-arrow-right\"></i>\n      </ion-item>\n\n      <ion-item class=\"item-divider\">\n      </ion-item>\n\n      <ion-item class=\"item item-icon-right\" ng-click=\"logout()\">\n          登出\n          <i class=\"icon ion-ios-arrow-right\"></i>\n      </ion-item>\n      <ion-item class=\"item-divider\"></ion-item>\n    </ion-list>\n  </ion-content>\n</ion-view>\n");
 $templateCache.put("shopTabs.html","<!--\nCreate tabs with an icon and label, using the tabs-positive style.\nEach tab\'s child <ion-nav-view> directive will have its own\nnavigation history that also transitions its views in and out.\n-->\n<ion-tabs class=\"maybi-tabs tabs-icon-top tabs-color-active-positive {{hideTabs}}\">\n\n  <!-- Explore Tab -->\n  <!-- <ion-tab title=\"美比\" icon-off=\"ion-aperture\" icon-on=\"ion-aperture\" href=\"#/explore\">\n    <ion-nav-view name=\"tab-explore\"></ion-nav-view>\n  </ion-tab> -->\n\n  <!-- Home Tab -->\n  <ion-tab title=\"首页\" icon-off=\"ion-ios-home-outline\" icon-on=\"ion-ios-home\" href=\"#/shopTab/cateHome\">\n    <ion-nav-view name=\"shopTab-cateHome\"></ion-nav-view>\n  </ion-tab>\n\n  <!-- Photo Tab -->\n  <!-- <ion-tab class=\"icon-center\" title=\"\" icon-off=\"icon-center\" icon-on=\"icon-center\" ng-click=\"togglePhotoModal()\">\n    <ion-nav-view name=\"tab-capture\"></ion-nav-view>\n  </ion-tab> -->\n\n  <!-- <ion-tab class=\"icon-center\" title=\"\" icon-off=\"icon-center\" icon-on=\"icon-center\" href=\"#/appIndex\">\n    <ion-nav-view name=\"tab-index\"></ion-nav-view>\n  </ion-tab> -->\n\n  <!-- Noti Tab -->\n  <ion-tab title=\"购物车\" icon-off=\"ion-ios-cart-outline\" icon-on=\"ion-ios-cart\" href=\"#/cart\">\n    <!-- <ion-view name=\"cart\"></ion-view> -->\n  </ion-tab>\n\n  <!-- Account Tab -->\n  <ion-tab title=\"我的\" icon-off=\"ion-ios-person-outline\" icon-on=\"ion-ios-person\" href=\"#/shopTab/account\">\n    <ion-nav-view name=\"shopTab-account\"></ion-nav-view>\n  </ion-tab>\n\n\n</ion-tabs>\n");
 $templateCache.put("showMore.html","<div>\n    <div ng-style=\'expandable&&!expanded? showLessStyle : \"\"\'>\n        <p ng-bind-html=\"title||\'\' | nl2br\"></p>\n    </div>\n    <div ng-if=\"expandable\" class=\"expand-btn\">\n        <button class=\"button button-small button-clear button-dark \"\n           ng-click=\'$event.stopPropagation();toggle()\'>{{expanded? \'收起\':\'展开全文\'}}\n        </button>\n    </div>\n</div>\n");

@@ -105,7 +105,6 @@
     <a class="button button-clear">
         总计: <span class="footer-price"> {{ ngCart.getSubTotal() |currency:'￥'}}</span>
     </a>
-    <h1 class="title"></h1>
     <ngcart-checkout settings="{ coupon: coupon_codes.code,
                         logistic_provider: selectedProvider.name,
                         order_type: 'new'}">

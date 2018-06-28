@@ -38,45 +38,45 @@
             </ion-slide>
         </ion-slide-box>
 
-        <ion-slide-box show-pager="false" on-slide-changed="slideHasChanged($index)" active-slide="currentIndex" delegate-handle="delegateHandler">
-            <ion-slide ng-repeat="v in banners">
-                <div ng-if="currentTab==v.codeKey" style="width:100%">
-                    <!-- <ion-refresher
-                        pulling-text="下拉刷新..."
-                        on-refresh="doRefresh()"
-                        spinner="spiral">
-                    </ion-refresher> -->
+        <!-- <ion-slide-box show-pager="false" on-slide-changed="slideHasChanged($index)" active-slide="currentIndex" delegate-handle="delegateHandler">
+        </ion-slide-box> -->
+        <div ng-repeat="v in banners">
+            <div ng-if="currentIndex==v.codeKey" style="width:100%">
+                <!-- <ion-refresher
+                    pulling-text="下拉刷新..."
+                    on-refresh="doRefresh()"
+                    spinner="spiral">
+                </ion-refresher> -->
 
-                    <div class="col col-50 " style="display: inline-block" ng-repeat="item in items track by $index" ng-click="goItem(item.id)">
-                        <div class="item item-image">
-                            <img ng-src="{{item.mainUrl}}">
-                        </div>
-                        <div class="item item-text-wrap" href="#">
-                            <h2 class="product-title" style="overflow: hidden;">{{item.name}}</h2>
-                            <p class="product-prices">
-                                <span class="curr-price">{{::item.price | currency:'￥'}}</span>
-                            </p>
-                        </div>
+                <div class="col col-50 " style="display: inline-block" ng-repeat="item in items track by $index" ng-click="goItem(item.id)">
+                    <div class="item item-image">
+                        <img ng-src="{{item.mainUrl}}">
                     </div>
-
-                    <div class="center-ico" ng-if="isEmpty()">
-                        <i class="icon ion-ios-grid-view-outline"></i>
-
-                        <h1>暂无此类商品</h1>
+                    <div class="item item-text-wrap" href="#">
+                        <h2 class="product-title" style="overflow: hidden;">{{item.name}}</h2>
+                        <p class="product-prices">
+                            <span class="curr-price">{{::item.price | currency:'￥'}}</span>
+                        </p>
                     </div>
-
-                    <ion-infinite-scroll ng-if="moreDataCanBeLoaded()" on-infinite="loadMore()" distance="1" spinner='spiral'>
-                    </ion-infinite-scroll>
-
-                </div>
-                <div ng-if="currentTab!=v.codeKey">
-                    <div style="background:#f9f9f9;padding-top:100%;height:0"></div>
                 </div>
 
+                <div class="center-ico" ng-if="isEmpty()">
+                    <i class="icon ion-ios-grid-view-outline"></i>
+
+                    <h1>暂无此类商品</h1>
+                </div>
+
+                <ion-infinite-scroll ng-if="moreDataCanBeLoaded()" on-infinite="loadMore()" distance="1" spinner='spiral'>
+                </ion-infinite-scroll>
+
+            </div>
+            <!-- <div ng-if="currentTab!=v.codeKey">
+                <div style="background:#f9f9f9;padding-top:100%;height:0"></div>
+            </div> -->
 
 
-            </ion-slide>
-        </ion-slide-box>
+
+        </div>
 
 
     </ion-content>
