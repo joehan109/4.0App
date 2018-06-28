@@ -43,7 +43,7 @@
           <i class="icon ion-ios-arrow-right"></i>
         </a>
 
-        <a class="item item-icon-left item-icon-right" href="#/setting">
+        <a class="item item-icon-left item-icon-right" href="#/settings">
           <i class="icon ion-ios-gear-outline"></i>
           设置
           <i class="icon ion-ios-arrow-right"></i>
@@ -51,12 +51,20 @@
       </div>
     </ion-list>
     <div style="margin-top:50px;text-align:center">
-      <button class="button button-assertive"
-        style="padding:0 50px;"
+      <button class="button button-assertive button-outline"
+        ng-if="user.getUser().name"
+        style="padding:0 50px; border:1px solid #6fd6b9"
         ng-click="logout()"
        >
          退出当前账户
        </button>
+       <button class="button button-assertive"
+         ng-if="!user.getUser().name"
+         style="padding:0 50px;"
+         ng-click="showAuthBox()"
+        >
+          登录
+        </button>
     </div>
   </ion-content>
 

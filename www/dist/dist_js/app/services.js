@@ -696,13 +696,13 @@ angular.module('maybi.services', [])
                     } else {
                         if (status == 404 || status == 302 || !res.ret) {
                             $ionicLoading.show({
-                                template: '请先登录',
-                                duration: 1000,
+                                template: res.errmsg || '请先登录',
+                                duration: 1000
                             });
                         } else {
                             $ionicLoading.show({
-                                template: res.error || '出错了',
-                                duration: 1000,
+                                template: res.errmsg || '出错了',
+                                duration: 1000
                             });
                         }
                         d.reject();
@@ -711,7 +711,7 @@ angular.module('maybi.services', [])
                     //$ionicLoading.hide();
                     $ionicLoading.show({
                         template: "网络出错, " + status,
-                        duration: 1000,
+                        duration: 1000
                     });
                     d.reject();
                 });
@@ -738,13 +738,13 @@ angular.module('maybi.services', [])
                     } else {
                         if (status == 404 || status == 302) {
                             $ionicLoading.show({
-                                template: '请先登录',
-                                duration: 1000,
+                                template: res.errmsg || '请先登录',
+                                duration: 1000
                             });
                         } else {
                             $ionicLoading.show({
-                                template: res.error || '出错了',
-                                duration: 1000,
+                                template: res.errmsg || '出错了',
+                                duration: 1000
                             });
                         }
                         d.reject();
@@ -753,7 +753,7 @@ angular.module('maybi.services', [])
                     //$ionicLoading.hide();
                     $ionicLoading.show({
                         template: "网络出错, " + status,
-                        duration: 1000,
+                        duration: 1000
                     });
                     d.reject();
                 });
@@ -776,6 +776,46 @@ angular.module('maybi.services', [])
         }
 
     })
+    .service('orderOpt', ['$rootScope', '$http', 'FetchData', 'Storage', 'ENV', function($rootScope, $http, FetchData, Storage, ENV) {
+        return {
+          cancel:cancel,
+          del:del,
+          done:done
+        };
+
+        function cancel(id) {
+          FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
+            if(data.ret) {
+              $scope.$emit("alert", "订单已删除");
+              $state.go('tab.orders');
+            } else{
+              $scope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
+            }
+          })
+        }
+        function del(id) {
+          FetchData.get('/mall/maorder/delete?id=' + id)
+              .then(function(data) {
+                if(data.res) {
+                  $scope.$emit("alert", "订单删除成功！");
+                  $state.go('tab.orders');
+                } else{
+                  $scope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
+                }
+              })
+        }
+        function done(id) {
+          FetchData.get('/mall/maorder/confirm?id=' + id)
+              .then(function(data) {
+                if(data.res) {
+                  $scope.$emit("alert", "交易成功！");
+                  $state.go('tab.orders');
+                } else{
+                  $scope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
+                }
+              })
+        }
+    }])
     .service('ngCart', ['$rootScope', '$http', 'ngCartItem', 'Storage', 'ENV', function($rootScope, $http, ngCartItem, Storage, ENV) {
 
         this.attrMap = {
@@ -1170,7 +1210,7 @@ angular.module('maybi.services', [])
         };
         return item;
     }])
-    .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading', '$state', 'utils', '$http', 'ENV', function(ngCart, $rootScope, $ionicLoading,$state, utils, $http, ENV) {
+    .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading','$state', 'utils', '$http', 'ENV',function(ngCart, $rootScope, $ionicLoading,$state, utils, $http, ENV) {
 
 
         this.checkout = function(data,cb) {

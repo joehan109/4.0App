@@ -14,7 +14,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
 
 .run(function($ionicPlatform, $rootScope, $state, JPush,
     $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast,
-    amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate, $cordovaBarcodeScanner) {
+    amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate, $cordovaBarcodeScanner,orderOpt) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -318,7 +318,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
     .state('tab.settings', {
         url: '/settings',
         views: {
-            'tab-account@tab': {
+            'tab-account': {
                 templateUrl: 'settings.html',
                 controller: 'settingsCtrl'
             }

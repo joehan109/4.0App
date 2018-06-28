@@ -1215,6 +1215,10 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
         $rootScope.hideTabs = '';
     });
 
+    $scope.login = function() {
+        AuthService.login();
+    };
+
     $scope.logout = function() {
         AuthService.logout();
     };
@@ -1397,19 +1401,125 @@ function signupCtrl($rootScope, $scope, AuthService, $state) {
 
 }
 
-function settingsCtrl($rootScope, $scope, $state, AuthService) {
+function settingsCtrl($rootScope, $scope, $state, AuthService, $ionicModal) {
     //登出
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
     });
+    $scope.user = AuthService;
 
-    $scope.logout = function() {
-        AuthService.logout()
-            .then(function() {
-                $state.go('tab.account');
-            });
+    // 修改密码弹窗
+    $scope.showPasswordModifyBox = function() {
+        $ionicModal.fromTemplateUrl('passwordModify.html', {
+            scope: $scope,
+            focusFirstInput: true,
+        }).then(function(modal) {
+            $scope.passwordDialog = modal;
+            $scope.passwordDialog.show();
+        });
     };
+
+    $scope.closePasswordModifyBox = function() {
+        $scope.passwordDialog.hide();
+        $scope.passwordDialog.remove();
+    };
+
+    $scope.$on('changePWModal:hide', function(event) {
+        $scope.passwordDialog.hide();
+        $scope.passwordDialog.remove();
+    })
+
+    // 修改手机号弹窗
+    $scope.showPhoneModifyBox = function() {
+        $ionicModal.fromTemplateUrl('phoneModify.html', {
+            scope: $scope,
+            focusFirstInput: true,
+        }).then(function(modal) {
+            $scope.phoneDialog = modal;
+            $scope.phoneDialog.show();
+        });
+    };
+
+    $scope.closePhoneModifyBox = function() {
+        $scope.phoneDialog.hide();
+        $scope.phoneDialog.remove();
+    };
+
+    $scope.$on('changePhoneModal:hide', function(event) {
+        $scope.phoneDialog.hide();
+        $scope.phoneDialog.remove();
+    })
+
+
+    // $scope.logout = function() {
+    //     AuthService.logout()
+    //         .then(function() {
+    //             $state.go('tab.account');
+    //         });
+    // };
+}
+function changePWCtrl($rootScope, $scope, $http, ENV) {
+    $scope.submit = function() {
+      if ($scope.new1 !== $scope.new) {
+        $scope.$emit('alert', "两次输入的新密码需保持一致");
+        return;
+      }
+      $http.post(ENV.SERVER_URL + '/mall/vip/updatePwd?oldPwd=' + $scope.origin + '&newPwd=' + $scope.new)
+        .success(function(res) {
+          if (res.ret) {
+            $rootScope.$broadcast('changePWModal:hide');
+            $scope.$emit('alert', res.data || "修改密码成功");
+          } else {
+            $scope.$emit('alert', res.errmsg || "系统出错，请稍后再试");
+          }
+        });
+    }
+}
+
+function changePhoneCtrl($rootScope, $scope, $http, ENV, $interval) {
+    $scope.validateTime = "获取验证码";
+    $scope.sendStatus = false;
+    $scope.timeout = null;
+    $scope.getValidateCode = function() {
+      if ($scope.phone) {
+        $http.get(ENV.SERVER_URL + '/mall/vip/login/getCode?type=1&phone=' + $scope.phone).success(function(data) {
+          if (data.ret) {
+            $scope.$emit('alert', "发送验证码成功");
+            var timeRemaining;
+            if (!$scope.sendStatus) {
+                timeRemaining = 60;
+                $scope.sendStatus = true;
+                $scope.timeout = $interval(function() {
+                    if (timeRemaining <= 1) {
+                        $scope.sendStatus = false;
+                        $scope.validateTime = "重新获取";
+                        $interval.cancel($scope.timeout)
+                    } else {
+                        timeRemaining--;
+                        $scope.validateTime = timeRemaining + '  秒';
+                    }
+                }, 1000)
+            }
+          } else {
+            $scope.$emit('alert', "验证码发送失败，请稍后再试");
+          }
+        })
+      } else {
+        $scope.$emit('alert', "请输入正确的手机号");
+      }
+    };
+    $scope.submit = function() {
+      $http.post(ENV.SERVER_URL + '/mall/vip/updatePhone?code=&phone=' + $scope.phone)
+        .success(function(res) {
+          if (res.ret) {
+            $rootScope.$broadcast('changePhoneModal:hide');
+            $scope.$emit('alert', res.data || "修改手机号成功");
+          } else {
+            $scope.$emit('alert', res.errmsg || "系统出错，请稍后再试");
+          }
+        });
+    }
 }
 
 function paymentSuccessCtrl($location, $timeout) {
@@ -1712,12 +1822,13 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
     };
 }
 
-function ordersCtrl($rootScope, $scope, FetchData, ngCart) {
+function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt) {
     //订单列表
     //
     $scope.$on('$ionicView.beforeEnter', function() {
+        $scope.orders = [];
         $rootScope.hideTabs = 'tabs-item-hide';
-        FetchData.get('/mall/maorder/query?code=&status=0').then(function(data) {
+        FetchData.get('/mall/maorder/query?code=&status=' + $scope.orderType).then(function(data) {
             $scope.orders = data.data.data;
         });
     });
@@ -1738,15 +1849,19 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart) {
       });
       confirmPopup.then(function(res) {
           if (res) {
-              FetchData.get('/mall/maorder/confirm?id=' + $order.code)
-                  .then(function(data) {
-                    if(data.res) {
-                      $scope.$emit("alert", "交易成功！");
-                      $state.go('tab.orders');
-                    } else{
-                      $scope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
-                    }
-                  })
+            orderOpt.done(order.id);
+          } else {
+              console.log('You are not sure');
+          }
+      });
+    }
+    $scope.orderDel = function (order) {
+      var confirmPopup = $ionicPopup.confirm({
+          title: '确定删除该订单?',
+      });
+      confirmPopup.then(function(res) {
+          if (res) {
+            orderOpt.del(order.id);
           } else {
               console.log('You are not sure');
           }
@@ -1754,7 +1869,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart) {
     }
 }
 
-function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup) {
+function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup,orderOpt) {
     //订单详情
     //
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -1774,15 +1889,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         });
         confirmPopup.then(function(res) {
             if (res) {
-                FetchData.get('/mall/maorder/cancel?id=' + $scope.order.id)
-                    .then(function(data) {
-                      if(data.ret) {
-                        $scope.$emit("alert", "订单已删除");
-                        $state.go('tab.orders');
-                      } else{
-                        $scope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
-                      }
-                    })
+              orderOpt.cacel($scope.order.id);
             } else {
                 console.log('You are not sure');
             }
@@ -2522,6 +2629,8 @@ controllersModule.controller('accountCtrl', accountCtrl);
 controllersModule.controller('profileCtrl', profileCtrl);
 controllersModule.controller('bindEmailCtrl', bindEmailCtrl);
 controllersModule.controller('forgotPWCtrl', forgotPWCtrl);
+controllersModule.controller('changePWCtrl', changePWCtrl);
+controllersModule.controller('changePhoneCtrl', changePhoneCtrl);
 controllersModule.controller('settingsCtrl', settingsCtrl);
 controllersModule.controller('paymentSuccessCtrl', paymentSuccessCtrl);
 controllersModule.controller('paymentCancelCtrl', paymentCancelCtrl);

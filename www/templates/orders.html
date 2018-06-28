@@ -77,6 +77,7 @@
           <tr style="height:40px">
             <td colspan="3" class="status-cell" style="text-align:right;padding-right:10px;">
                 <a class="button button-default button-small"
+                  ng-if="order.status=='1' || order.status=='2'"
                   ng-href="#/order/logistics/{{order.code}}">
                     查看物流
                 </a>
@@ -89,6 +90,11 @@
                   ng-if="order.status=='1' || order.status=='2'"
                   ng-click="orderDone(order)">
                     确认收货
+                </a>
+                <a class="button button-energized button-small"
+                  ng-if="order.status=='3'"
+                  ng-click="orderDel(order)">
+                    删除订单
                 </a>
             </td>
           </tr>
