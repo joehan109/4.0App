@@ -1530,7 +1530,7 @@ function paymentSuccessCtrl($location, $timeout) {
         if (order_type == 'TRANSFER') {
             $location.path('/order/transfer/' + order_id);
         } else {
-            $location.path('/orders');
+            $location.path('/orders/3');
         }
     }, 2000);
 
