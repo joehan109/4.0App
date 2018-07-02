@@ -9,9 +9,9 @@ function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
         $ionicSlideBoxDelegate.start();
     });
     $scope.types = [
-        { name: '扫一扫', url: 'scan', icon: 'search' },
-        { name: '4.0 商城', url: 'shopTab.cateHome', icon: 'search' },
-        { name: '4.0 拍卖', url: 'tab.home', icon: 'search' }
+        { name: '扫一扫', url: 'scan', icon: 'qr-scanner' },
+        { name: '4.0 商城', url: 'shopTab.cateHome', icon: 'ios-home-outline' },
+        { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline' }
     ];
     $scope.goto = function(item) {
         if (item.url === 'shopTab.cateHome') {
@@ -86,28 +86,28 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
       $scope.alreadyShow = false;
 
       $cordovaBarcodeScanner
-          .scan()
-          .then(function(barcodeData) {
-            $scope.barcodeData = 1;
-            FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
-              if (res.ret) {
-                $scope.data = res.data;
-                $scope.imgUrl = res.data.proUrl;
-                if (res.data.pwdFlag) {
-                  $scope.showCode = true;
-                  // $scope.alreadyShow = true;
-                  $scope.openCode = res.data.sonPwd;
-                } else {
-                  $scope.showOpen = true;
-                }
+        .scan()
+        .then(function(barcodeData) {
+          $scope.barcodeData = barcodeData;
+          FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
+            if (res.ret) {
+              $scope.data = res.data;
+              $scope.imgUrl = res.data.proUrl;
+              if (res.data.pwdFlag) {
+                $scope.showCode = true;
+                // $scope.alreadyShow = true;
+                $scope.openCode = res.data.sonPwd;
               } else {
-                $scope.$emit("alert", res.errmsg);
+                $scope.showOpen = true;
               }
-            });
-          }, function(error) {
-              alert('扫描失败，请稍后重试');
-              $state.go('appIndex');
+            } else {
+              $scope.$emit("alert", res.errmsg);
+            }
           });
+        }, function(error) {
+            alert('扫描失败，请稍后重试');
+            $state.go('appIndex');
+        });
     });
 
     $scope.getCode = function() {
@@ -1822,19 +1822,22 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
     };
 }
 
-function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt) {
+function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt,$stateParams) {
     //订单列表
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $scope.orders = [];
         $rootScope.hideTabs = 'tabs-item-hide';
+        if ($stateParams.status_id) {
+          $scope.orderType = $stateParams.status_id
+        }
         FetchData.get('/mall/maorder/query?code=&status=' + $scope.orderType).then(function(data) {
             $scope.orders = data.data.data;
         });
     });
 
     $scope.ngCart = ngCart;
-    $scope.orderType = '0';
+    $scope.orderType = $stateParams.status_id || '0';
     $scope.setType = function(type) {
       if(type !== $scope.orderType) {
         $scope.orderType = type;
@@ -2055,7 +2058,7 @@ function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData
         window.confirm('确定取消订单？') ?
             FetchData.get('/api/orders/' + $scope.order.id + '/delete').then(function(data) {
                 $scope.$emit("alert", "订单已删除");
-                $location.path('/orders');
+                $location.path('/orders/3');
             }) : void(0);
     };
 

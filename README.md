@@ -15,21 +15,21 @@
 npm install
 bower install
 
-ionic plugin add com.ionic.keyboard
-ionic plugin add cordova-plugin-console
-ionic plugin add cordova-plugin-whitelist
-ionic plugin add cordova-plugin-device
-ionic plugin add cordova-plugin-statusbar
-ionic plugin add cordova-plugin-splashscreen
-ionic plugin add cordova-plugin-camera
-ionic plugin add cordova-plugin-dialogs
-ionic plugin add https://git.oschina.net/seasonstar/ImagePicker.git
-ionic plugin add cordova-plugin-geolocation
-ionic plugin add cordova-plugin-file
-ionic plugin add cordova-plugin-file-transfer
-ionic plugin add cordova-plugin-x-toast
-ionic plugin add cordova-plugin-x-socialsharing
-ionic plugin add ionic-plugin-deploy
+cordova plugin add com.ionic.keyboard
+cordova plugin add cordova-plugin-console
+cordova plugin add cordova-plugin-whitelist
+cordova plugin add cordova-plugin-device
+cordova plugin add cordova-plugin-statusbar
+cordova plugin add cordova-plugin-splashscreen
+cordova plugin add cordova-plugin-camera
+cordova plugin add cordova-plugin-dialogs
+cordova plugin add https://git.oschina.net/seasonstar/ImagePicker.git
+cordova plugin add cordova-plugin-geolocation
+cordova plugin add cordova-plugin-file
+cordova plugin add cordova-plugin-file-transfer
+cordova plugin add cordova-plugin-x-toast
+cordova plugin add cordova-plugin-x-socialsharing
+cordova plugin add ionic-plugin-deploy
 
 cordova plugin add https://github.com/RaananW/PhoneGap-Image-Resizer
 cordova plugin add https://github.com/Telerik-Verified-Plugins/NativePageTransitions#0.6.2

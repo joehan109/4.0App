@@ -1,0 +1,113 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "ionic-plugin-deploy",
+        "scope": null,
+        "escapedName": "ionic-plugin-deploy",
+        "name": "ionic-plugin-deploy",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/hanqiang.han/joe/workspace/4.0App"
+    ]
+  ],
+  "_cnpm_publish_time": 1494366396988,
+  "_from": "ionic-plugin-deploy@latest",
+  "_hasShrinkwrap": false,
+  "_id": "ionic-plugin-deploy@0.6.7",
+  "_inCache": true,
+  "_location": "/ionic-plugin-deploy",
+  "_nodeVersion": "7.9.0",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/ionic-plugin-deploy-0.6.7.tgz_1494366394885_0.6233504198025912"
+  },
+  "_npmUser": {
+    "name": "fuiste",
+    "email": "rudy@ionic.io"
+  },
+  "_npmVersion": "4.2.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "ionic-plugin-deploy",
+    "scope": null,
+    "escapedName": "ionic-plugin-deploy",
+    "name": "ionic-plugin-deploy",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "http://npmrepo.corp.qunar.com/ionic-plugin-deploy/-/ionic-plugin-deploy-0.6.7.tgz",
+  "_shasum": "517e4285470e0ccd397609764cee2ae8ec6c6d3f",
+  "_shrinkwrap": null,
+  "_spec": "ionic-plugin-deploy",
+  "_where": "/Users/hanqiang.han/joe/workspace/4.0App",
+  "author": {
+    "name": "Ionic"
+  },
+  "bugs": {
+    "url": "https://github.com/driftyco/ionic-plugin-deploy/issues"
+  },
+  "cordova": {
+    "id": "ionic-plugin-deploy",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "deprecated": "This plugin is no longer supported. Please move to the new Ionic Pro plugin: cordova-plugin-ionic",
+  "description": "Ionic Deploy Plugin",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "517e4285470e0ccd397609764cee2ae8ec6c6d3f",
+    "size": 202695,
+    "noattachment": false,
+    "tarball": "http://registry.npm.taobao.org/ionic-plugin-deploy/download/ionic-plugin-deploy-0.6.7.tgz"
+  },
+  "gitHead": "03330af1f5a080601fd6e324f796732fec2058d6",
+  "homepage": "https://github.com/driftyco/ionic-plugin-deploy#readme",
+  "keywords": [
+    "Ionic",
+    "deploy",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "license": "Apache 2.0",
+  "maintainers": [
+    {
+      "name": "dwieeb",
+      "email": "dwieeb@gmail.com"
+    },
+    {
+      "name": "ericb",
+      "email": "eric@hellouser.net"
+    },
+    {
+      "name": "fuiste",
+      "email": "rudy@drifty.com"
+    },
+    {
+      "name": "tlancina",
+      "email": "tim@ionic.io"
+    }
+  ],
+  "name": "ionic-plugin-deploy",
+  "optionalDependencies": {},
+  "publish_time": 1494366396988,
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/driftyco/ionic-plugin-deploy.git"
+  },
+  "scripts": {},
+  "version": "0.6.7"
+}

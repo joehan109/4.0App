@@ -1,9 +1,0 @@
-/* Empty. Add your own CSS if you like */
-.loginTab{
-  display: flex;
-  justify-content:center;
-}
-.loginTabName{
-  font-size: 16px;
-  margin: 5px;
-}

@@ -26,10 +26,11 @@ buildscript {
         maven {
             url "https://maven.google.com"
         }
+        google()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.1.1'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     }
@@ -38,15 +39,15 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 group = 'org.apache.cordova'
-version = '7.0.0'
+version = '6.4.0'
 android {
     compileSdkVersion cdvCompileSdkVersion
     buildToolsVersion cdvBuildToolsVersion
     publishNonDefault true
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
     }
 
     sourceSets {
@@ -120,13 +121,13 @@ bintray {
         licenses = ['Apache-2.0']
         labels = ['android', 'cordova', 'phonegap']
         version {
-            name = '7.0.0'
+            name = '6.4.0'
             released = new Date()
-            vcsTag = '7.0.0'
+            vcsTag = '6.4.0'
         }
     }
 }
 
 dependencies {
-    implementation files('/Users/hanqiang.han/joe/github/4.0App/platforms/android/libs/alipaySdk-20170725.jar')
+    implementation files('/Users/hanqiang.han/joe/workspace/4.0App/platforms/android/libs/alipaySdk-20170725.jar')
 }

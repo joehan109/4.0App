@@ -32,9 +32,11 @@
     .chooseType{
       display: flex;
       flex-direction: column;
+      text-align: center;
       .icon{
         font-size: 50px;
-        color: $assertive;
+        color: $energized;
+        padding: 5px;
       }
     }
   }
