@@ -397,15 +397,8 @@ angular.module('maybi.services', [])
                 }).success(function(data, status) {
                     if (status === 200 && data.ret) {
                         isAuthenticated = true;
-                        $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
-                            user = data.user;
-                            Storage.set('user', data.user);
-                            Storage.set('access_token', data.remember_token);
-                            if (window.cordova && window.cordova.plugins) {
-                                plugins.jPushPlugin.setAlias(data.user.id);
-                            }
-                            deferred.resolve();
-                        });
+                        deferred.resolve();
+                        $state.go('appIndex');
                     } else {
                         isAuthenticated = false;
                         deferred.reject(data.errmsg);
@@ -472,8 +465,8 @@ angular.module('maybi.services', [])
 
             $http.get(ENV.SERVER_URL + '/api/users/followers', {
                 params: {
-                    page: page,
-                    per_page: perPage,
+                    currentPage: page,
+                    pageSize: perPage,
                     user_id: userId,
                 }
             }).success(function(r, status) {
@@ -501,8 +494,8 @@ angular.module('maybi.services', [])
 
             $http.get(ENV.SERVER_URL + '/api/users/followings', {
                 params: {
-                    page: page,
-                    per_page: perPage,
+                    currentPage: page,
+                    pageSize: perPage,
                     user_id: userId,
                 }
             }).success(function(r, status) {
@@ -531,7 +524,7 @@ angular.module('maybi.services', [])
             $http.get(ENV.SERVER_URL + '/api/post/' + postId + '/likes', {
                 params: {
                     page: page,
-                    per_page: perPage,
+                    pageSize: perPage,
                 }
             }).success(function(r, status) {
                 if (status === 200 && r.message == "OK") {
@@ -559,7 +552,7 @@ angular.module('maybi.services', [])
         var currentTab = '';
         var hasNextPage = true;
         var nextPage = 0;
-        var perPage = 2;
+        var perPage = 8;
         var isEmpty = false;
 
         return {
@@ -570,8 +563,8 @@ angular.module('maybi.services', [])
                 currentTab && $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                     params: {
                         oneType: currentTab,
-                        page: 0,
-                        per_page: perPage,
+                        currentPage: 0,
+                        pageSize: perPage,
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
@@ -599,8 +592,8 @@ angular.module('maybi.services', [])
                 $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                     params: {
                         sub_category: sub_category,
-                        page: page,
-                        per_page: perPage,
+                        currentPage: page,
+                        pageSize: perPage,
                         title: query,
                     }
                 }).success(function(r, status) {
@@ -640,8 +633,8 @@ angular.module('maybi.services', [])
                 $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                     params: {
                         oneType: currentTab,
-                        page: nextPage,
-                        per_page: perPage,
+                        currentPage: nextPage,
+                        pageSize: perPage,
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
@@ -802,7 +795,11 @@ angular.module('maybi.services', [])
               .then(function(data) {
                 if(data.res) {
                   $scope.$emit("alert", "订单删除成功！");
-                  $state.go('tab.orders');
+                  $state.go('tab.orders',{
+                      status_id: 3
+                  }, {
+                      reload: true
+                  });
                 } else{
                   $scope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
                 }
@@ -1665,8 +1662,8 @@ angular.module('maybi.services', [])
 
                 $http.get(ENV.SERVER_URL + '/api/post/activities', {
                     params: {
-                        page: page,
-                        per_page: perPage,
+                        currentPage: page,
+                        pageSize: perPage,
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.message == "OK") {
@@ -1713,8 +1710,8 @@ angular.module('maybi.services', [])
 
                 $http.get(ENV.SERVER_URL + '/api/boards', {
                     params: {
-                        page: page,
-                        per_page: perPage,
+                        currentPage: page,
+                        pageSize: perPage,
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.message == "OK") {

@@ -95,23 +95,48 @@ angular.module('maybi.directives', [])
     };
 }])
 
-.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state){
+.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', '$http', 'ENV', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state, $http,ENV){
     return {
         restrict : 'E',
         link: function(scope, element, attrs){
             scope.ngCart = ngCart;
-
 
             scope.showPaymentMethods = function() {
 
               var sheet = {};
               sheet.buttonClicked = buttonClicked;
               sheet.buttons = [{
-                text: '<i class="icon fa fa-paypal"></i> 支付宝支付$'
+                text: '<i class="icon"><img class="aliIcon" src="../img/ali.png" /></i> 支付宝支付$'
               }];
               sheet.cancelOnStateChange = true;
 
               $ionicActionSheet.show(sheet);
+              function alipayCheckout(data){
+                var payInfo = data;
+                cordova.plugins.alipay.payment(payInfo,function success(e){
+                  if (e.status == 9000) {
+                    $ionicLoading.show({
+                        template: '订单支付成功',
+                        duration: 3000,
+                    });
+                    $state.go('tab.orders',{
+                        status_id: 2
+                    }, {
+                        reload: true
+                    });
+                  }
+                },function error(e){});
+                console.log(1)
+                 //e.resultStatus  状态代码  e.result  本次操作返回的结果数据 e.memo 提示信息
+                 //e.resultStatus  9000  订单支付成功 ;8000 正在处理中  调用function success
+                 //e.resultStatus  4000  订单支付失败 ;6001  用户中途取消 ;6002 网络连接出错  调用function error
+                 //当e.resultStatus为9000时，请去服务端验证支付结果
+                            /**
+                             * 同步返回的结果必须放置到服务端进行验证（验证的规则请看https://doc.open.alipay.com/doc2/
+                             * detail.htm?spm=0.0.0.0.xdvAU6&treeId=59&articleId=103665&
+                             * docType=1) 建议商户依赖异步通知
+                             */
+                }
 
               function buttonClicked(index) {
                 var service = { 0: 'alipay', 1: 'wechat'}
@@ -136,9 +161,18 @@ angular.module('maybi.directives', [])
                   receiptPostcode:data.postcode,
                   receiptDetail:data.detail
                 }
-                fulfilmentProvider.checkout(order, function(){
-                  $ionicActionSheet.hide();
-                })
+                if (attrs.ordertype == 'new') {
+                  fulfilmentProvider.checkout(order, function(){
+                    $ionicActionSheet.hide();
+                  })
+                } else if (attrs.ordertype == 'existed') {
+                  // 直接掉支付接口
+                  $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + attrs.orderid).success(function(r, status) {
+                      if (r.ret) {
+                          alipayCheckout(r.data)
+                      }
+                  });
+                }
               }
             };
         },

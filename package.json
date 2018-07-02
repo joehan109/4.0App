@@ -78,13 +78,13 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-alipay-v2": {
-        "APP_ID": "2006666666"
-      },
       "cordova-plugin-file": {},
       "cordova-plugin-file-transfer": {},
       "ionic-plugin-deploy": {},
-      "cordova-plugin-advanced-http": {}
+      "cordova-plugin-advanced-http": {},
+      "cordova-plugin-alipay-v2": {
+        "APP_ID": "2016091500517687"
+      }
     }
   }
 }

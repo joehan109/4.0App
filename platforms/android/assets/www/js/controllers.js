@@ -88,7 +88,7 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
       $cordovaBarcodeScanner
         .scan()
         .then(function(barcodeData) {
-          $scope.barcodeData = 1 ||barcodeData;
+          $scope.barcodeData = barcodeData;
           FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
             if (res.ret) {
               $scope.data = res.data;
@@ -1322,24 +1322,28 @@ function profileCtrl($scope, AuthService, $state, $rootScope,
           $http({
             url: ENV.SERVER_URL + '/mall/vip/updateImg',
             method: "POST",
-            data: data,
-            headers: {'Content-Type': undefined}
+            headers: {'Content-Type': undefined},
+            transformRequest: function() {
+  						var formData = new FormData();
+  						formData.append('file', image);
+  						return formData;
+					  }
         }).success(function (response) {
-            callback(response);
+          $scope.$emit('alert', "头像上传成功");
         });
-            PhotoService.upload(image, filename,
-                function(data) {
-                    AuthService.updateAvatar(filename)
-                        .then(function(data) {
-                            $rootScope.$broadcast('alert', "头像上传成功");
-                        }).catch(function(data) {
-                            $rootScope.$broadcast('alert', data.error);
-                        });
-                },
-                function(error) {
-                    $rootScope.$broadcast('alert', "头像上传失败");
-                });
-
+            // PhotoService.upload(image, filename,
+            //     function(data) {
+            //         AuthService.updateAvatar(filename)
+            //             .then(function(data) {
+            //                 $rootScope.$broadcast('alert', "头像上传成功");
+            //             }).catch(function(data) {
+            //                 $rootScope.$broadcast('alert', data.error);
+            //             });
+            //     },
+            //     function(error) {
+            //         $rootScope.$broadcast('alert', "头像上传失败");
+            //     });
+            //
         }).catch(function() {
             console.warn('Deu erro');
         });
@@ -1530,7 +1534,7 @@ function paymentSuccessCtrl($location, $timeout) {
         if (order_type == 'TRANSFER') {
             $location.path('/order/transfer/' + order_id);
         } else {
-            $location.path('/orders');
+            $location.path('/orders/3');
         }
     }, 2000);
 
@@ -1822,7 +1826,7 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
     };
 }
 
-function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt,$stateParams) {
+function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt,$stateParams,$state) {
     //订单列表
     //
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -1869,7 +1873,10 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
               console.log('You are not sure');
           }
       });
-    }
+    };
+    $scope.goTo = function () {
+      $state.go('shopTab.account')
+    };
 }
 
 function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup,orderOpt) {
@@ -1892,7 +1899,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         });
         confirmPopup.then(function(res) {
             if (res) {
-              orderOpt.cacel($scope.order.id);
+              orderOpt.cancel($scope.order.id);
             } else {
                 console.log('You are not sure');
             }

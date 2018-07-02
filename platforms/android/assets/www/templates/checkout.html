@@ -106,9 +106,12 @@
         总计: <span class="footer-price"> {{ ngCart.totalCost() |currency:'￥'}}</span>
     </a>
     <h1 class="title"></h1>
-    <ngcart-checkout settings="{ coupon: coupon_codes.code,
+    <ngcart-checkout
+      settings="{ coupon: coupon_codes.code,
                         logistic_provider: selectedProvider.name,
-                        order_type: 'new'}">
+                        order_type: 'new'}"
+      ordertype="new"
+      orderid=''>
                         去付款</ngcart-checkout>
   </ion-footer-bar>
 </ion-view>

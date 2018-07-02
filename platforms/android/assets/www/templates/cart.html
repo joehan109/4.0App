@@ -56,9 +56,6 @@
                 <td class="info-cell">
                     <div>{{ item.getName() }}</div>
                     <div>
-                        <span ng-repeat="(k, v) in item.getData().spec.attributes">
-                            {{ngCart.attrMap[k]}}: {{v}}
-                        </span>
                     </div>
                     <div class="btn-group">
                         <button class="btn del-num"
@@ -69,7 +66,7 @@
                             ng-click="setQuantity(item, 1, true)">+</button>
                     </div>
                 </td>
-                <td class="price-cell">{{ item.getTotal() | currency:'￥' }}</td>
+                <td class="price-cell">{{ item.getPrice() | currency:'￥' }}</td>
             </tr>
             </tbody>
             <tfoot>
@@ -89,7 +86,7 @@
         <a class="button button-clear">
             总价:  <span class="footer-price"> {{ ngCart.totalCost() |currency:'￥'}}</span>
         </a>
-        <button class="button button-assertive button-cart pull-right" ng-click="$state.go('checkout')">
+        <button ng-disabled="!ngCart.getTotalSelectedItems()" class="button button-assertive button-cart pull-right" ng-click="$state.go('checkout')">
             结算({{ngCart.getTotalSelectedItems()}})
 
         </button>

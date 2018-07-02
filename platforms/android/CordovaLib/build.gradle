@@ -15,11 +15,13 @@
    specific language governing permissions and limitations
    under the License.
 */
+
 ext {
     apply from: 'cordova.gradle'
     cdvCompileSdkVersion = privateHelpers.getProjectTarget()
     cdvBuildToolsVersion = privateHelpers.findLatestInstalledBuildTools()
 }
+
 buildscript {
     repositories {
         jcenter()
@@ -35,11 +37,14 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     }
 }
+
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
+
 group = 'org.apache.cordova'
 version = '6.4.0'
+
 android {
     compileSdkVersion cdvCompileSdkVersion
     buildToolsVersion cdvBuildToolsVersion
@@ -69,6 +74,7 @@ android {
         exclude 'META-INF/NOTICE'
     }
 }
+
 install {
     repositories.mavenInstaller {
         pom {
@@ -98,13 +104,16 @@ install {
         }
     }
 }
+
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
 }
+
 artifacts {
     archives sourcesJar
 }
+
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_KEY')
@@ -122,12 +131,8 @@ bintray {
         labels = ['android', 'cordova', 'phonegap']
         version {
             name = '6.4.0'
-            released = new Date()
+            released  = new Date()
             vcsTag = '6.4.0'
         }
     }
-}
-
-dependencies {
-    implementation files('/Users/hanqiang.han/joe/workspace/4.0App/platforms/android/libs/alipaySdk-20170725.jar')
 }

@@ -253,9 +253,9 @@ android {
 dependencies {
     implementation fileTree(include: '*.jar', dir: 'libs')
     // SUB-PROJECT DEPENDENCIES START
-    implementation(project(path: "CordovaLib"))
-    compile "com.squareup.okhttp3:okhttp-urlconnection:3.10.0"
-    compile "com.android.support:support-v4:27.+"
+    implementation project(path: 'CordovaLib')
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+    compile 'com.android.support:support-v4:27.+'
     // SUB-PROJECT DEPENDENCIES END
     implementation files('libs/alipaySdk-20170725.jar')
 }

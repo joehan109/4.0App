@@ -302,7 +302,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'account.html',
                 controller: 'accountCtrl'
             }
-        }
+        },
+        loginRequired: true
     })
 
     .state('tab.coupons', {
@@ -322,7 +323,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'settings.html',
                 controller: 'settingsCtrl'
             }
-        }
+        },
+        loginRequired: true
     })
 
     .state('tab.profile', {
@@ -332,7 +334,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'profile.html',
                 controller: 'profileCtrl'
             }
-        }
+        },
+        loginRequired: true
     })
 
 
@@ -350,13 +353,15 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
     .state('cart', {
         url: '/cart',
         templateUrl: 'cart.html',
-        controller: 'cartCtrl'
+        controller: 'cartCtrl',
+        loginRequired: true
     })
 
     .state('checkout', {
         url: '/checkout',
         templateUrl: 'checkout.html',
-        controller: 'checkoutCtrl'
+        controller: 'checkoutCtrl',
+        loginRequired: true
     })
 
     .state('tab.categories', {
@@ -386,7 +391,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'item/items.html',
                 controller: 'itemsCtrl'
             }
-        }
+        },
+        loginRequired: true
     })
 
     .state('tab.payment.success', {
@@ -414,7 +420,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'item.html',
                 controller: 'itemCtrl',
             }
-        }
+        },
+        loginRequired: true
     })
 
     .state('tab.board', {
@@ -431,14 +438,16 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
         url: '/address',
         cache: false,
         templateUrl: 'address.html',
-        controller: 'addressCtrl'
+        controller: 'addressCtrl',
+        loginRequired: true
     })
 
     .state('address_list', {
         url: '/address/list',
         cache: false,
         templateUrl: 'address_list.html',
-        controller: 'addressCtrl'
+        controller: 'addressCtrl',
+        loginRequired: true
     })
 
     .state('tab.orders', {
@@ -448,7 +457,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'orders.html',
                 controller: 'ordersCtrl'
             }
-        }
+        },
+        loginRequired: true
     })
 
     .state('tab.order_detail', {
@@ -458,7 +468,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'order.html',
                 controller: 'orderDetailCtrl'
             }
-        }
+        },
+        loginRequired: true
     })
 
     .state('tab.order_logistic', {
@@ -525,7 +536,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
     .state('favors', {
         url: '/favors',
         templateUrl: 'favors.html',
-        controller: 'favorCtrl'
+        controller: 'favorCtrl',
+        loginRequired: true
     })
 
     .state('tab.like_posts', {

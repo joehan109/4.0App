@@ -10,13 +10,14 @@
         "spec": "latest",
         "type": "tag"
       },
-      "/Users/hanqiang.han/joe/github/4.0App"
+      "/Users/hanqiang.han/joe/workspace/4.0App"
     ]
   ],
   "_cnpm_publish_time": 1503299306294,
-  "_from": "cordova-plugin-alipay-v2",
+  "_from": "cordova-plugin-alipay-v2@latest",
   "_hasShrinkwrap": false,
   "_id": "cordova-plugin-alipay-v2@0.0.4",
+  "_inCache": true,
   "_location": "/cordova-plugin-alipay-v2",
   "_nodeVersion": "6.7.0",
   "_npmOperationalInternal": {
@@ -42,11 +43,11 @@
     "#USER",
     "/"
   ],
-  "_resolved": "http://registry.npm.taobao.org/cordova-plugin-alipay-v2/download/cordova-plugin-alipay-v2-0.0.4.tgz",
+  "_resolved": "http://npmrepo.corp.qunar.com/cordova-plugin-alipay-v2/-/cordova-plugin-alipay-v2-0.0.4.tgz",
   "_shasum": "6293d1ce957bf9d08bf1e3db86943fc63a6fe8b5",
   "_shrinkwrap": null,
   "_spec": "cordova-plugin-alipay-v2",
-  "_where": "/Users/hanqiang.han/joe/github/4.0App",
+  "_where": "/Users/hanqiang.han/joe/workspace/4.0App",
   "author": {
     "name": "hhjjj1010"
   },
@@ -90,8 +91,7 @@
   "name": "cordova-plugin-alipay-v2",
   "optionalDependencies": {},
   "publish_time": 1503299306294,
-  "readme": "# cordova-plugin-alipay-v2\n### 前言：\n支付宝的cordova插件其实在github上已经有很多了，但是都已经是以前的版本了。在2016年11月的时候支付宝进行了一次更新，支付宝的SDK升级到2.0版本。以前在app中使用支付宝进行支付叫做移动支付，11月之后更名为APP支付。\n###### 本插件仅支持《APP支付》，不支持移动支付\n***\n### 功能说明\n1. 根据支付宝的说明文档的建议，为保证安全，签名都放到后端去做，前端只需要接收后台传入签名字符串，使用该插件调用支付宝SDK完成支付\n2. APP_ID：对应开放平台中应用的APPID，主要用于iOS平台xcode构建URL Schemes\n\n***\n### 支持平台\n1. android （alipaySdk-20161129.jar）\n2. iOS\n\n***\n### 安装\n###### 在线安装\n    cordova plugin add cordova-plugin-alipay-v2 --variable APP_ID=[your AppId]\n\n    cordova plugin add https://github.com/hhjjj1010/cordova-plugin-alipay-v2.git --variable APP_ID=[your AppId]\n\n###### 本地安装\n下载插件到本地\n\n    cordova plugin add /your/local/path --variable APP_ID=[your AppId]\n    \n***\n### 使用 API\n    // 第一步：订单在服务端签名生成订单信息，具体请参考官网进行签名处理\n    var payInfo  = \"xxxx\";\n\n    // 第二步：调用支付插件            \n    cordova.plugins.alipay.payment(payInfo,function success(e){},function error(e){});\n\n     //e.resultStatus  状态代码  e.result  本次操作返回的结果数据 e.memo 提示信息\n     //e.resultStatus  9000  订单支付成功 ;8000 正在处理中  调用function success\n     //e.resultStatus  4000  订单支付失败 ;6001  用户中途取消 ;6002 网络连接出错  调用function error\n     //当e.resultStatus为9000时，请去服务端验证支付结果\n                /**\n                 * 同步返回的结果必须放置到服务端进行验证（验证的规则请看https://doc.open.alipay.com/doc2/\n                 * detail.htm?spm=0.0.0.0.xdvAU6&treeId=59&articleId=103665&\n                 * docType=1) 建议商户依赖异步通知\n                 */\n",
-  "readmeFilename": "README.md",
+  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hhjjj1010/cordova-plugin-alipay-v2.git"

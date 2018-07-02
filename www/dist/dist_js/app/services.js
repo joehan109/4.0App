@@ -397,15 +397,8 @@ angular.module('maybi.services', [])
                 }).success(function(data, status) {
                     if (status === 200 && data.ret) {
                         isAuthenticated = true;
-                        $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
-                            user = data.user;
-                            Storage.set('user', data.user);
-                            Storage.set('access_token', data.remember_token);
-                            if (window.cordova && window.cordova.plugins) {
-                                plugins.jPushPlugin.setAlias(data.user.id);
-                            }
-                            deferred.resolve();
-                        });
+                        deferred.resolve();
+                        $state.go('appIndex');
                     } else {
                         isAuthenticated = false;
                         deferred.reject(data.errmsg);
