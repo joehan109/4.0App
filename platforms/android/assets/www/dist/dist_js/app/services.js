@@ -190,7 +190,7 @@ angular.module('maybi.services', [])
             }
         };
     })
-    .factory('AuthService', ['ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', function(ENV, $http, Storage, $state, $q, FetchData, ngCart) {
+    .factory('AuthService', ['ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function(ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
         var isAuthenticated = false;
         var user = Storage.get('user') || {};
         return {
@@ -213,8 +213,10 @@ angular.module('maybi.services', [])
                         isAuthenticated = true;
                         $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
                             user = data.data;
-                            Storage.set('user', data.data);
-                            Storage.set('access_token', data.data.name);
+                            if (user) {
+                              Storage.set('user', data.data);
+                              Storage.set('access_token', data.data.name);
+                            }
                             deferred.resolve();
                             $state.go('appIndex')
                         });
@@ -270,7 +272,6 @@ angular.module('maybi.services', [])
 
                 return deferred.promise;
             },
-
 
             bindEmail: function(email, user_id) {
                 var deferred = $q.defer();
@@ -405,6 +406,11 @@ angular.module('maybi.services', [])
                 }).success(function(data, status) {
                     if (status === 200 && data.ret) {
                         isAuthenticated = true;
+                        if(data.data) {
+                          user = data.data;
+                          Storage.set('user', data.data);
+                          Storage.set('access_token', data.data.name);
+                        }
                         deferred.resolve();
                         $state.go('appIndex');
                     } else {
@@ -412,7 +418,7 @@ angular.module('maybi.services', [])
                         deferred.reject(data.errmsg);
                     }
                 }).error(function(data) {
-                    deferred.reject();
+                  deferred.reject();
                 });
 
                 return deferred.promise;
@@ -558,28 +564,30 @@ angular.module('maybi.services', [])
         // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
         var items = [];
         var currentTab = '';
-        var hasNextPage = true;
+        var hasNextPage = false;
         var nextPage = 0;
-        var perPage = 8;
+        var perPage = 2;
         var isEmpty = false;
+        var tabChanged = false;
 
         return {
             fetchTopItems: function() {
                 var deferred = $q.defer();
-                hasNextPage = true;
                 isEmpty = false;
                 currentTab && $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                     params: {
                         oneType: currentTab,
-                        currentPage: 0,
+                        currentPage: 1,
                         pageSize: perPage,
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
                         if (r.data.data.length < perPage) {
                             hasNextPage = false;
+                        } else {
+                          hasNextPage = true;
                         }
-                        nextPage = 1;
+                        nextPage = 2;
                         deferred.resolve(r.data.data);
                         if (r.data.data.length === 0) {
                             isEmpty = true;
@@ -609,7 +617,7 @@ angular.module('maybi.services', [])
                         if (r.data.data.length < perPage) {
                             hasNextPage = false;
                         }
-                        nextPage = 1;
+                        nextPage = 2;
                         deferred.resolve(r.data.data);
                         if (r.data.data.length === 0) {
                             isEmpty = true;
@@ -777,54 +785,54 @@ angular.module('maybi.services', [])
         }
 
     })
-    .service('orderOpt', ['$rootScope', '$http', 'FetchData', 'Storage', 'ENV', function($rootScope, $http, FetchData, Storage, ENV) {
+    .service('orderOpt', ['$rootScope', '$http', 'FetchData', 'Storage', 'ENV', '$state', function($rootScope, $http, FetchData, Storage, ENV, $state) {
         return {
           cancel:cancel,
           del:del,
           done:done
         };
 
-        function cancel(id) {
+        function cancel(id, tabId) {
           FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
             if(data.ret) {
-              $scope.$emit("alert", "订单已删除");
+              $rootScope.$emit("alert", "订单已删除");
               $state.go('tab.orders',{
-                  status_id: 3
+                  status_id: tabId || 3
               }, {
                   reload: true
               });
             } else{
-              $scope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
+              $rootScope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
             }
           })
         }
-        function del(id) {
+        function del(id, tabId) {
           FetchData.get('/mall/maorder/delete?id=' + id)
               .then(function(data) {
-                if(data.res) {
-                  $scope.$emit("alert", "订单删除成功！");
+                if(data.ret) {
+                  $rootScope.$emit("alert", "订单删除成功！");
                   $state.go('tab.orders',{
-                      status_id: 3
+                      status_id: tabId || 3
                   }, {
                       reload: true
                   });
                 } else{
-                  $scope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
+                  $rootScope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
                 }
               })
         }
-        function done(id) {
+        function done(id, tabId) {
           FetchData.get('/mall/maorder/confirm?id=' + id)
               .then(function(data) {
-                if(data.res) {
-                  $scope.$emit("alert", "交易成功！");
+                if(data.ret) {
+                  $rootScope.$emit("alert", "交易成功！");
                   $state.go('tab.orders',{
-                      status_id: 2
+                      status_id: tabId || 2
                   }, {
                       reload: true
                   });
                 } else{
-                  $scope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
+                  $rootScope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
                 }
               })
         }
@@ -856,8 +864,10 @@ angular.module('maybi.services', [])
         };
 
         this.setAddress = function(addr) {
+          if(addr) {
             this.$addr.id = addr.id;
             this.$addr.data = addr;
+          }
         };
 
         this.getAddress = function() {

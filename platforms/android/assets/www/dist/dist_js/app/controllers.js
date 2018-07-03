@@ -19,7 +19,7 @@ faqCtrl.$inject = ['$rootScope', '$scope'];
 couponsCtrl.$inject = ['$rootScope', '$scope', 'AuthService'];
 categoryCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state'];
 authCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'AuthService', '$ionicModal', '$cordovaFacebook', '$interval', '$http', 'ENV'];
-signupCtrl.$inject = ['$rootScope', '$scope', 'AuthService', '$state'];
+signupCtrl.$inject = ['$rootScope', '$scope', 'AuthService', '$state', '$http', 'ENV'];
 accountCtrl.$inject = ['$rootScope', '$scope', 'AuthService', 'User', 'Photogram', '$ionicScrollDelegate', 'Storage'];
 profileCtrl.$inject = ['$scope', 'AuthService', '$state', '$rootScope', 'PhotoService', '$http', 'ENV', '$ionicPopup'];
 bindEmailCtrl.$inject = ['$rootScope', '$scope', 'AuthService'];
@@ -132,6 +132,9 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
         .scan()
         .then(function(barcodeData) {
           $scope.barcodeData = barcodeData;
+          if (!barcodeData) {
+            $state.go('appIndex');
+          }
           FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
             if (res.ret) {
               $scope.data = res.data;
@@ -1426,25 +1429,65 @@ function forgotPWCtrl($rootScope, $scope, AuthService) {
     };
 }
 
-function signupCtrl($rootScope, $scope, AuthService, $state) {
-    $scope.signup = function() {
-        // call register from service
-        AuthService.register($scope.signupForm)
-            // handle success
-            .then(function() {
-                $rootScope.$broadcast('signupModal:hide');
-                $rootScope.authDialog.hide()
-                $scope.$emit('alert', "注册成功");
-                $state.go('appIndex')
-            })
-            .catch(function(data) {
-                if (data) {
-                    $scope.$emit('alert', data.error);
-                } else {
-                    $scope.$emit('alert', 'Something went wrong..');
-                }
-            });
-    };
+function signupCtrl($rootScope, $scope, AuthService, $state,$http,ENV) {
+  $scope.signupForm = {
+    email:'',
+    name:'',
+    phone:''
+  };
+  $scope.form = {
+    email:false,
+    name:false,
+    phone:false
+  }
+  $scope.canRe = function () {
+    return !($scope.form.email && $scope.form.name && $scope.form.phone);
+  };
+  $scope.validate = function (type){
+    var url = ENV.SERVER_URL + '/mall/vip/app/check/' + type + "?" + type + '=';
+    var reg = {
+      email:/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/,
+      phone:/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$/,
+      name:/([A-Za-z0-9]{1,20})|([\u4e00-\u9fa5]{2,10})|([\u4e00-\u9fa5][\w\W]{2})/
+    }[type];
+    var name = {
+      email:'邮箱',
+      phone:'手机号',
+      name:'用户名'
+    }[type]
+    if ($scope.signupForm[type]) {
+      if (reg.test($scope.signupForm[type])) {
+        $http.get(url + $scope.signupForm[type]).success(function (res) {
+          if (!res.ret) {
+            $scope.$emit('alert',  res.errmsg);
+            $scope.form[type] = false;
+          } else {
+            $scope.form[type] = true;
+          }
+        })
+      } else {
+        $scope.$emit('alert', "请输入正确的" + name);
+      }
+    }
+  };
+  $scope.signup = function() {
+      // call register from service
+      AuthService.register($scope.signupForm)
+          // handle success
+          .then(function() {
+              $rootScope.$broadcast('signupModal:hide');
+              $rootScope.authDialog.hide()
+              $scope.$emit('alert', "注册成功");
+              $state.go('appIndex')
+          })
+          .catch(function(data) {
+              if (data) {
+                  $scope.$emit('alert', data);
+              } else {
+                  $scope.$emit('alert', 'Something went wrong..');
+              }
+          });
+  };
 
 }
 
@@ -1526,6 +1569,7 @@ function changePWCtrl($rootScope, $scope, $http, ENV) {
 
 function changePhoneCtrl($rootScope, $scope, $http, ENV, $interval) {
     $scope.validateTime = "获取验证码";
+    $scope.validateCode = '';
     $scope.sendStatus = false;
     $scope.timeout = null;
     $scope.getValidateCode = function() {
@@ -1557,7 +1601,7 @@ function changePhoneCtrl($rootScope, $scope, $http, ENV, $interval) {
       }
     };
     $scope.submit = function() {
-      $http.post(ENV.SERVER_URL + '/mall/vip/updatePhone?code=&phone=' + $scope.phone)
+      $http.post(ENV.SERVER_URL + '/mall/vip/updatePhone?code='+ $scope.validateCode +'&phone=' + $scope.phone)
         .success(function(res) {
           if (res.ret) {
             $rootScope.$broadcast('changePhoneModal:hide');
@@ -1806,7 +1850,7 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
     var sub_cate = $stateParams.en || '';
     var query = $stateParams.query || '';
 
-    var page = 0;
+    var page = 1;
 
     Items.searchItems(query, sub_cate, page).then(function(data) {
         $scope.items = data;
@@ -1855,9 +1899,9 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
     $scope.unfavor = function(item) {
         FetchData.get('/mall/macollect/delete?maProId=' + item.id).then(function(data) {
             item.collectFlag = false;
-        })
-        $scope.items = $scope.items.map(function (child) {
-          return child.id !== item.id
+            FetchData.get('/mall/macollect/getAll').then(function(data) {
+                $scope.items = data.data;
+            });
         })
     };
     $scope.addToCart = function(item) {
@@ -1899,7 +1943,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
       });
       confirmPopup.then(function(res) {
           if (res) {
-            orderOpt.done(order.id);
+            orderOpt.done(order.id, $scope.orderType);
           } else {
               console.log('You are not sure');
           }
@@ -1911,7 +1955,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
       });
       confirmPopup.then(function(res) {
           if (res) {
-            orderOpt.del(order.id);
+            orderOpt.del(order.id, $scope.orderType);
           } else {
               console.log('You are not sure');
           }
@@ -2276,7 +2320,11 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage) {
             ngCart.selectItem(id);
         }
     };
-
+    $scope.delete = function () {
+      ngCart.getSelectedItems().forEach(function (item) {
+        ngCart.removeSelectedItemById(item.id);
+      })
+    }
     $scope.selectAllEntries = function() {
         if ($scope.isSelectedAll === false) {
             angular.forEach(ngCart.getCart().items, function(item, index) {

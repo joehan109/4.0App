@@ -15,8 +15,7 @@
                 <p class="product-prices">
                     <span class="curr-price">{{item.price | currency:'￥'}}</span>
                     <span style="float:right;font-size:16px;">
-                      <i class="icon ion-ios-heart"
-                          ng-class="{'like-icon energized':item.collectFlag, 'light':!item.collectFlag}"
+                      <i class="icon ion-ios-heart like-icon energized"
                           ng-click="unfavor(item)"></i>
                       <i class="icon ion-ios-cart"
                         ng-click="addToCart(item)"

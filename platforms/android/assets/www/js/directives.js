@@ -308,6 +308,9 @@ angular.module('maybi.directives', [])
 
             scope.ngCart = ngCart;
             scope.saveAddress = function(){
+              if(!validate()){
+                return;
+              }
                 if (addr_id) {
                     FetchData.post('/mall/receipt/update'+utils.formatGetParams({
                       'id':addr_id,
@@ -333,7 +336,27 @@ angular.module('maybi.directives', [])
 
                 }
             }
-
+            function validate(){
+              var reg = {
+                phone:/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,
+                postcode:/[0-9]{6}/
+              };
+              if (!scope.addr.name){
+                $rootScope.$emit('alert', "请填写收货人");
+                return false
+              } else if (!reg.phone.test(scope.addr.phone)) {
+                $rootScope.$emit('alert', "请输入正确的联系方式");
+                return false
+              } else if (!scope.addr.detail){
+                $rootScope.$emit('alert', "请填写收货地址");
+                return false
+              } else if (!reg.postcode.test(scope.addr.postcode)){
+                $rootScope.$emit('alert', "请输入正确的邮编");
+                return false
+              } else{
+                return true
+              }
+            }
         },
     };
 })
