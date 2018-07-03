@@ -12,9 +12,9 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
     'maybi.constants', 'maybi.filters', 'tag-select'
 ])
 
-.run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$ionicSlideBoxDelegate', '$cordovaBarcodeScanner', 'orderOpt', function($ionicPlatform, $rootScope, $state, JPush,
+.run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$ionicSlideBoxDelegate', '$cordovaBarcodeScanner', 'orderOpt', 'AlipayService', function($ionicPlatform, $rootScope, $state, JPush,
     $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast,
-    amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate, $cordovaBarcodeScanner,orderOpt) {
+    amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate, $cordovaBarcodeScanner,orderOpt,AlipayService) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -75,7 +75,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
     //         ngCart.$loadCart(data.data);
     //     });
     // }
-    ngCart.init();
+    // ngCart.init();
     FetchData.get('/mall/mashopping/getAll').then(function(data) {
         ngCart.$loadCart(data.data);
     }, function(err) {

@@ -190,7 +190,7 @@ angular.module('maybi.services', [])
             }
         };
     })
-    .factory('AuthService', ['ENV', '$http', 'Storage', '$state', '$q', function(ENV, $http, Storage, $state, $q) {
+    .factory('AuthService', ['ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', function(ENV, $http, Storage, $state, $q, FetchData, ngCart) {
         var isAuthenticated = false;
         var user = Storage.get('user') || {};
         return {
@@ -215,12 +215,13 @@ angular.module('maybi.services', [])
                             user = data.data;
                             Storage.set('user', data.data);
                             Storage.set('access_token', data.data.name);
-                            // if (window.cordova && window.cordova.plugins) {
-                            //     plugins.jPushPlugin.setAlias(data.user.id);
-                            // }
                             deferred.resolve();
                             $state.go('appIndex')
-                        })
+                        });
+                        // 刷新购物车
+                        FetchData.get('/mall/mashopping/getAll').then(function(data) {
+                            ngCart.$loadCart(data.data);
+                        });
                     } else {
                         isAuthenticated = false;
                         deferred.reject();
@@ -324,6 +325,13 @@ angular.module('maybi.services', [])
                     user = {};
                     Storage.remove('user');
                     Storage.remove('access_token');
+                    // 清空购物车
+                    Storage.set('cart',{
+                      shipping: null,
+                      taxRate: null,
+                      tax: null,
+                      items: [],
+                      selectedItems: []});
                     window.location.href = "#/appIndex";
                     deferred.resolve();
                 }).error(function(data) {
@@ -881,13 +889,12 @@ angular.module('maybi.services', [])
             var item = this.getItemById(id);
 
             $http.post(ENV.SERVER_URL + '/mall/mashopping/save?maProId=' + id + '&num=' + quantity).success(function(res) {
-                _self.$loadCart(res.data);
+              if (item) {
+                  item._quantity += +quantity;
+              } else {
+                  _self.$cart.items.push(new ngCartItem(id, name, price, quantity, data));
+              }
             }).error(function() {
-                if (item) {
-                    item._quantity += +quantity;
-                } else {
-                    _self.$cart.items.push(new ngCartItem(id, name, price, quantity, data));
-                }
             }).finally(function() {
                 $rootScope.$broadcast('specsModal:hide');
                 $rootScope.$broadcast('ngCart:change', "商品已添加到购物车");
@@ -1113,7 +1120,7 @@ angular.module('maybi.services', [])
         this.$save = function() {
             return Storage.set('cart', this.getCart());
         };
-
+        this.init();
     }])
     .service('ngCartItem', ['$rootScope', '$log', function($rootScope, $log) {
 
@@ -1215,7 +1222,7 @@ angular.module('maybi.services', [])
         };
         return item;
     }])
-    .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading','$state', 'utils', '$http', 'ENV',function(ngCart, $rootScope, $ionicLoading,$state, utils, $http, ENV) {
+    .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading','$state', 'utils', '$http', 'ENV','AlipayService',function(ngCart, $rootScope, $ionicLoading,$state, utils, $http, ENV, AlipayService) {
 
 
         this.checkout = function(data,cb) {
@@ -1235,7 +1242,7 @@ angular.module('maybi.services', [])
                   template: '订单生成成功',
                   duration: 3000,
               });
-              alipayCheckout(res.data.data);
+              AlipayService.alipayCheckout(res.data.data);
             } else {
               $ionicLoading.show({
                   template: res.data.errmsg,
@@ -1255,32 +1262,32 @@ angular.module('maybi.services', [])
             });
           });
         };
-        function alipayCheckout(data){
-          var payInfo = data;
-          cordova.plugins.alipay.payment(payInfo,function success(e){
-            if (e.status == 9000) {
-              $ionicLoading.show({
-                  template: '订单支付成功',
-                  duration: 3000,
-              });
-              $state.go('tab.orders',{
-                  status_id: 2
-              }, {
-                  reload: true
-              });
-            }
-          },function error(e){});
-          console.log(1)
-           //e.resultStatus  状态代码  e.result  本次操作返回的结果数据 e.memo 提示信息
-           //e.resultStatus  9000  订单支付成功 ;8000 正在处理中  调用function success
-           //e.resultStatus  4000  订单支付失败 ;6001  用户中途取消 ;6002 网络连接出错  调用function error
-           //当e.resultStatus为9000时，请去服务端验证支付结果
-                      /**
-                       * 同步返回的结果必须放置到服务端进行验证（验证的规则请看https://doc.open.alipay.com/doc2/
-                       * detail.htm?spm=0.0.0.0.xdvAU6&treeId=59&articleId=103665&
-                       * docType=1) 建议商户依赖异步通知
-                       */
-          }
+        // function alipayCheckout(data){
+        //   var payInfo = data;
+        //   cordova.plugins.alipay.payment(payInfo,function success(e){
+        //     if (e.status == 9000) {
+        //       $ionicLoading.show({
+        //           template: '订单支付成功',
+        //           duration: 3000,
+        //       });
+        //       $state.go('tab.orders',{
+        //           status_id: 2
+        //       }, {
+        //           reload: true
+        //       });
+        //     }
+        //   },function error(e){});
+        //   console.log(1)
+        //    //e.resultStatus  状态代码  e.result  本次操作返回的结果数据 e.memo 提示信息
+        //    //e.resultStatus  9000  订单支付成功 ;8000 正在处理中  调用function success
+        //    //e.resultStatus  4000  订单支付失败 ;6001  用户中途取消 ;6002 网络连接出错  调用function error
+        //    //当e.resultStatus为9000时，请去服务端验证支付结果
+        //               /**
+        //                * 同步返回的结果必须放置到服务端进行验证（验证的规则请看https://doc.open.alipay.com/doc2/
+        //                * detail.htm?spm=0.0.0.0.xdvAU6&treeId=59&articleId=103665&
+        //                * docType=1) 建议商户依赖异步通知
+        //                */
+        //   }
 
     }])
 
@@ -1411,136 +1418,37 @@ angular.module('maybi.services', [])
         };
     }])
 
-    .factory('AlipayService', ['$q', '$ionicPlatform', 'paypalSettings', '$filter', '$timeout', function($q, $ionicPlatform, paypalSettings, $filter, $timeout) {
+    .service('AlipayService', ['$q', '$ionicPlatform', '$state', '$filter', '$timeout', function($q, $ionicPlatform, $state, $filter, $timeout) {
 
-        var init_defer;
-        /**
-         * Service object
-         * @type object
-         */
-        var service = {
-            initPaymentUI: initPaymentUI,
-            createPayment: createPayment,
-            configuration: configuration,
-            onPayPalMobileInit: onPayPalMobileInit,
-            makePayment: makePayment
-        };
-
-
-        /**
-         * @ngdoc method
-         * @name initPaymentUI
-         * @methodOf app.PaypalService
-         * @description
-         * Inits the payapl ui with certain envs.
-         *
-         *
-         * @returns {object} Promise paypal ui init done
-         */
-        function initPaymentUI() {
-
-            init_defer = $q.defer();
-            $ionicPlatform.ready().then(function() {
-
-                var clientIDs = {
-                    "PayPalEnvironmentProduction": paypalSettings.PAYPAL_LIVE_CLIENT_ID,
-                    "PayPalEnvironmentSandbox": paypalSettings.PAYPAL_SANDBOX_CLIENT_ID
-                };
-                PayPalMobile.init(clientIDs, onPayPalMobileInit);
-            });
-
-            return init_defer.promise;
-
-        }
-
-
-        /**
-         * @ngdoc method
-         * @name createPayment
-         * @methodOf app.PaypalService
-         * @param {string|number} total total sum. Pattern 12.23
-         * @param {string} name name of the item in paypal
-         * @description
-         * Creates a paypal payment object
-         *
-         *
-         * @returns {object} PayPalPaymentObject
-         */
-        function createPayment(total, name) {
-
-            // "Sale  == >  immediate payment
-            // "Auth" for payment authorization only, to be captured separately at a later time.
-            // "Order" for taking an order, with authorization and capture to be done separately at a later time.
-            var payment = new PayPalPayment("" + total, "USD", "" + name, "Sale");
-            return payment;
-        }
-
-        /**
-         * @ngdoc method
-         * @name configuration
-         * @methodOf app.PaypalService
-         * @description
-         * Helper to create a paypal configuration object
-         *
-         *
-         * @returns {object} PayPal configuration
-         */
-        function configuration() {
-            // for more options see `paypal-mobile-js-helper.js`
-            var config = new PayPalConfiguration({
-                merchantName: paypalSettings.ShopName,
-                merchantPrivacyPolicyURL: paypalSettings.MerchantPrivacyPolicyURL,
-                merchantUserAgreementURL: paypalSettings.MerchantUserAgreementURL
-            });
-            return config;
-        }
-
-        function onPayPalMobileInit() {
-            $ionicPlatform.ready().then(function() {
-                // must be called
-                // use PayPalEnvironmentNoNetwork mode to get look and feel of the flow
-                PayPalMobile.prepareToRender(paypalSettings.ENV, configuration(), function() {
-
-                    $timeout(function() {
-                        init_defer.resolve();
-                    });
-
-                });
-            });
-        }
-
-        /**
-         * @ngdoc method
-         * @name makePayment
-         * @methodOf app.PaypalService
-         * @param {string|number} total total sum. Pattern 12.23
-         * @param {string} name name of the item in paypal
-         * @description
-         * Performs a paypal single payment
-         *
-         *
-         * @returns {object} Promise gets resolved on successful payment, rejected on error
-         */
-        function makePayment(total, name) {
-
-            var defer = $q.defer();
-            total = $filter('number')(total, 2);
-            $ionicPlatform.ready().then(function() {
-                PayPalMobile.renderSinglePaymentUI(createPayment(total, name), function(result) {
-                    $timeout(function() {
-                        defer.resolve(result);
-                    });
-                }, function(error) {
-                    $timeout(function() {
-                        defer.reject(error);
-                    });
-                });
-            });
-
-            return defer.promise;
-        }
-
-        return service;
+        this.alipayCheckout = function (data){
+          var payInfo = data;
+          cordova.plugins.alipay.payment(payInfo,function success(e){
+            if (e.resultStatus == 9000) {
+              $ionicLoading.show({
+                  template: '订单支付成功',
+                  duration: 3000,
+              });
+              $state.go('tab.orders',{
+                  status_id: 2
+              }, {
+                  reload: true
+              });
+            }
+          },function error(e){
+            console.log(e.resultStatus)
+            console.log(e.memo)
+          });
+          console.log(1)
+           //e.resultStatus  状态代码  e.result  本次操作返回的结果数据 e.memo 提示信息
+           //e.resultStatus  9000  订单支付成功 ;8000 正在处理中  调用function success
+           //e.resultStatus  4000  订单支付失败 ;6001  用户中途取消 ;6002 网络连接出错  调用function error
+           //当e.resultStatus为9000时，请去服务端验证支付结果
+                      /**
+                       * 同步返回的结果必须放置到服务端进行验证（验证的规则请看https://doc.open.alipay.com/doc2/
+                       * detail.htm?spm=0.0.0.0.xdvAU6&treeId=59&articleId=103665&
+                       * docType=1) 建议商户依赖异步通知
+                       */
+          }
     }])
 
     .factory("appUpdateService", ['$ionicPopup', '$timeout', '$ionicLoading', function($ionicPopup, $timeout, $ionicLoading) {

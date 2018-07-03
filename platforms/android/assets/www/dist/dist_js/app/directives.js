@@ -95,11 +95,13 @@ angular.module('maybi.directives', [])
     };
 }])
 
-.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', '$http', 'ENV', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state, $http,ENV){
+.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', '$http', 'ENV', 'AlipayService', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state, $http,ENV,AlipayService){
     return {
         restrict : 'E',
         link: function(scope, element, attrs){
             scope.ngCart = ngCart;
+
+            scope.payInfo = attrs.ordertype == 'new' ? '提交订单' : '去付款';
 
             scope.showPaymentMethods = function() {
 
@@ -111,32 +113,6 @@ angular.module('maybi.directives', [])
               sheet.cancelOnStateChange = true;
 
               $ionicActionSheet.show(sheet);
-              function alipayCheckout(data){
-                var payInfo = 'alipay_sdk=alipay-sdk-java-dynamicVersionNo&app_id=2018051560119605&biz_content=%7B%22body%22%3A%22%E6%88%91%E6%98%AF%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%22%2C%22out_trade_no%22%3A%222017090080001939235%22%2C%22product_code%22%3A%22QUICK_MSECURITY_PAY%22%2C%22subject%22%3A%22App%E6%94%AF%E4%BB%98%E6%B5%8B%E8%AF%95Java%22%2C%22timeout_express%22%3A%2230m%22%2C%22total_amount%22%3A%220.01%22%7D&charset=utf-8&format=json&method=alipay.trade.app.pay&notify_url=http%3A%2F%2F39.106.199.108%3A8080%2Fmall%2Falipay%2Fapp%2Fnotify&sign=WlHZ%2F1WuJcpKATo008LoRgU2Prt7tKkAjqAPvKrO38%2BkNI251peEL6gKbPArinIcrEH%2BsQyx8yVy6SWyqtvd9q44mPZWoOWXfR8HrGz1ezYJyegBAOFKXp1GhZaZq5OD7WqsjkwZZLYUW3TpjARKcvV39xibtjNloz1MBeQy5JZE%2Bq00VJOqKP0%2B5HiqllsbduyxboEwYLaOjEh14nypID75dXwVK%2B1k%2BeGz%2F7a4LgH8VFrj%2F7Wz9nhGWCqaHKz%2FPTW0OtGV1tMx%2B5sOeVOl%2BZq2uxGj1kZbj7%2F646caKR9woe1URFDH78Qh3cP43bt8PxDPFW11m7h0Is36sXAp0g%3D%3D&sign_type=RSA2&timestamp=2018-07-03+00%3A20%3A36&version=1.0';
-                cordova.plugins.alipay.payment(payInfo,function success(e){
-                  if (e.status == 9000) {
-                    $ionicLoading.show({
-                        template: '订单支付成功',
-                        duration: 3000,
-                    });
-                    $state.go('tab.orders',{
-                        status_id: 2
-                    }, {
-                        reload: true
-                    });
-                  }
-                },function error(e){});
-                console.log(1)
-                 //e.resultStatus  状态代码  e.result  本次操作返回的结果数据 e.memo 提示信息
-                 //e.resultStatus  9000  订单支付成功 ;8000 正在处理中  调用function success
-                 //e.resultStatus  4000  订单支付失败 ;6001  用户中途取消 ;6002 网络连接出错  调用function error
-                 //当e.resultStatus为9000时，请去服务端验证支付结果
-                            /**
-                             * 同步返回的结果必须放置到服务端进行验证（验证的规则请看https://doc.open.alipay.com/doc2/
-                             * detail.htm?spm=0.0.0.0.xdvAU6&treeId=59&articleId=103665&
-                             * docType=1) 建议商户依赖异步通知
-                             */
-                }
 
               function buttonClicked(index) {
                 var service = { 0: 'alipay', 1: 'wechat'}
@@ -169,7 +145,7 @@ angular.module('maybi.directives', [])
                   // 直接掉支付接口
                   $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + attrs.orderid).success(function(r, status) {
                       if (r.ret) {
-                          alipayCheckout(r.data)
+                          AlipayService.alipayCheckout(r.data)
                       }
                   });
                 }

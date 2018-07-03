@@ -79,9 +79,12 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
     FetchData.get('/mall/mashopping/getAll').then(function(data) {
         ngCart.$loadCart(data.data);
     }, function(err) {
-        Storage.remove('user');
         $rootScope.authDialog.show();
     });
+
+    // // 初始化会员信息、登录信息
+    // Storage.remove('user');
+    // Storage.remove('access_token');
 
     $ionicModal.fromTemplateUrl('auth.html', {
         scope: $rootScope
