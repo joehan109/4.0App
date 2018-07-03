@@ -1033,8 +1033,8 @@ angular.module('maybi.services', [])
                     cart.items.splice(index, 1);
                 }
             });
-            $http.post(ENV.SERVER_URL + '/mall/mashopping/delete?id='+ id).success(function(data) {
-                _self.$loadCart(res.cart);
+            $http.post(ENV.SERVER_URL + '/mall/mashopping/delete?ids='+ id).success(function(data) {
+                // _self.$loadCart(res.cart);
             }).error(function() {
 
             }).finally(function() {

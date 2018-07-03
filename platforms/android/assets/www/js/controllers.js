@@ -2279,7 +2279,7 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage) {
     };
     $scope.delete = function () {
       ngCart.getSelectedItems().forEach(function (item) {
-        ngCart.removeSelectedItemById(item.id);
+        ngCart.removeItemById(item._id);
       })
     }
     $scope.selectAllEntries = function() {
