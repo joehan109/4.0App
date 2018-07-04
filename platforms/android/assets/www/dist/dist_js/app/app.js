@@ -131,10 +131,9 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
     });
 
     $rootScope.$on('alert', function(event, msg, options) {
-//    console.log(window.cordova)
-//        if (window.cordova) {
-//            $cordovaToast.show(msg, 'short', 'center');
-//        } else {
+        if (window.cordova) {
+            $cordovaToast.show(msg, 'short', 'center');
+        } else {
             var o = options || {};
             angular.extend(o, {
                 template: msg || '<ion-spinner icon="spiral"></ion-spinner>',
@@ -142,7 +141,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
             });
 
             $ionicLoading.show(o);
-//        }
+        }
     });
 
     // if (Storage.get('introPage') !== 'alreadyShow') {

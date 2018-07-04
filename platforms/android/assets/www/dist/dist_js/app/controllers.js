@@ -25,8 +25,8 @@ profileCtrl.$inject = ['$scope', 'AuthService', '$state', '$rootScope', 'PhotoSe
 bindEmailCtrl.$inject = ['$rootScope', '$scope', 'AuthService'];
 forgotPWCtrl.$inject = ['$rootScope', '$scope', 'AuthService'];
 changePWCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV'];
-changePhoneCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV', '$interval'];
-settingsCtrl.$inject = ['$rootScope', '$scope', '$state', 'AuthService', '$ionicModal'];
+changePhoneCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV', '$interval', 'Storage'];
+settingsCtrl.$inject = ['$rootScope', '$scope', '$state', 'AuthService', '$ionicModal', 'Storage'];
 paymentSuccessCtrl.$inject = ['$location', '$timeout'];
 itemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionicModal', 'ngCart', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup'];
 itemsCtrl.$inject = ['$rootScope', '$scope', 'Items', '$state', '$stateParams'];
@@ -127,30 +127,7 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
       $scope.showOpen = false;
       $scope.showCode = false;
       $scope.alreadyShow = false;
-
-      $cordovaBarcodeScanner
-        .scan()
-        .then(function(barcodeData) {
-          $scope.barcodeData = barcodeData;
-          $scope.barcodeData.text && FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
-            if (res.ret) {
-              $scope.data = res.data;
-              $scope.imgUrl = res.data.proUrl;
-              if (res.data.pwdFlag) {
-                $scope.showCode = true;
-                // $scope.alreadyShow = true;
-                $scope.openCode = res.data.sonPwd;
-              } else {
-                $scope.showOpen = true;
-              }
-            } else {
-              $scope.$emit("alert", res.errmsg);
-            }
-          });
-        }, function(error) {
-            alert('扫描失败，请稍后重试');
-            $state.go('appIndex');
-        });
+      scan();
     });
 
     $scope.getCode = function() {
@@ -171,16 +148,35 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
 
     };
     $scope.scanStart = function() {
-      FetchData.get('/mall/mascan/getPwd?id=' + $scope.data.id).then(function(res) {
-        if (res.ret) {
-          $scope.openCode = res.data.split('');
-          $scope.showOpen = false;
-          $scope.showCode = true;
-        } else {
-          $scope.$emit("alert", res.errmsg);
-        }
-      });
+      scan();
     };
+    function scan(){
+      $cordovaBarcodeScanner
+        .scan()
+        .then(function(barcodeData) {
+          $scope.barcodeData = barcodeData;
+          $scope.barcodeData.text && FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text).then(function(res) {
+            if (res.ret) {
+              console.log(res.data)
+              $scope.data = res.data;
+              $scope.imgUrl = res.data.proUrl;
+              if (res.data.pwdFlag) {
+                $scope.showCode = true;
+                $scope.openCode = res.data.sonPwd;
+              } else {
+                $scope.showOpen = true;
+              }
+            }
+          },function (res) {
+          console.log(res)
+              $state.go('appIndex');
+              $scope.$emit("alert", '数据不存在，请重新扫码');
+          });
+        }, function(error) {
+            $state.go('appIndex');
+        });
+
+    }
 
 
 }
@@ -700,6 +696,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
+        $scope.searchQuery = '';
         if (Storage.get('cateHomeOrigin') == 'index') {
             $scope.currentIndex = 0;
             Storage.remove('cateHomeOrigin');
@@ -763,7 +760,13 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     };
 
     $scope.searchItem = function(query) {
-        $state.go('tab.search', { 'query': query });
+        // $state.go('tab.search', { 'query': query });
+        Items.fetchTopItems({ 'query': query }).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items = data;
+            $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+        });
+
     }
 
     /**
@@ -832,7 +835,8 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     // });
 
     $scope.doRefresh = function() {
-        Items.fetchTopItems().then(function(data) {
+
+        Items.fetchTopItems($scope.searchQuery ? {query:$scope.searchQuery}: null).then(function(data) {
             $scope.items = data;
         });
         $scope.$broadcast('scroll.refreshComplete');
@@ -840,7 +844,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     $scope.loadMore = function() {
         if (!$scope.isFirst && Items.hasNextPage()) {
-            Items.increaseNewItems().then(function(data) {
+            Items.increaseNewItems($scope.searchQuery ? {query:$scope.searchQuery}: null).then(function(data) {
                 $scope.items = $scope.items.concat(data);
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             });
@@ -1353,6 +1357,19 @@ function profileCtrl($scope, AuthService, $state, $rootScope,
     };
 
 
+    /**
+     * 将dataurl转为blob对象
+     * @param dataurl
+     * @returns {Blob}
+     */
+    function dataURLtoBlob(dataurl) {
+      var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
+    }
 
     $scope.togglePhotoModal = function() {
 
@@ -1362,18 +1379,25 @@ function profileCtrl($scope, AuthService, $state, $rootScope,
             pieces: 1,
             allowEdit: true
         }).then(function(image) {
+            var formData = new FormData();
+            formData.append('img', dataURLtoBlob(image));
           $http({
             url: ENV.SERVER_URL + '/mall/vip/updateImg',
             method: "POST",
             headers: {'Content-Type': undefined},
+            data:formData,
             transformRequest: function() {
-  						var formData = new FormData();
-  						formData.append('file', image);
-  						return formData;
-					  }
-        }).success(function (response) {
-          $scope.$emit('alert', "头像上传成功");
-        });
+                return formData;
+              }
+            }).then(function (response) {
+                   console.log(dataURLtoBlob(image).size)
+     console.log(333)
+              $scope.$emit('alert', "头像上传成功");
+            },function(e){
+            console.log(ENV.SERVER_URL + '/mall/vip/updateImg')
+                   console.log(dataURLtoBlob(image).size)
+                console.log(e.status)
+            });
             // PhotoService.upload(image, filename,
             //     function(data) {
             //         AuthService.updateAvatar(filename)
@@ -1387,7 +1411,8 @@ function profileCtrl($scope, AuthService, $state, $rootScope,
             //         $rootScope.$broadcast('alert', "头像上传失败");
             //     });
             //
-        }).catch(function() {
+               console.log(222)
+     }).catch(function() {
             console.warn('Deu erro');
         });
     };
@@ -1488,11 +1513,12 @@ function signupCtrl($rootScope, $scope, AuthService, $state,$http,ENV) {
 
 }
 
-function settingsCtrl($rootScope, $scope, $state, AuthService, $ionicModal) {
+function settingsCtrl($rootScope, $scope, $state, AuthService, $ionicModal,Storage) {
     //登出
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.defaultPhone = Storage.get('user').phone
     });
     $scope.user = AuthService;
 
@@ -1510,11 +1536,13 @@ function settingsCtrl($rootScope, $scope, $state, AuthService, $ionicModal) {
     $scope.closePasswordModifyBox = function() {
         $scope.passwordDialog.hide();
         $scope.passwordDialog.remove();
+        $scope.defaultPhone = Storage.get('user').phone
     };
 
     $scope.$on('changePWModal:hide', function(event) {
         $scope.passwordDialog.hide();
         $scope.passwordDialog.remove();
+        $scope.defaultPhone = Storage.get('user').phone
     })
 
     // 修改手机号弹窗
@@ -1564,7 +1592,7 @@ function changePWCtrl($rootScope, $scope, $http, ENV) {
     }
 }
 
-function changePhoneCtrl($rootScope, $scope, $http, ENV, $interval) {
+function changePhoneCtrl($rootScope, $scope, $http, ENV, $interval, Storage) {
     $scope.validateTime = "获取验证码";
     $scope.validateCode = '';
     $scope.sendStatus = false;
@@ -1601,12 +1629,18 @@ function changePhoneCtrl($rootScope, $scope, $http, ENV, $interval) {
       $http.post(ENV.SERVER_URL + '/mall/vip/updatePhone?code='+ $scope.validateCode +'&phone=' + $scope.phone)
         .success(function(res) {
           if (res.ret) {
+            var user = Storage.get('user');
+            user && (user.phone = $scope.phone);
+            Storage.set('user', user);
             $rootScope.$broadcast('changePhoneModal:hide');
             $scope.$emit('alert', res.data || "修改手机号成功");
           } else {
             $scope.$emit('alert', res.errmsg || "系统出错，请稍后再试");
           }
         });
+    };
+    $scope.canSave = function (){
+      return $scope.phone && $scope.validateCode
     }
 }
 
@@ -1855,7 +1889,7 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
     });
 
     $scope.doRefresh = function() {
-        page = 0;
+        page = 1;
         Items.searchItems(query, sub_cate, page).then(function(data) {
             $scope.items = data;
             page++;
@@ -1865,6 +1899,7 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
 
     $scope.loadMore = function() {
         Items.searchItems(query, sub_cate, page).then(function(data) {
+          debugger
             $scope.items = $scope.items.concat(data);
             $scope.$broadcast('scroll.infiniteScrollComplete');
             page++;
@@ -1975,7 +2010,6 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     FetchData.get('/mall/maorder/query?code='+$stateParams.order_id+'&status=').then(function(data) {
         $scope.order = data.data.data[0];
     });
-
     // A confirm dialog
     $scope.cancelOrder = function() {
         var confirmPopup = $ionicPopup.confirm({
@@ -1983,16 +2017,19 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         });
         confirmPopup.then(function(res) {
             if (res) {
-              FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
-                if(data.ret) {
-                  $rootScope.$emit("alert", "订单已删除");
-                  FetchData.get('/mall/maorder/query?code='+id+'&status=').then(function(data) {
-                      $scope.order = data.data.data[0];
-                  });
-              } else{
-                  $rootScope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
-                }
-              })
+              orderOpt.cancel($scope.order.id);
+            } else {
+                console.log('You are not sure');
+            }
+        });
+    };
+    $scope.delOrder = function() {
+        var confirmPopup = $ionicPopup.confirm({
+            title: '确定删除订单?',
+        });
+        confirmPopup.then(function(res) {
+            if (res) {
+              orderOpt.del($scope.order.id, 3);
             } else {
                 console.log('You are not sure');
             }
@@ -2382,7 +2419,9 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
     };
 
     FetchData.get('/mall/syscode/app/get?codeType=express_type').then(function(data) {
-        $scope.provider_prices = data.data;
+      $scope.provider_prices = data.data;
+      // 全局保存
+      $rootScope.provider_prices = data.data;
 
         // 设置购物车默认快递
         $scope.selectedProvider = data.data[0];

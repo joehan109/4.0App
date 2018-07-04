@@ -108,7 +108,7 @@ angular.module('maybi.directives', [])
               var sheet = {};
               sheet.buttonClicked = buttonClicked;
               sheet.buttons = [{
-                text: '<i class="icon"><img class="aliIcon" src="../img/ali.png" /></i> 支付宝支付$'
+                text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付$'
               }];
               sheet.cancelOnStateChange = true;
 

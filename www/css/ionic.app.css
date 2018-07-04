@@ -15022,7 +15022,7 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
     width: 200px;
     text-align: center; }
   .avatar-section .avatar-content {
-    background: url(../../img/b7.jpg) center no-repeat;
+    background: url(./img/b7.jpg) center no-repeat;
     background-size: cover;
     height: 150px; }
   .avatar-section .follow_btn {

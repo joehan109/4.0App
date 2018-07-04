@@ -49,7 +49,7 @@
 <section>
 <div class="checkout-info">
     <div class="partner-info" style="margin-left: 8px;">
-        <div class="selected-partner">快递方式:{{order.trackingName}}
+        <div class="selected-partner">快递方式:{{order.trackingTypeStr}}
             <span class="detail-price pull-right">{{order.trackingAmount | currency:'￥' }}</span>
         </div>
     </div>
@@ -57,18 +57,18 @@
 </section>
 
 <section>
-<div class="checkout-info">
+<!-- <div class="checkout-info">
     <div class="item-info-table">
         <dl class="item-info-field">
             <dt class="">商品总价: </dt>
-            <dd class="detail-price">{{order.totalAmount | currency:'￥' }}</dd>
+            <dd class="detail-price">{{ngCart.getSubTotal() | currency:'￥' }}</dd>
         </dl>
         <dl class="item-info-field">
             <dt class="">运费: </dt>
             <dd class="detail-price">{{order.trackingAmount | currency:'￥' }}</dd>
         </dl>
     </div>
-</div>
+</div> -->
 <div class="order-bottom">
     <div class="">
         订单号：{{order.code}}
@@ -100,6 +100,11 @@
             ng-click="cancelOrder()"
             ng-if="order.status=='0'">
             取消订单
+        </button>
+        <button class="button button-energized"
+            ng-click="delOrder()"
+            ng-if="order.status=='3'">
+            删除订单
         </button>
     </div>
   </ion-footer-bar>

@@ -566,20 +566,24 @@ angular.module('maybi.services', [])
         var currentTab = '';
         var hasNextPage = false;
         var nextPage = 0;
-        var perPage = 2;
+        var perPage = 4;
         var isEmpty = false;
         var tabChanged = false;
 
         return {
-            fetchTopItems: function() {
+            fetchTopItems: function(query) {
                 var deferred = $q.defer();
                 isEmpty = false;
+                var params = {
+                    oneType: currentTab,
+                    currentPage: 1,
+                    pageSize: perPage,
+                };
+                if (query && query.query){
+                  params.name = query.query
+                }
                 currentTab && $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
-                    params: {
-                        oneType: currentTab,
-                        currentPage: 1,
-                        pageSize: perPage,
-                    }
+                    params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
                         if (r.data.data.length < perPage) {
@@ -614,9 +618,11 @@ angular.module('maybi.services', [])
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
-                        if (r.data.data.length < perPage) {
-                            hasNextPage = false;
-                        }
+                      if (r.data.data.length < perPage) {
+                          hasNextPage = false;
+                      } else {
+                        hasNextPage = true;
+                      }
                         nextPage = 2;
                         deferred.resolve(r.data.data);
                         if (r.data.data.length === 0) {
@@ -644,14 +650,18 @@ angular.module('maybi.services', [])
                 return currentTab;
             },
 
-            increaseNewItems: function() {
+            increaseNewItems: function(query) {
                 var deferred = $q.defer();
-                $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
-                    params: {
-                        oneType: currentTab,
-                        currentPage: nextPage,
-                        pageSize: perPage,
-                    }
+                var params = {
+                    oneType: currentTab,
+                    currentPage: nextPage,
+                    pageSize: perPage,
+                };
+                if (query && query.query){
+                  params.name = query.query
+                }
+              $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
+                    params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
                         if (r.data.data.length < perPage) {
@@ -795,14 +805,14 @@ angular.module('maybi.services', [])
         function cancel(id, tabId) {
           FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
             if(data.ret) {
-              $rootScope.$emit("alert", "订单已删除");
+              $rootScope.$emit("alert", "订单已取消");
               $state.go('tab.orders',{
-                  status_id: tabId || 3
+                  status_id: tabId || 0
               }, {
                   reload: true
               });
             } else{
-              $rootScope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
+              $rootScope.$emit("alert", data.errmsg || "订单取消出错，请稍后尝试");
             }
           })
         }
