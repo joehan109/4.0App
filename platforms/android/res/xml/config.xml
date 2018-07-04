@@ -28,6 +28,9 @@
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="Toast">
+        <param name="android-package" value="nl.xservices.plugins.Toast" />
+    </feature>
     <feature name="IonicDeploy">
         <param name="android-package" value="io.ionic.deploy.IonicDeploy" />
         <param name="onload" value="true" />

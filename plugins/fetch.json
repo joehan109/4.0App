@@ -96,5 +96,13 @@
     "variables": {
       "APP_ID": "2016091500517687"
     }
+  },
+  "cordova-plugin-x-toast": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-x-toast"
+    },
+    "is_top_level": true,
+    "variables": {}
   }
 }

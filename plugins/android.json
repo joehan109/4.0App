@@ -39,6 +39,9 @@
     "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "io.ionic.starter"
     },
+    "cordova-plugin-x-toast": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
     "ionic-plugin-deploy": {
       "PACKAGE_NAME": "io.ionic.starter"
     },

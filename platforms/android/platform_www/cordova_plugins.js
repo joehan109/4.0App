@@ -297,6 +297,14 @@ module.exports = [
     ]
   },
   {
+    "id": "cordova-plugin-x-toast.Toast",
+    "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
+    "pluginId": "cordova-plugin-x-toast",
+    "clobbers": [
+      "window.plugins.toast"
+    ]
+  },
+  {
     "id": "ionic-plugin-deploy.IonicDeploy",
     "file": "plugins/ionic-plugin-deploy/www/ionicdeploy.js",
     "pluginId": "ionic-plugin-deploy",
@@ -327,6 +335,7 @@ module.exports.metadata =
   "cordova-plugin-ionic-webview": "1.1.19",
   "cordova-plugin-splashscreen": "5.0.2",
   "cordova-plugin-whitelist": "1.3.4-dev",
+  "cordova-plugin-x-toast": "2.6.2",
   "ionic-plugin-deploy": "0.6.7",
   "phonegap-plugin-barcodescanner": "7.1.2"
 };
