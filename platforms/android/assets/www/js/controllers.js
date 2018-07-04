@@ -91,6 +91,7 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
           $scope.barcodeData = barcodeData;
           if (!barcodeData) {
             $state.go('appIndex');
+            return;
           }
           FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
             if (res.ret) {

@@ -38,11 +38,11 @@ expressCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', 'AuthServi
 expressItemAddCtrl.$inject = ['$rootScope', '$scope', 'expressList'];
 orderDetailCtrl.$inject = ['$rootScope', '$scope', '$state', '$stateParams', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt'];
 logisticsDetailCtrl.$inject = ['$rootScope', '$scope', '$stateParams', '$state', 'FetchData', 'ngCart'];
-cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage'];
+cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage', '$ionicPopup'];
 checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart'];
 addressCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart'];
 aboutCtrl.$inject = ['$rootScope', '$scope', '$state', 'appUpdateService'];
-scanCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$cordovaToast', 'Photogram', '$ionicPopup', '$timeout', 'geoService', 'FetchData', '$cordovaBarcodeScanner'];
+scanCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$cordovaToast', 'Photogram', '$ionicPopup', '$timeout', 'geoService', 'FetchData', '$cordovaBarcodeScanner', '$ionicHistory', 'backButtonOverride'];
 var controllersModule = angular.module('maybi.controllers', [])
 
 function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
@@ -120,22 +120,18 @@ function shopTabsCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
 }
 
 function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
-    Photogram, $ionicPopup, $timeout, geoService, FetchData, $cordovaBarcodeScanner) {
+    Photogram, $ionicPopup, $timeout, geoService, FetchData, $cordovaBarcodeScanner,$ionicHistory,backButtonOverride) {
 
     // 每次一进页面就调用照相机
     $scope.$on('$ionicView.beforeEnter', function() {
       $scope.showOpen = false;
       $scope.showCode = false;
       $scope.alreadyShow = false;
-
       $cordovaBarcodeScanner
         .scan()
         .then(function(barcodeData) {
           $scope.barcodeData = barcodeData;
-          if (!barcodeData) {
-            $state.go('appIndex');
-          }
-          FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
+          $scope.barcodeData.text && FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text).then(function(res) {
             if (res.ret) {
               $scope.data = res.data;
               $scope.imgUrl = res.data.proUrl;
@@ -151,7 +147,7 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
             }
           });
         }, function(error) {
-            alert('扫描失败，请稍后重试');
+          alert('扫描失败，请稍后重试');
             $state.go('appIndex');
         });
     });
@@ -1447,7 +1443,7 @@ function signupCtrl($rootScope, $scope, AuthService, $state,$http,ENV) {
     var url = ENV.SERVER_URL + '/mall/vip/app/check/' + type + "?" + type + '=';
     var reg = {
       email:/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/,
-      phone:/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$/,
+      phone:/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,
       name:/([A-Za-z0-9]{1,20})|([\u4e00-\u9fa5]{2,10})|([\u4e00-\u9fa5][\w\W]{2})/
     }[type];
     var name = {
@@ -2260,7 +2256,7 @@ function expressItemAddCtrl($rootScope, $scope, expressList) {
     }
 }
 
-function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage) {
+function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage, $ionicPopup) {
     //购物车
     //
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -2321,9 +2317,19 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage) {
         }
     };
     $scope.delete = function () {
-      ngCart.getSelectedItems().forEach(function (item) {
-        ngCart.removeItemById(item._id);
-      })
+      var confirmPopup = $ionicPopup.confirm({
+          title: '确定删除已选中的项目?',
+      });
+      confirmPopup.then(function(res) {
+          if (res) {
+            ngCart.getSelectedItems().forEach(function (item) {
+              ngCart.removeItemById(item._id);
+            })
+          } else {
+              console.log('You are not sure');
+          }
+      });
+
     }
     $scope.selectAllEntries = function() {
         if ($scope.isSelectedAll === false) {
