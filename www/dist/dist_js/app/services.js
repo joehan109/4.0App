@@ -610,7 +610,7 @@ angular.module('maybi.services', [])
                         sub_category: sub_category,
                         currentPage: page,
                         pageSize: perPage,
-                        title: query,
+                        name: query
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
