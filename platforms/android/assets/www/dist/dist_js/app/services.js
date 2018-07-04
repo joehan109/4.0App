@@ -1717,26 +1717,26 @@ angular.module('maybi.services', [])
 
     .factory('backButtonOverride', ['$rootScope', '$ionicPlatform', function ($rootScope, $ionicPlatform) {
       // 二维码返回按钮
-    var results = {};
+      var results = {};
 
-    function _setup($scope, customBackFunction) {
+      function _setup($scope, customBackFunction) {
 
-        var oldSoftBack = $rootScope.$ionicGoBack;
+          var oldSoftBack = $rootScope.$ionicGoBack;
 
-        $rootScope.$ionicGoBack = function () {
-            customBackFunction();
-        };
-        var deregisterSoftBack = function () {
-            $rootScope.$ionicGoBack = oldSoftBack;
-        };
-        var deregisterHardBack = $ionicPlatform.registerBackButtonAction(
-            customBackFunction, 101
-        );
-        $scope.$on('$destroy', function () {
-            deregisterHardBack();
-            deregisterSoftBack();
-        });
-    }
-    results.setup = _setup;
-    return results;
-}])
+          $rootScope.$ionicGoBack = function () {
+              customBackFunction();
+          };
+          var deregisterSoftBack = function () {
+              $rootScope.$ionicGoBack = oldSoftBack;
+          };
+          var deregisterHardBack = $ionicPlatform.registerBackButtonAction(
+              customBackFunction, 101
+          );
+          $scope.$on('$destroy', function () {
+              deregisterHardBack();
+              deregisterSoftBack();
+          });
+      }
+      results.setup = _setup;
+      return results;
+    }])

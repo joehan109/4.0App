@@ -42,7 +42,7 @@ cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage', '$
 checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart'];
 addressCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart'];
 aboutCtrl.$inject = ['$rootScope', '$scope', '$state', 'appUpdateService'];
-scanCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$cordovaToast', 'Photogram', '$ionicPopup', '$timeout', 'geoService', 'FetchData', '$cordovaBarcodeScanner', '$ionicHistory', 'backButtonOverride'];
+scanCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$cordovaToast', 'Photogram', '$ionicPopup', '$timeout', 'geoService', 'FetchData', '$cordovaBarcodeScanner'];
 var controllersModule = angular.module('maybi.controllers', [])
 
 function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
@@ -120,18 +120,19 @@ function shopTabsCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
 }
 
 function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
-    Photogram, $ionicPopup, $timeout, geoService, FetchData, $cordovaBarcodeScanner,$ionicHistory,backButtonOverride) {
+    Photogram, $ionicPopup, $timeout, geoService, FetchData, $cordovaBarcodeScanner) {
 
     // 每次一进页面就调用照相机
     $scope.$on('$ionicView.beforeEnter', function() {
       $scope.showOpen = false;
       $scope.showCode = false;
       $scope.alreadyShow = false;
+
       $cordovaBarcodeScanner
         .scan()
         .then(function(barcodeData) {
           $scope.barcodeData = barcodeData;
-          $scope.barcodeData.text && FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text).then(function(res) {
+          $scope.barcodeData.text && FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
             if (res.ret) {
               $scope.data = res.data;
               $scope.imgUrl = res.data.proUrl;
@@ -147,7 +148,7 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
             }
           });
         }, function(error) {
-          alert('扫描失败，请稍后重试');
+            alert('扫描失败，请稍后重试');
             $state.go('appIndex');
         });
     });
@@ -1982,7 +1983,16 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         });
         confirmPopup.then(function(res) {
             if (res) {
-              orderOpt.cancel($scope.order.id);
+              FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
+                if(data.ret) {
+                  $rootScope.$emit("alert", "订单已删除");
+                  FetchData.get('/mall/maorder/query?code='+id+'&status=').then(function(data) {
+                      $scope.order = data.data.data[0];
+                  });
+              } else{
+                  $rootScope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
+                }
+              })
             } else {
                 console.log('You are not sure');
             }

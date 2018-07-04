@@ -89,11 +89,7 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
         .scan()
         .then(function(barcodeData) {
           $scope.barcodeData = barcodeData;
-          if (!barcodeData) {
-            $state.go('appIndex');
-            return;
-          }
-          FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
+          $scope.barcodeData.text && FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData).then(function(res) {
             if (res.ret) {
               $scope.data = res.data;
               $scope.imgUrl = res.data.proUrl;
@@ -1405,7 +1401,7 @@ function signupCtrl($rootScope, $scope, AuthService, $state,$http,ENV) {
     var url = ENV.SERVER_URL + '/mall/vip/app/check/' + type + "?" + type + '=';
     var reg = {
       email:/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/,
-      phone:/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$/,
+      phone:/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,
       name:/([A-Za-z0-9]{1,20})|([\u4e00-\u9fa5]{2,10})|([\u4e00-\u9fa5][\w\W]{2})/
     }[type];
     var name = {
@@ -1944,7 +1940,16 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         });
         confirmPopup.then(function(res) {
             if (res) {
-              orderOpt.cancel($scope.order.id);
+              FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
+                if(data.ret) {
+                  $rootScope.$emit("alert", "订单已删除");
+                  FetchData.get('/mall/maorder/query?code='+id+'&status=').then(function(data) {
+                      $scope.order = data.data.data[0];
+                  });
+              } else{
+                  $rootScope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
+                }
+              })
             } else {
                 console.log('You are not sure');
             }
@@ -2218,7 +2223,7 @@ function expressItemAddCtrl($rootScope, $scope, expressList) {
     }
 }
 
-function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage) {
+function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage, $ionicPopup) {
     //购物车
     //
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -2279,9 +2284,19 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage) {
         }
     };
     $scope.delete = function () {
-      ngCart.getSelectedItems().forEach(function (item) {
-        ngCart.removeItemById(item._id);
-      })
+      var confirmPopup = $ionicPopup.confirm({
+          title: '确定删除已选中的项目?',
+      });
+      confirmPopup.then(function(res) {
+          if (res) {
+            ngCart.getSelectedItems().forEach(function (item) {
+              ngCart.removeItemById(item._id);
+            })
+          } else {
+              console.log('You are not sure');
+          }
+      });
+
     }
     $scope.selectAllEntries = function() {
         if ($scope.isSelectedAll === false) {
