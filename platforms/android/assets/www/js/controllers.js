@@ -667,9 +667,9 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         if (Storage.get('cateHomeOrigin') == 'index') {
             $scope.currentIndex = 0;
             Storage.remove('cateHomeOrigin');
+            $scope.banners && $scope.changeTab($scope.banners[0],0);
         }
         $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
-        $scope.banners && $scope.changeTab($scope.banners[0],0);
     });
     $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
         if (r.ret) {
@@ -714,12 +714,11 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         $scope.items = [];
         $scope.currentTab = tab.codeKey;
         $scope.currentIndex = index;
-        var query = $scope.searchQuery ? {query: $scope.searchQuery} : '';
         Items.setCurrentTab(tab.codeKey);
-        Items.fetchTopItems(query).then(function(data) {
+        Items.fetchTopItems().then(function(data) {
             $scope.isFirst = false;
             $scope.items = data;
-            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+            $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
         if (!index) {
             index = GetCateIndex($scope.currentTab);
@@ -732,7 +731,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         Items.fetchTopItems({ 'query': query }).then(function(data) {
             $scope.isFirst = false;
             $scope.items = data;
-            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+            $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
 
     }

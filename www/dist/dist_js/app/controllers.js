@@ -710,9 +710,9 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         if (Storage.get('cateHomeOrigin') == 'index') {
             $scope.currentIndex = 0;
             Storage.remove('cateHomeOrigin');
+            $scope.banners && $scope.changeTab($scope.banners[0],0);
         }
         $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
-        $scope.banners && $scope.changeTab($scope.banners[0],0);
     });
     $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
         if (r.ret) {
