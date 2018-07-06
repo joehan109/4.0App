@@ -14926,16 +14926,16 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
       height: 36px;
       display: block;
       margin: 0 auto; }
-      .homepage .intro-box .icon.category {
+      .icon1.category {
         background: url("../img/icons/category.png") no-repeat;
         background-size: 36px; }
-      .homepage .intro-box .icon.calculate {
+      .icon1.calculate {
         background: url("../img/icons/calculate.png") no-repeat;
         background-size: 36px; }
-      .homepage .intro-box .icon.limit {
+      .icon1.limit {
         background: url("../img/icons/limit.png") no-repeat;
         background-size: 36px; }
-      .homepage .intro-box .icon.send {
+      .icon1.send {
         background: url("../img/icons/send_list.png") no-repeat;
         background-size: 36px; }
     .homepage .intro-box p {
@@ -15022,7 +15022,7 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
     width: 200px;
     text-align: center; }
   .avatar-section .avatar-content {
-    background: url(./img/b7.jpg) center no-repeat;
+    background: url(../../img/b7.jpg) center no-repeat;
     background-size: cover;
     height: 150px; }
   .avatar-section .follow_btn {
@@ -16224,3 +16224,12 @@ section.msg {
 
 .categories .cate-row .sub a {
   color: #333; }
+
+.ii-scan {
+  background-image: url("../img/scan.jpg"); }
+
+.ii-shop {
+  background-image: url("../img/shop.jpg"); }
+
+.ii-sell {
+  background-image: url("../img/sell.jpg"); }

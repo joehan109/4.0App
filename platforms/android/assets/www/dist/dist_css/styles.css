@@ -23,6 +23,16 @@ $royal:                           #886aea !default;
   used under CC BY http://creativecommons.org/licenses/by/4.0/
   Modified icons to fit ionicon’s grid from original.
 */
+.ii-scan{
+  background-image: url("../img/scan.jpg")
+}
+.ii-shop{
+  background-image: url("../img/shop.jpg")
+}
+.ii-sell{
+  background-image: url("../img/sell.jpg")
+}
+
 @font-face {
   font-family: "Ionicons";
   src: url("../fonts/ionicons.eot?v=2.0.1");
@@ -15015,7 +15025,7 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
     width: 200px;
     text-align: center; }
   .avatar-section .avatar-content {
-    background: url(./img/b7.jpg) center no-repeat;
+    background: url(../../img/b7.jpg) center no-repeat;
     background-size: cover;
     height: 150px; }
   .avatar-section .follow_btn {

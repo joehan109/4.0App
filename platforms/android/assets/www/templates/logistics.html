@@ -8,9 +8,12 @@
 
 <section class="clearfix" ng-cloak>
 <div class="logistic-row">
-    <span class="">
-        包裹编号：{{logistic.partner_tracking_no}}
-    </span>
+    <div class="">
+        快递公司：{{logisticDetail.com | express}}
+    </div>
+    <div class="">
+        快递单号：{{order.trackingNum}}
+    </div>
     <span class="pull-right">
         <ul class="logistic-nav">
             <li class=""
@@ -22,44 +25,10 @@
         </ul>
     </span>
 </div>
-<div class="">
-    <table class="table ngCart cart-table">
-        <tbody>
-        <tr ng-repeat="entry in logistic.entries track by $index">
-            <td class="img-cell">
-                <div>
-                    <img ng-src="{{entry.spec.images[0]}}">
-                </div>
-            </td>
-            <td class="info-cell">
-                <div>{{ entry.item.title }}</div>
-                <div>
-                    <span ng-repeat="(k, v) in entry.spec.attributes">
-                        {{ngCart.attrMap[k]}}: {{v}}
-                    </span>
-                </div>
-                <div class="btn-group cart-btn">
-                    <span>数量: {{ entry.quantity | number }}</span>
-                </div>
-            </td>
-            <td class="price-cell">{{ entry.amount_usd | currency }}</td>
-        </tr>
-    </table>
-</div>
-
-<div class="logistic-row">
-    <ul class="progress-indicator">
-        <li ng-class="{'completed': allStatus.indexOf(logistic.current_status) >= $index}"
-             ng-repeat="status in logistic.all_status">
-            <span class="bubble"></span>
-            <div class="logistic-status">{{status.desc}}</div>
-        </li>
-    </ul>
-</div>
 <div class="logistic-row">
     <ul class="tracking">
-        <li ng-repeat="h in logistic.history | reverse">
-            <div class="">{{h.desc}}</div>
+        <li ng-repeat="h in logistics">
+            <div class="">{{h.context}}</div>
             <div class="time">{{h.time}}</div>
         </li>
     </ul>

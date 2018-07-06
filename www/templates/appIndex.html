@@ -36,7 +36,7 @@
         class="chooseType"
         ng-click="goto(item)"
         ng-repeat="item in types track by $index">
-        <i class="icon placeholder-icon ion-{{item.icon}}"></i>
+        <div class='icon1 {{item.pic}}' style='height: 60px;width: 50px;background-size: 50px;'></div>
         <span>{{item.name}}</span>
       </div>
     </div>

@@ -21,7 +21,9 @@
         </button>
       </div>
 
-    <button class="button button-block button-assertive login-btn" ng-click="submit()">
+    <button
+      ng-disabled="!canSave()"
+      class="button button-block button-assertive login-btn" ng-click="submit()">
         确定修改
     </button>
 

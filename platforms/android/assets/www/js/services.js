@@ -426,7 +426,18 @@ angular.module('maybi.services', [])
             getUser: function() {
                 return user;
             },
-
+            refreshUser:function () {
+              var deferred = $q.defer();
+              $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
+                  user = data.data;
+                  if (user) {
+                    Storage.set('user', data.data);
+                    Storage.set('access_token', data.data.name);
+                  }
+                  deferred.resolve();
+              });
+              return deferred.promise;
+            }
         };
     })
     .factory('User', function(ENV, $http, $state, $q) {
@@ -566,20 +577,24 @@ angular.module('maybi.services', [])
         var currentTab = '';
         var hasNextPage = false;
         var nextPage = 0;
-        var perPage = 2;
+        var perPage = 4;
         var isEmpty = false;
         var tabChanged = false;
 
         return {
-            fetchTopItems: function() {
+            fetchTopItems: function(query) {
                 var deferred = $q.defer();
                 isEmpty = false;
+                var params = {
+                    oneType: currentTab,
+                    currentPage: 1,
+                    pageSize: perPage,
+                };
+                if (query && query.query){
+                  params.name = query.query
+                }
                 currentTab && $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
-                    params: {
-                        oneType: currentTab,
-                        currentPage: 1,
-                        pageSize: perPage,
-                    }
+                    params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
                         if (r.data.data.length < perPage) {
@@ -614,9 +629,11 @@ angular.module('maybi.services', [])
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
-                        if (r.data.data.length < perPage) {
-                            hasNextPage = false;
-                        }
+                      if (r.data.data.length < perPage) {
+                          hasNextPage = false;
+                      } else {
+                        hasNextPage = true;
+                      }
                         nextPage = 2;
                         deferred.resolve(r.data.data);
                         if (r.data.data.length === 0) {
@@ -644,14 +661,18 @@ angular.module('maybi.services', [])
                 return currentTab;
             },
 
-            increaseNewItems: function() {
+            increaseNewItems: function(query) {
                 var deferred = $q.defer();
-                $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
-                    params: {
-                        oneType: currentTab,
-                        currentPage: nextPage,
-                        pageSize: perPage,
-                    }
+                var params = {
+                    oneType: currentTab,
+                    currentPage: nextPage,
+                    pageSize: perPage,
+                };
+                if (query && query.query){
+                  params.name = query.query
+                }
+              $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
+                    params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
                         if (r.data.data.length < perPage) {
@@ -795,14 +816,14 @@ angular.module('maybi.services', [])
         function cancel(id, tabId) {
           FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
             if(data.ret) {
-              $rootScope.$emit("alert", "订单已删除");
+              $rootScope.$emit("alert", "订单已取消");
               $state.go('tab.orders',{
-                  status_id: tabId || 3
+                  status_id: tabId || 0
               }, {
                   reload: true
               });
             } else{
-              $rootScope.$emit("alert", data.errmsg || "订单删除出错，请稍后尝试");
+              $rootScope.$emit("alert", data.errmsg || "订单取消出错，请稍后尝试");
             }
           })
         }
@@ -812,7 +833,7 @@ angular.module('maybi.services', [])
                 if(data.ret) {
                   $rootScope.$emit("alert", "订单删除成功！");
                   $state.go('tab.orders',{
-                      status_id: tabId || 3
+                      status_id: tabId || 0
                   }, {
                       reload: true
                   });
@@ -1022,7 +1043,7 @@ angular.module('maybi.services', [])
         };
 
         this.totalCost = function() {
-            return +parseFloat(this.getSubTotal() + this.getShipping()).toFixed(2);
+            return +parseFloat(this.getSubTotal() + this.$cart.shipping).toFixed(2);
         };
 
         this.removeItemById = function(id) {
@@ -1107,22 +1128,22 @@ angular.module('maybi.services', [])
         };
 
 
-        this.$restore = function(storedCart) {
-            var _self = this;
-            _self.init();
-            angular.forEach(storedCart.items, function(item) {
-                if (item.id) {
-                    _self.$cart.items.push(new ngCartItem(item._id, item._name, item._price, item._quantity, item));
-                }
-            });
-            this.$save();
-        };
+        // this.$restore = function(storedCart) {
+        //     var _self = this;
+        //     _self.init();
+        //     angular.forEach(storedCart.items, function(item) {
+        //         if (item.id) {
+        //             _self.$cart.items.push(new ngCartItem(item._id, item._name, item._price, item._quantity, item));
+        //         }
+        //     });
+        //     this.$save();
+        // };
 
         this.$loadCart = function(cart) {
             var _self = this;
             _self.init();
             angular.forEach(cart, function(item) {
-                _self.$cart.items.push(new ngCartItem(item.id, item.name, item.price, item.num, item));
+                _self.$cart.items.push(new ngCartItem(item.maProId, item.name, item.price, item.num, item));
             });
             this.$save();
         };

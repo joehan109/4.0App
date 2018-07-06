@@ -23,7 +23,7 @@ signupCtrl.$inject = ['$rootScope', '$scope', 'AuthService', '$state', '$http', 
 accountCtrl.$inject = ['$rootScope', '$scope', 'AuthService', 'User', 'Photogram', '$ionicScrollDelegate', 'Storage'];
 profileCtrl.$inject = ['$scope', 'AuthService', '$state', '$rootScope', 'PhotoService', '$http', 'ENV', '$ionicPopup'];
 bindEmailCtrl.$inject = ['$rootScope', '$scope', 'AuthService'];
-forgotPWCtrl.$inject = ['$rootScope', '$scope', 'AuthService'];
+forgotPWCtrl.$inject = ['$rootScope', '$scope', 'AuthService', '$http', 'ENV', '$interval'];
 changePWCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV'];
 changePhoneCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV', '$interval', 'Storage'];
 settingsCtrl.$inject = ['$rootScope', '$scope', '$state', 'AuthService', '$ionicModal', 'Storage'];
@@ -37,7 +37,7 @@ calculateCtrl.$inject = ['$rootScope', '$scope', '$location', 'FetchData'];
 expressCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', 'AuthService', '$state', 'expressList'];
 expressItemAddCtrl.$inject = ['$rootScope', '$scope', 'expressList'];
 orderDetailCtrl.$inject = ['$rootScope', '$scope', '$state', '$stateParams', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt'];
-logisticsDetailCtrl.$inject = ['$rootScope', '$scope', '$stateParams', '$state', 'FetchData', 'ngCart'];
+logisticsDetailCtrl.$inject = ['$rootScope', '$scope', '$stateParams', '$state', 'FetchData', 'ngCart', '$http'];
 cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage', '$ionicPopup'];
 checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart'];
 addressCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart'];
@@ -52,9 +52,9 @@ function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
         $ionicSlideBoxDelegate.start();
     });
     $scope.types = [
-        { name: '扫一扫', url: 'scan', icon: 'qr-scanner' },
-        { name: '4.0 商城', url: 'shopTab.cateHome', icon: 'ios-home-outline' },
-        { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline' }
+        { name: '扫一扫', url: 'scan', icon: 'qr-scanner', pic:'category' },
+        { name: '4.0 商城', url: 'shopTab.cateHome', icon: 'ios-home-outline', pic:'calculate' },
+        { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline', pic:'limit' }
     ];
     $scope.goto = function(item) {
         if (item.url === 'shopTab.cateHome') {
@@ -129,6 +129,7 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
       $scope.alreadyShow = false;
       scan();
     });
+    $scope.getDetail = false;
 
     $scope.getCode = function() {
         var confirmPopup = $ionicPopup.confirm({
@@ -140,7 +141,15 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
         });
         confirmPopup.then(function(res) {
             if (res) {
-                $scope.scanStart();
+              FetchData.get('/mall/mascan/getPwd?id=' + $scope.data.id).then(function(res) {
+                if (res.ret) {
+                  $scope.openCode = res.data.split('');
+                  $scope.showOpen = false;
+                  $scope.showCode = true;
+                } else {
+                  $scope.$emit("alert", res.errmsg);
+                }
+              });
             } else {
                 console.log('You are not sure');
             }
@@ -160,6 +169,7 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
               console.log(res.data)
               $scope.data = res.data;
               $scope.imgUrl = res.data.proUrl;
+              $scope.getDetail = true;
               if (res.data.pwdFlag) {
                 $scope.showCode = true;
                 $scope.openCode = res.data.sonPwd;
@@ -702,7 +712,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
             Storage.remove('cateHomeOrigin');
         }
         $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
-        // $scope.banners && $scope.changeTab($scope.banners[0],0);
+        $scope.banners && $scope.changeTab($scope.banners[0],0);
     });
     $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
         if (r.ret) {
@@ -747,11 +757,12 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         $scope.items = [];
         $scope.currentTab = tab.codeKey;
         $scope.currentIndex = index;
+        var query = $scope.searchQuery ? {query: $scope.searchQuery} : '';
         Items.setCurrentTab(tab.codeKey);
-        Items.fetchTopItems().then(function(data) {
+        Items.fetchTopItems(query).then(function(data) {
             $scope.isFirst = false;
             $scope.items = data;
-            $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
         if (!index) {
             index = GetCateIndex($scope.currentTab);
@@ -764,7 +775,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         Items.fetchTopItems({ 'query': query }).then(function(data) {
             $scope.isFirst = false;
             $scope.items = data;
-            $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
 
     }
@@ -869,14 +880,16 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
     Items, FetchData, Categories) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
+      $scope.$emit('alert','该功能正在开发，请以后版本尝试')
+      $state.go('appIndex')
         $rootScope.hideTabs = '';
     });
 
-    FetchData.get('/api/banners').then(function(data) {
-        $scope.banners = data.banners;
-        $ionicSlideBoxDelegate.$getByHandle('image-viewer').update();
-        $ionicSlideBoxDelegate.$getByHandle('image-viewer').loop(true);
-    });
+    // FetchData.get('/api/banners').then(function(data) {
+    //     $scope.banners = data.banners;
+    //     $ionicSlideBoxDelegate.$getByHandle('image-viewer').update();
+    //     $ionicSlideBoxDelegate.$getByHandle('image-viewer').loop(true);
+    // });
 
     $scope.ngCart = ngCart;
 
@@ -899,10 +912,10 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
     $scope.boards = [];
     var page = 0;
 
-    Board.getBoards(page).then(function(data) {
-        $scope.boards = data.boards;
-        page++;
-    });
+    // Board.getBoards(page).then(function(data) {
+    //     $scope.boards = data.boards;
+    //     page++;
+    // });
 
     $scope.doRefresh = function() {
         page = 0;
@@ -913,13 +926,13 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
         $scope.$broadcast('scroll.refreshComplete');
     };
 
-    $scope.loadMore = function() {
-        Board.getBoards(page).then(function(data) {
-            $scope.boards = $scope.boards.concat(data.boards);
-            $scope.$broadcast('scroll.infiniteScrollComplete');
-            page++;
-        });
-    };
+    // $scope.loadMore = function() {
+    //     Board.getBoards(page).then(function(data) {
+    //         $scope.boards = $scope.boards.concat(data.boards);
+    //         $scope.$broadcast('scroll.infiniteScrollComplete');
+    //         page++;
+    //     });
+    // };
 
     $scope.moreDataCanBeLoaded = function() {
         return Board.hasNextPage();
@@ -1271,13 +1284,13 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
     };
     $scope.user = AuthService;
 
-    $scope.onUserDetailContentScroll = onUserDetailContentScroll;
-
-    function onUserDetailContentScroll() {
-        var scrollDelegate = $ionicScrollDelegate.$getByHandle('userDetailContent');
-        var scrollView = scrollDelegate.getScrollView();
-        $scope.$broadcast('userDetailContent.scroll', scrollView);
-    }
+    // $scope.onUserDetailContentScroll = onUserDetailContentScroll;
+    //
+    // function onUserDetailContentScroll() {
+    //     var scrollDelegate = $ionicScrollDelegate.$getByHandle('userDetailContent');
+    //     var scrollView = scrollDelegate.getScrollView();
+    //     $scope.$broadcast('userDetailContent.scroll', scrollView);
+    // }
 
     $scope.gridStyle = 'list';
     $scope.switchListStyle = function(style) {
@@ -1380,7 +1393,7 @@ function profileCtrl($scope, AuthService, $state, $rootScope,
             allowEdit: true
         }).then(function(image) {
             var formData = new FormData();
-            formData.append('img', dataURLtoBlob(image));
+            formData.append('img', image);
           $http({
             url: ENV.SERVER_URL + '/mall/vip/updateImg',
             method: "POST",
@@ -1390,13 +1403,12 @@ function profileCtrl($scope, AuthService, $state, $rootScope,
                 return formData;
               }
             }).then(function (response) {
-                   console.log(dataURLtoBlob(image).size)
-     console.log(333)
               $scope.$emit('alert', "头像上传成功");
+              AuthService.refreshUser().then(function (){
+                $state.go('shopTab.account')
+              })
             },function(e){
-            console.log(ENV.SERVER_URL + '/mall/vip/updateImg')
-                   console.log(dataURLtoBlob(image).size)
-                console.log(e.status)
+              $scope.$emit('alert', "上传出错，请稍后重试");
             });
             // PhotoService.upload(image, filename,
             //     function(data) {
@@ -1411,7 +1423,6 @@ function profileCtrl($scope, AuthService, $state, $rootScope,
             //         $rootScope.$broadcast('alert', "头像上传失败");
             //     });
             //
-               console.log(222)
      }).catch(function() {
             console.warn('Deu erro');
         });
@@ -1435,20 +1446,57 @@ function bindEmailCtrl($rootScope, $scope, AuthService) {
     };
 }
 
-function forgotPWCtrl($rootScope, $scope, AuthService) {
-    $scope.submit = function() {
-        AuthService.forgotPassword($scope.forgotPWForm.email)
-            .then(function() {
-                $rootScope.$broadcast('forgotPWModal:hide');
-                $scope.$emit('alert', "邮件已发送至您的邮箱");
-            }).catch(function(data) {
-                if (data) {
-                    $scope.$emit('alert', data.error);
-                } else {
-                    $scope.$emit('alert', 'Something went wrong..');
-                }
-            })
-    };
+function forgotPWCtrl($rootScope, $scope, AuthService,$http,ENV,$interval) {
+  $scope.validateTime = "获取验证码";
+  $scope.validateCode = '';
+  $scope.sendStatus = false;
+  $scope.timeout = null;
+  $scope.getValidateCode = function() {
+    if ($scope.phone) {
+      $http.get(ENV.SERVER_URL + '/mall/vip/login/getCode?type=3&phone=' + $scope.phone).success(function(data) {
+        if (data.ret) {
+          $scope.$emit('alert', "发送验证码成功");
+          var timeRemaining;
+          if (!$scope.sendStatus) {
+              timeRemaining = 60;
+              $scope.sendStatus = true;
+              $scope.timeout = $interval(function() {
+                  if (timeRemaining <= 1) {
+                      $scope.sendStatus = false;
+                      $scope.validateTime = "重新获取";
+                      $interval.cancel($scope.timeout)
+                  } else {
+                      timeRemaining--;
+                      $scope.validateTime = timeRemaining + '  秒';
+                  }
+              }, 1000)
+          }
+        } else {
+          $scope.$emit('alert', "验证码发送失败，请稍后再试");
+        }
+      })
+    } else {
+      $scope.$emit('alert', "请输入正确的手机号");
+    }
+  };
+  $scope.submit = function() {
+    if ($scope.password && ($scope.password === $scope.password1)) {
+      $http.post(ENV.SERVER_URL + '/mall/vip/app/resetPwd?code='
+        + $scope.validateCode +'&phone=' + $scope.phone +'&newPwd='+ $scope.password)
+        .success(function(res) {
+          if (res.ret) {
+            $scope.$emit('alert', res.data || "修改成功，请重新登录");
+          } else {
+            $scope.$emit('alert', res.errmsg || "验证出错，请稍后再试");
+          }
+        });
+    } else{
+      $scope.$emit('alert', '请两次密码保持一致');
+    }
+  };
+  $scope.canSave = function (){
+    return $scope.phone && $scope.validateCode && $scope.password && $scope.password1
+  }
 }
 
 function signupCtrl($rootScope, $scope, AuthService, $state,$http,ENV) {
@@ -1898,6 +1946,7 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
     };
 
     $scope.loadMore = function() {
+      debugger
         Items.searchItems(query, sub_cate, page).then(function(data) {
           debugger
             $scope.items = $scope.items.concat(data);
@@ -1937,6 +1986,7 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
         })
     };
     $scope.addToCart = function(item) {
+      debugger
         ngCart.addItem(item.id, item.name, item.price, 1, item);
         // $scope.$emit("alert", "成功添加到购物车！");
     }
@@ -2035,23 +2085,45 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
             }
         });
     };
+    $scope.doneOrder = function() {
+        var confirmPopup = $ionicPopup.confirm({
+            title: '确定已收到货?',
+        });
+        confirmPopup.then(function(res) {
+            if (res) {
+              orderOpt.done($scope.order.id, 3);
+            } else {
+                console.log('You are not sure');
+            }
+        });
+    };
 }
 
-function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData, ngCart) {
+function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData, ngCart, $http) {
     //商品详情
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
     });
 
-    $scope.allStatus = [];
-    FetchData.get('/api/orders/get/' + $stateParams.order_id).then(function(data) {
-        $scope.ngCart = ngCart;
-        $scope.order = data.order;
-        $scope.logistic = data.order.logistics[0];
-        angular.forEach($scope.logistic.all_status, function(status, index) {
-            $scope.allStatus.push(status.status);
+    FetchData.get('/mall/maorder/query?code='+$stateParams.order_id+'&status=').then(function(res) {
+        $scope.order = res.data.data[0];
+        // var url = 'http://api.kuaidi100.com/api?id=[]&show=0&muti=1&order=desc&com='+$scope.order.trackingCode+'&nu='+$scope.order.trackingNum
+        var url = '/mall/maorder/express/query?id'
+        FetchData.get('/mall/maorder/express/query?id='+$scope.order.id).then(function(res) {
+            $scope.logistics = res.data.data;
+            $scope.logisticDetail = res.data;
         });
     });
+
+    $scope.allStatus = [];
+    // FetchData.get('/api/orders/get/' + $stateParams.order_id).then(function(data) {
+    //     $scope.ngCart = ngCart;
+    //     $scope.order = data.order;
+    //     $scope.logistic = data.order.logistics[0];
+    //     angular.forEach($scope.logistic.all_status, function(status, index) {
+    //         $scope.allStatus.push(status.status);
+    //     });
+    // });
 
     $scope.currTab = 0;
     $scope.goTab = function(index, lo) {

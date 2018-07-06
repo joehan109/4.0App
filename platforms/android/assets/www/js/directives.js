@@ -108,7 +108,7 @@ angular.module('maybi.directives', [])
               var sheet = {};
               sheet.buttonClicked = buttonClicked;
               sheet.buttons = [{
-                text: '<i class="icon"><img class="aliIcon" src="../img/ali.png" /></i> 支付宝支付$'
+                text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付$'
               }];
               sheet.cancelOnStateChange = true;
 
@@ -138,6 +138,10 @@ angular.module('maybi.directives', [])
                   receiptDetail:data.detail
                 }
                 if (attrs.ordertype == 'new') {
+                  if (!order.receiptId){
+                    scope.$emit('alert', '请选择收货地址');
+                    return;
+                  }
                   fulfilmentProvider.checkout(order, function(){
                     $ionicActionSheet.hide();
                   })
@@ -282,6 +286,7 @@ angular.module('maybi.directives', [])
                 }
               })
             }
+            var isFisrt = !scope.addresses.length;
             $ionicModal.fromTemplateUrl('add_address.html', {
                 scope: scope,
                 animation: 'slide-in-right'
@@ -324,7 +329,7 @@ angular.module('maybi.directives', [])
                     });
                 } else {
                     FetchData.post('/mall/receipt/save'+utils.formatGetParams({
-                      'flag': 0,
+                      'flag': isFisrt ? 1 : 0,
                       'name': scope.addr.name,
                       'detail': scope.addr.detail,
                       'postcode': scope.addr.postcode,

@@ -4,7 +4,7 @@
         <div class="title">扫码开锁</div>
     </div>
     <ion-content class="has-header account">
-        <div style="display:flex;flex-direction:row">
+        <div style="display:flex;flex-direction:row" ng-if="getDetail">
             <img style="height:150px;width:150px;" ng-src="{{imgUrl}}" alt="">
             <div style="display: flex;flex-direction: column;justify-content: space-around;margin: 10px 5px;">
               <p>{{data.proName}}</p>

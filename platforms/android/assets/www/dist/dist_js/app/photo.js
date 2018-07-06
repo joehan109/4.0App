@@ -52,7 +52,7 @@ function PhotoService($ionicActionSheet, ENV, $jrCrop, $rootScope, $http,
         if (window.cordova) {
             capture(options)
                 .then(function (image) {
-                    console.log(image,'resolved image');
+                    console.log('resolved image');
                     defer.resolve(image);
                 })
         } else {

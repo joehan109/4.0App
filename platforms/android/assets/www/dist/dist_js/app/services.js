@@ -426,7 +426,18 @@ angular.module('maybi.services', [])
             getUser: function() {
                 return user;
             },
-
+            refreshUser:function () {
+              var deferred = $q.defer();
+              $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
+                  user = data.data;
+                  if (user) {
+                    Storage.set('user', data.data);
+                    Storage.set('access_token', data.data.name);
+                  }
+                  deferred.resolve();
+              });
+              return deferred.promise;
+            }
         };
     }])
     .factory('User', ['ENV', '$http', '$state', '$q', function(ENV, $http, $state, $q) {
@@ -822,7 +833,7 @@ angular.module('maybi.services', [])
                 if(data.ret) {
                   $rootScope.$emit("alert", "订单删除成功！");
                   $state.go('tab.orders',{
-                      status_id: tabId || 3
+                      status_id: tabId || 0
                   }, {
                       reload: true
                   });
@@ -1032,7 +1043,7 @@ angular.module('maybi.services', [])
         };
 
         this.totalCost = function() {
-            return +parseFloat(this.getSubTotal() + this.getShipping()).toFixed(2);
+            return +parseFloat(this.getSubTotal() + this.$cart.shipping).toFixed(2);
         };
 
         this.removeItemById = function(id) {
@@ -1117,22 +1128,22 @@ angular.module('maybi.services', [])
         };
 
 
-        this.$restore = function(storedCart) {
-            var _self = this;
-            _self.init();
-            angular.forEach(storedCart.items, function(item) {
-                if (item.id) {
-                    _self.$cart.items.push(new ngCartItem(item._id, item._name, item._price, item._quantity, item));
-                }
-            });
-            this.$save();
-        };
+        // this.$restore = function(storedCart) {
+        //     var _self = this;
+        //     _self.init();
+        //     angular.forEach(storedCart.items, function(item) {
+        //         if (item.id) {
+        //             _self.$cart.items.push(new ngCartItem(item._id, item._name, item._price, item._quantity, item));
+        //         }
+        //     });
+        //     this.$save();
+        // };
 
         this.$loadCart = function(cart) {
             var _self = this;
             _self.init();
             angular.forEach(cart, function(item) {
-                _self.$cart.items.push(new ngCartItem(item.id, item.name, item.price, item.num, item));
+                _self.$cart.items.push(new ngCartItem(item.maProId, item.name, item.price, item.num, item));
             });
             this.$save();
         };

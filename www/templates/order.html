@@ -92,9 +92,15 @@
           orderid={{order.id}}>
             去付款
         </ngcart-checkout>
-        <button class="button button-clear" ng-disabled="order.payment_status=='PAID'"
+        <a class="button button-default"
+            href="#/order/logistics/{{order.code}}"
             ng-if="order.status=='1' || order.status=='2'">
-            已付款
+            查看物流
+        </a>
+        <button class="button button-energized"
+            ng-click="doneOrder()"
+            ng-if="order.status=='1' || order.status=='2'">
+            确认收货
         </button>
         <button class="button button-default"
             ng-click="cancelOrder()"
