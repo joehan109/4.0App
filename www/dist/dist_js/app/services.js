@@ -217,6 +217,15 @@ angular.module('maybi.services', [])
                               Storage.set('user', data.data);
                               Storage.set('access_token', data.data.name);
                             }
+                            if (data.savePW && data.type === 'common') {
+                              var pws = Storage.get('userPassword') || [];
+                              angular.forEach(pws, function (item) {
+                                if (item.name == data.data.name) {
+                                  item.pwd = data.data.pwd
+                                }
+                              });
+                              Storage.set('userPassword', pws);
+                            }
                             deferred.resolve();
                             $state.go('appIndex')
                         });

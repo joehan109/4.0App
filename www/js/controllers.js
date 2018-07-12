@@ -1044,7 +1044,7 @@ function likePostsCtrl($scope, $rootScope, $state, $ionicModal,
 }
 
 function authCtrl($rootScope, $scope, FetchData, $state,
-    AuthService, $ionicModal, $cordovaFacebook, $interval,$http,ENV) {
+    AuthService, $ionicModal, $cordovaFacebook, $interval,$http,ENV, Storage) {
 
     $scope.commonLogin = false;
     $scope.checkLogin = function(i) {
@@ -1053,6 +1053,19 @@ function authCtrl($rootScope, $scope, FetchData, $state,
     $scope.validateTime = "获取验证码";
     $scope.sendStatus = false;
     $scope.timeout = null;
+    $scope.savePW = true;
+    $scope.autoLogin = true;
+
+    $scope.$watch('email',function (newVal, oldVal) {
+      if (newVal && $scope.savePW) {
+        var pws = Storage.get('userPassword') || [];
+        angular.forEach(pws, function (item) {
+          if (item.name == newVal) {
+            $scope.password = item.pwd;
+          }
+        });
+      }
+    });
     $scope.getValidateCode = function() {
       if ($scope.phone) {
         $http.get(ENV.SERVER_URL + '/mall/vip/login/getCode?type=0&phone=' + $scope.phone).success(function(data) {
@@ -1092,6 +1105,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
             'name':$scope.email,
             'pwd':$scope.password
           };
+          $scope.params.savePW = $scope.savePW;
         } else {
           $scope.params.type = 'phone';
           $scope.params.data = {

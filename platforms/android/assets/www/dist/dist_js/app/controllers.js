@@ -18,7 +18,7 @@ csCtrl.$inject = ['$rootScope', '$scope'];
 faqCtrl.$inject = ['$rootScope', '$scope'];
 couponsCtrl.$inject = ['$rootScope', '$scope', 'AuthService'];
 categoryCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state'];
-authCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'AuthService', '$ionicModal', '$cordovaFacebook', '$interval', '$http', 'ENV'];
+authCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'AuthService', '$ionicModal', '$cordovaFacebook', '$interval', '$http', 'ENV', 'Storage'];
 signupCtrl.$inject = ['$rootScope', '$scope', 'AuthService', '$state', '$http', 'ENV'];
 accountCtrl.$inject = ['$rootScope', '$scope', 'AuthService', 'User', 'Photogram', '$ionicScrollDelegate', 'Storage'];
 profileCtrl.$inject = ['$scope', 'AuthService', '$state', '$rootScope', 'PhotoService', '$http', 'ENV', '$ionicPopup'];
@@ -757,11 +757,12 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         $scope.items = [];
         $scope.currentTab = tab.codeKey;
         $scope.currentIndex = index;
+        var query = $scope.searchQuery ? {query: $scope.searchQuery} : '';
         Items.setCurrentTab(tab.codeKey);
-        Items.fetchTopItems().then(function(data) {
+        Items.fetchTopItems(query).then(function(data) {
             $scope.isFirst = false;
             $scope.items = data;
-            $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
         if (!index) {
             index = GetCateIndex($scope.currentTab);
@@ -774,7 +775,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         Items.fetchTopItems({ 'query': query }).then(function(data) {
             $scope.isFirst = false;
             $scope.items = data;
-            $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
 
     }
@@ -1086,7 +1087,7 @@ function likePostsCtrl($scope, $rootScope, $state, $ionicModal,
 }
 
 function authCtrl($rootScope, $scope, FetchData, $state,
-    AuthService, $ionicModal, $cordovaFacebook, $interval,$http,ENV) {
+    AuthService, $ionicModal, $cordovaFacebook, $interval,$http,ENV, Storage) {
 
     $scope.commonLogin = false;
     $scope.checkLogin = function(i) {
@@ -1095,6 +1096,19 @@ function authCtrl($rootScope, $scope, FetchData, $state,
     $scope.validateTime = "获取验证码";
     $scope.sendStatus = false;
     $scope.timeout = null;
+    $scope.savePW = true;
+    $scope.autoLogin = true;
+
+    $scope.$watch('email',function (newVal, oldVal) {
+      if (newVal && $scope.savePW) {
+        var pws = Storage.get('userPassword') || [];
+        angular.forEach(pws, function (item) {
+          if (item.name == newVal) {
+            $scope.password = item.pwd;
+          }
+        });
+      }
+    });
     $scope.getValidateCode = function() {
       if ($scope.phone) {
         $http.get(ENV.SERVER_URL + '/mall/vip/login/getCode?type=0&phone=' + $scope.phone).success(function(data) {
@@ -1134,6 +1148,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
             'name':$scope.email,
             'pwd':$scope.password
           };
+          $scope.params.savePW = $scope.savePW;
         } else {
           $scope.params.type = 'phone';
           $scope.params.data = {

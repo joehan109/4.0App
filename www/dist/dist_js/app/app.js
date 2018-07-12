@@ -204,7 +204,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
             url: '/scan',
             controller: 'scanCtrl',
             templateUrl: 'scan.html',
-            loginRequired: true,
+            loginRequired: true
         })
 
     .state('shopTab.cateHome', {

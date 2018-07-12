@@ -14628,6 +14628,19 @@ input.ion-google-place[readonly] {
     .loginTab .loginTabName.isSelected {
       border-bottom: 3px solid #6fd6b9; }
 
+.codeBtn {
+  background-color: #fff;
+  border: 1px solid #6fd6b9 !important;
+  margin: 0 !important;
+  /* padding: 0px 10px; */
+  height: 32px;
+  min-height: 20px !important;
+  line-height: 32px;
+  font-size: 14px; }
+
+.disableCodeBtn {
+  border: 1px solid #eee !important; }
+
 .appIndex .indexSlide {
   height: 150px; }
   .appIndex .indexSlide .box img {
@@ -14926,16 +14939,16 @@ ion-tabs.tabs-color-active-positive .tab-item.tab-item-active, ion-tabs.tabs-col
       height: 36px;
       display: block;
       margin: 0 auto; }
-      .icon1.category {
+      .homepage .intro-box .icon.category {
         background: url("../img/icons/category.png") no-repeat;
         background-size: 36px; }
-      .icon1.calculate {
+      .homepage .intro-box .icon.calculate {
         background: url("../img/icons/calculate.png") no-repeat;
         background-size: 36px; }
-      .icon1.limit {
+      .homepage .intro-box .icon.limit {
         background: url("../img/icons/limit.png") no-repeat;
         background-size: 36px; }
-      .icon1.send {
+      .homepage .intro-box .icon.send {
         background: url("../img/icons/send_list.png") no-repeat;
         background-size: 36px; }
     .homepage .intro-box p {
