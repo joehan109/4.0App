@@ -1,30 +1,26 @@
 <!-- 商品详情 -->
 <ion-view>
     <div class="buttons">
-      <button class="button button-clear icon ion-ios-arrow-back item-header-button" ng-click="$ionicGoBack()"></button>
+        <button class="button button-clear icon ion-ios-arrow-back item-header-button" ng-click="$ionicGoBack()"></button>
     </div>
 
-  <ion-content class="item-page has-footer">
+    <ion-content class="item-page has-footer">
 
-    <ion-slide-box delegate-handle="image-viewer"
-        ng-style="{'height':(item.mainList.length?'200px':'0px'),'padding-top':(item.mainList.length?'0':'100%')}">
-        <ion-slide ng-repeat="img in item.mainList track by $index">
-            <img
-              ng-src="{{ img.imgUrl }}"
-              ng-click="zoom(img.url)"
-              />
-        </ion-slide>
-    </ion-slide-box>
+        <ion-slide-box delegate-handle="image-viewer" ng-style="{'height':(item.mainList.length?'200px':'0px'),'padding-top':(item.mainList.length?'0':'100%')}">
+            <ion-slide ng-repeat="img in item.mainList track by $index">
+                <img ng-src="{{ img.imgUrl }}" ng-click="zoom(img.url)" />
+            </ion-slide>
+        </ion-slide-box>
 
-    <ion-item class="item item-details">
-        <div class="item-title" style="color:red">
-            {{item.price | currency:'￥'}}
-        </div>
-        <div class="product-prices">
-            <span class="curr-price">{{ item.name }}</span>
-        </div>
-    </ion-item>
-    <!-- <ion-item class="item item-details">
+        <ion-item class="item item-details">
+            <div class="item-title" style="color:red">
+                {{item.price | currency:'￥'}}
+            </div>
+            <div class="product-prices">
+                <span>{{ item.name }}</span>
+            </div>
+        </ion-item>
+        <!-- <ion-item class="item item-details">
         <div class="item-info">
             <div class="item-info-table">
                 <dl class="item-info-field">
@@ -46,29 +42,26 @@
             </div>
         </div>
     </ion-item> -->
-    <ion-item class="item item-desc">
-        <p class="info-header">商品详情:</p>
-        {{item.name}}
-        <img ng-src='{{ img.imgUrl }}' ng-repeat="img in item.detailList track by $index" />
-        <div class="description" ng-bind-html="item.detail"></div>
-    </ion-item>
-  </ion-content>
-  <div class="bar bar-footer bar-light item-bottom-bar">
-      <a ng-click="favor(item.id)" class="only-btn">
-        <i class="icon ion-ios-heart" ng-class="{'like-icon energized':item.collectFlag, 'dark':!item.collectFlag}"></i>
-        <span>收藏</span>
-      </a>
-      <a href="#/cart" class="only-btn">
-        <i class="icon ion-ios-cart"></i>
-        <span>购物车</span>
-      </a>
-      <a class="add-to-cart item-bar-icon"
-          ng-click="showSpecsBox()">
+        <ion-item class="item item-desc">
+            <p class="info-header">商品详情:</p>
+            <img ng-src='{{ img.imgUrl }}' ng-repeat="img in item.detailList track by $index" />
+            <div class="description" ng-bind-html="item.detail"></div>
+        </ion-item>
+    </ion-content>
+    <div class="bar bar-footer bar-light item-bottom-bar">
+        <a ng-click="favor(item.id)" class="only-btn">
+            <i class="icon ion-ios-star" ng-class="{'like-icon energized':item.collectFlag, 'dark':!item.collectFlag}"></i>
+            <span>收藏</span>
+        </a>
+        <a href="#/cart" class="only-btn">
+            <i class="icon ion-ios-cart"></i>
+            <span>购物车</span>
+        </a>
+        <a class="add-to-cart item-bar-icon" ng-click="showSpecsBox()">
           加入购物车
-      </a>
-      <a class="buy-rightnow item-bar-icon"
-          ng-click="showSpecsBuy()">
+        </a>
+        <a class="buy-rightnow item-bar-icon" ng-click="showSpecsBuy()">
           立即购买
       </a>
-  </div>
+    </div>
 </ion-view>

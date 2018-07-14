@@ -1,118 +1,224 @@
-.button-energized{
-  background-color: $energized
+// 修改全局弹窗样式
+.popup-container .popup {
+    border-radius: 5px;
 }
-.loginTab{
-  display: flex;
-  justify-content:center;
-  margin-top: 100px;
-  .loginTabName{
-    font-size: 16px;
-    padding: 10px;
-    border-bottom: 1px solid $assertive;
-    &.isSelected{
-      border-bottom:3px solid $assertive;
+
+.popup-head {
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+    border: 0 none;
+}
+
+.popup-body {
+    padding: 0;
+    min-height: 100px;
+    text-align: center;
+    vertical-align: middle;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.popup-buttons {
+    padding: 0;
+    min-height: 45px;
+    border-top: 1px solid #aaa;
+}
+
+.button-energized {
+    background-color: $energized
+}
+
+.loginTab {
+    display: flex;
+    justify-content: center;
+    margin-top: 100px;
+    .loginTabName {
+        font-size: 16px;
+        padding: 10px;
+        border-bottom: 1px solid $assertive;
+        &.isSelected {
+            border-bottom: 3px solid $assertive;
+        }
     }
-  }
 }
-.codeBtn{
-  background-color: #fff;
-  border: 1px solid $assertive!important;
-  margin: 0!important;
-  /* padding: 0px 10px; */
-  height: 32px;
-  min-height: 20px!important;
-  line-height: 32px;
-  font-size: 14px;
+
+.codeBtn {
+    background-color: #fff;
+    border: 1px solid $assertive!important;
+    margin: 0!important;
+    padding: 0px 10px!important;
+    height: 32px;
+    min-height: 20px!important;
+    line-height: 32px;
+    font-size: 14px;
 }
-.disableCodeBtn{
-  border: 1px solid #eee!important;
+
+.disableCodeBtn {
+    border: 1px solid #eee!important;
 }
-.appIndex{
-  .indexSlide{
-    height: 150px;
-    .box{
-      img{
+
+.appIndex {
+    .indexSlide {
         height: 150px;
-        width:100%;
-      }
+        .box {
+            img {
+                height: 150px;
+                width: 100%;
+            }
+        }
     }
-  }
-  .chooseTypes{
+    .chooseTypes {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        margin-top: 50px;
+        .chooseType {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            .icon {
+                font-size: 50px;
+                color: $energized;
+                padding: 5px;
+            }
+        }
+    }
+    .icon1 {
+        vertical-align: middle;
+        width: 36px;
+        height: 36px;
+        display: block;
+        margin: 0 auto;
+        &.category {
+            background: url("../img/icons/category.png") no-repeat;
+            background-size: 36px;
+        }
+        &.calculate {
+            background: url("../img/icons/calculate.png") no-repeat;
+            background-size: 36px;
+        }
+        &.limit {
+            background: url("../img/icons/limit.png") no-repeat;
+            background-size: 36px;
+        }
+        &.send {
+            background: url("../img/icons/send_list.png") no-repeat;
+            background-size: 36px;
+        }
+    }
+}
+
+.cateHomeSlide {
+    height: 150px;
+    margin-bottom: 10px;
+    .box {
+        img {
+            height: 200px;
+            width: 100%;
+        }
+    }
+}
+
+.itemCart {
+    bottom: 0;
+    .popup {
+        height: 250px;
+        bottom: 0;
+        position: absolute;
+        width: 100%;
+    }
+}
+
+.item-icon-left,
+.item-icon-right {
+    .icon {
+        font-size: 26px;
+    }
+}
+
+.addressForm {
+    .input-label {
+        width: 75px;
+    }
+}
+
+.item-bottom-bar {
+    padding: 0;
+    display: flex;
+    border-bottom: 0 none!important;
+    .only-btn {
+        margin: 0 10px;
+        width: 40px;
+        text-align: center
+    }
+    i.icon {
+        font-size: 24px;
+        display: block;
+        text-align: center;
+    }
+    span {
+        font-size: 6px;
+    }
+    .item-bar-icon {
+        flex: 1;
+        text-align: center;
+        color: #fff;
+        line-height: 44px;
+        font-size: 14px;
+    }
+    .add-to-cart {
+        background-color: #aaa
+    }
+    .buy-rightnow {
+        background-color: $energized;
+    }
+}
+
+.aliIcon {
+    height: 30px;
+    background-color: black;
+    vertical-align: middle;
+}
+
+.item-thumbnail-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.spec-info-field {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    margin-top: 50px;
-    .chooseType{
-      display: flex;
-      flex-direction: column;
-      text-align: center;
-      .icon{
-        font-size: 50px;
-        color: $energized;
-        padding: 5px;
-      }
+    justify-content: space-between;
+}
+
+.itemCart .popup {
+    height: 230px;
+}
+
+.itemTab {
+    padding-bottom: 15px;
+    padding-top: 15px;
+    padding-left: 45px;
+    .icon {
+        font-size: 20px;
+        font-weight: bold;
+        left: 7px;
+        &::before {
+            font-weight: bold;
+        }
     }
-  }
-}
-.cateHomeSlide{
-  height: 150px;
-  margin-bottom: 10px;
-  .box{
-    img{
-      height: 200px;
-      width:100%;
+    .ion-ios-arrow-right {
+        color: #ddd;
+        font-size: 26px;
+        &::before {
+            font-weight: normal;
+        }
     }
-  }
 }
-.itemCart{
-  bottom: 0;
-  .popup{
-    height: 250px;
-    bottom: 0;
-    position: absolute;
-    width: 100%;
-  }
-}
-.item-icon-left, .item-icon-right{
-  .icon{
-    font-size:26px;
-  }
-}
-.addressForm{
-  .input-label{
-    width: 75px;
-  }
-}
-.item-bottom-bar{
-  padding:0;
-  display: flex;
-  .only-btn{
-    margin: 0 10px;
-  }
-  i.icon{
-    font-size: 24px;
-    display: block;
-    text-align: center;
-  }
-  span{
-    font-size: 6px;
-  }
-  .item-bar-icon{
-    flex:1;
-    text-align: center;
-    color:#fff;
-    line-height: 44px;
-    font-size: 14px;
-  }
-  .add-to-cart{
-    background-color: #aaa
-  }
-  .buy-rightnow{
-    background-color: $energized;
-  }
-}
-.aliIcon{
-  height: 30px;
-  background-color: black;
-  vertical-align: middle;
+
+.orderButtons Button {
+    margin-left: 5px;
 }

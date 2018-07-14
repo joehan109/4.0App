@@ -14,7 +14,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
 
 .run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$ionicSlideBoxDelegate', '$cordovaBarcodeScanner', 'orderOpt', 'AlipayService', function($ionicPlatform, $rootScope, $state, JPush,
     $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast,
-    amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate, $cordovaBarcodeScanner,orderOpt,AlipayService) {
+    amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate, $cordovaBarcodeScanner, orderOpt, AlipayService) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -482,7 +482,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'logistics.html',
                 controller: 'logisticsDetailCtrl'
             }
-        }
+        },
+        loginRequired: true
     })
 
     .state('tab.order_transfer', {
@@ -502,7 +503,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'expressForm.html',
                 controller: 'expressCtrl'
             }
-        }
+        },
+        loginRequired: true
     })
 
     .state('tab.express_add', {
@@ -522,7 +524,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'item.html',
                 controller: 'itemCtrl',
             }
-        }
+        },
+        loginRequired: true
     })
 
 
