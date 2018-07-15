@@ -5,16 +5,16 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
+angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     'angularMoment', 'templates', 'ionic-native-transitions',
     'ion-BottomSheet', 'ion-affix', 'ion-photo', 'ion-geo',
-    'maybi.controllers', 'maybi.services', 'maybi.directives', 'maybi.photogram',
-    'maybi.constants', 'maybi.filters', 'tag-select'
+    'fourdotzero.controllers', 'fourdotzero.services', 'fourdotzero.directives', 'fourdotzero.photogram',
+    'fourdotzero.constants', 'fourdotzero.filters', 'tag-select', 'timer'
 ])
 
 .run(function($ionicPlatform, $rootScope, $state, JPush,
     $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast,
-    amMoment, AuthService, ngCart, Storage, FetchData, $ionicSlideBoxDelegate, $cordovaBarcodeScanner,orderOpt,AlipayService) {
+    amMoment, AuthService, ngCart, Storage, FetchData, $location, $ionicPopup) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -48,6 +48,39 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
 
     });
 
+    // 注册安卓返回键
+    $ionicPlatform.registerBackButtonAction(function(e) {
+        e.preventDefault();
+
+        function showConfirm() {
+            var confirmPopup = $ionicPopup.confirm({
+                title: '<strong>退出应用?</strong>',
+                template: '你确定要退出应用吗?',
+                okText: '退出',
+                cancelText: '取消'
+            });
+
+            confirmPopup.then(function(res) {
+                if (res) {
+                    ionic.Platform.exitApp();
+                } else {
+                    // Don't close
+                }
+            });
+        }
+
+        // Is there a page to go back to?
+        if ($location.path() == '/appIndex') {
+            showConfirm();
+        } else if ($ionicHistory.backView()) {
+            $ionicHistory.goBack();
+        } else {
+            // This is the last page: Show confirmation popup
+            showConfirm();
+        }
+
+        return false;
+    }, 101);
     // set moment locale
     amMoment.changeLocale('zh-cn');
 
@@ -111,7 +144,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 //     }).catch(function() {
                 //         Storage.remove('access_token');
                 //     })
-            } else if (next.loginRequired) {
+                // } else if (next.loginRequired) {
+            } else {
                 $rootScope.authDialog.show();
             }
         }
@@ -130,14 +164,14 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
         $ionicLoading.hide()
     });
 
-    $rootScope.$on('alert', function(event, msg, options) {
+    $rootScope.$on('alert', function(event, msg, options, duration) {
         if (window.cordova) {
             $cordovaToast.show(msg, 'short', 'center');
         } else {
             var o = options || {};
             angular.extend(o, {
                 template: msg || '<ion-spinner icon="spiral"></ion-spinner>',
-                duration: 1000,
+                duration: duration || 1000,
             });
 
             $ionicLoading.show(o);
@@ -204,7 +238,7 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
             url: '/scan',
             controller: 'scanCtrl',
             templateUrl: 'scan.html',
-            loginRequired: true,
+            loginRequired: true
         })
 
     .state('shopTab.cateHome', {
@@ -482,7 +516,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'logistics.html',
                 controller: 'logisticsDetailCtrl'
             }
-        }
+        },
+        loginRequired: true
     })
 
     .state('tab.order_transfer', {
@@ -502,7 +537,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'expressForm.html',
                 controller: 'expressCtrl'
             }
-        }
+        },
+        loginRequired: true
     })
 
     .state('tab.express_add', {
@@ -522,7 +558,8 @@ angular.module('maybi', ['ionic', 'ionic.service.core', 'ngCordova',
                 templateUrl: 'item.html',
                 controller: 'itemCtrl',
             }
-        }
+        },
+        loginRequired: true
     })
 
 

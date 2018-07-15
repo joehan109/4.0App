@@ -21,16 +21,7 @@
     </div>
 
     <ion-content class="has-header has-subheader homepage" overflow-scroll="true">
-        <ion-slide-box
-          class="cateHomeSlide"
-          on-slide-changed="slideHasChanged2($index)"
-          auto-play="true"
-          does-continue="true"
-          slide-interval=2000
-          show-pager="true"
-          pager-click="pageClick(index)"
-          active-slide="model.activeIndex"
-          delegate-handle="delegateHandler2">
+        <ion-slide-box class="cateHomeSlide" on-slide-changed="slideHasChanged2($index)" auto-play="true" does-continue="true" slide-interval=2000 show-pager="true" pager-click="pageClick(index)" active-slide="model.activeIndex" delegate-handle="delegateHandler2">
             <ion-slide ng-repeat="item in tuijian track by $index">
                 <div class="box" ng-click="goItem(item.maProId)">
                     <img ng-src="{{item.detailUrl}}">
@@ -53,9 +44,9 @@
                         <img ng-src="{{item.mainUrl}}">
                     </div>
                     <div class="item item-text-wrap" href="#">
-                        <h2 class="product-title" style="overflow: hidden;">{{item.name}}</h2>
+                        <h3 class="product-title" style="overflow: hidden;">{{item.name}}</h3>
                         <p class="product-prices">
-                            <span class="curr-price">{{::item.price | currency:'￥'}}</span>
+                            <span class="curr-price" style="color:#333">{{::item.price | currency:'￥'}}</span>
                         </p>
                     </div>
                 </div>

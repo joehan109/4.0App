@@ -1,8 +1,8 @@
 "use strict";
 
-angular.module('maybi.services', [])
+angular.module('fourdotzero.services', [])
 
-    .factory('timeoutHttpIntercept', function() {
+.factory('timeoutHttpIntercept', function() {
         return {
             'request': function(config) {
                 config.timeout = 10000;
@@ -108,75 +108,75 @@ angular.module('maybi.services', [])
         }
     })
 
-    .service('share', function($rootScope, $ionicActionSheet) {
-        this.popup = showPopup;
+.service('share', function($rootScope, $ionicActionSheet) {
+    this.popup = showPopup;
 
-        function showPopup(item) {
-            var sheet = {};
-            sheet.cancelText = '取消';
-            sheet.buttonClicked = buttonClicked;
-            sheet.buttons = [{
-                text: '<i class="icon fa fa-weixin"></i> 发送给微信好友'
-            }, {
-                text: '<i class="icon fa fa-weixin"></i> 分享到朋友圈'
-            }, {
-                text: '<i class="icon fa fa-weibo"></i> 分享到微博'
-            }, {
-                text: '<i class="icon fa fa-qq"></i> 发送给QQ好友'
-            }];
+    function showPopup(item) {
+        var sheet = {};
+        sheet.cancelText = '取消';
+        sheet.buttonClicked = buttonClicked;
+        sheet.buttons = [{
+            text: '<i class="icon fa fa-weixin"></i> 发送给微信好友'
+        }, {
+            text: '<i class="icon fa fa-weixin"></i> 分享到朋友圈'
+        }, {
+            text: '<i class="icon fa fa-weibo"></i> 分享到微博'
+        }, {
+            text: '<i class="icon fa fa-qq"></i> 发送给QQ好友'
+        }];
 
-            $ionicActionSheet.show(sheet);
+        $ionicActionSheet.show(sheet);
 
-            function buttonClicked(index) {
+        function buttonClicked(index) {
 
-                var title = item.title;
-                var description = "美比，给您比邻中国的海外生活。";
-                var url = "http://may.bi/#/items/" + item.item_id;
-                var image = item.small_thumbnail;
+            var title = item.title;
+            var description = "美比，给您比邻中国的海外生活。";
+            var url = "http://may.bi/#/items/" + item.item_id;
+            var image = item.small_thumbnail;
 
-                var successCallback = function() {
-                    $rootScope.$broadcast('alert', "分享成功");
-                };
-                var failCallback = function(reason) {
-                    $rootScope.$broadcast('alert', reason);
-                };
+            var successCallback = function() {
+                $rootScope.$broadcast('alert', "分享成功");
+            };
+            var failCallback = function(reason) {
+                $rootScope.$broadcast('alert', reason);
+            };
 
-                if (index == 0 || index == 1) {
-                    window.Wechat.share({
-                        message: {
-                            title: title,
-                            description: description,
-                            thumb: image,
-                            media: {
-                                type: Wechat.Type.LINK,
-                                webpageUrl: url
-                            }
-                        },
-                        scene: index
-                    }, successCallback, failCallback);
-                } else if (index == 2) {
-                    var args = {};
-                    args.url = url;
-                    args.title = title;
-                    args.description = description;
-                    args.imageUrl = image;
-                    args.defaultText = "";
-                    window.YCWeibo.shareToWeibo(successCallback, failCallback, args);
-                } else if (index == 3) {
-                    var args = {};
-                    args.url = url;
-                    args.title = title;
-                    args.description = description;
-                    args.imageUrl = image;
-                    args.appName = "美比客户端";
-                    window.YCQQ.shareToQQ(function() {}, failCallback, args);
-                }
-
+            if (index == 0 || index == 1) {
+                window.Wechat.share({
+                    message: {
+                        title: title,
+                        description: description,
+                        thumb: image,
+                        media: {
+                            type: Wechat.Type.LINK,
+                            webpageUrl: url
+                        }
+                    },
+                    scene: index
+                }, successCallback, failCallback);
+            } else if (index == 2) {
+                var args = {};
+                args.url = url;
+                args.title = title;
+                args.description = description;
+                args.imageUrl = image;
+                args.defaultText = "";
+                window.YCWeibo.shareToWeibo(successCallback, failCallback, args);
+            } else if (index == 3) {
+                var args = {};
+                args.url = url;
+                args.title = title;
+                args.description = description;
+                args.imageUrl = image;
+                args.appName = "美比客户端";
+                window.YCQQ.shareToQQ(function() {}, failCallback, args);
             }
-        }
-    })
 
-    .factory('Storage', function() {
+        }
+    }
+})
+
+.factory('Storage', function() {
         return {
             set: function(key, data) {
                 return window.localStorage.setItem(key, window.JSON.stringify(data));
@@ -205,8 +205,8 @@ angular.module('maybi.services', [])
             login: function(data) {
                 var deferred = $q.defer();
                 var url = {
-                  'common':ENV.SERVER_URL + '/mall/vip/login',
-                  'phone':ENV.SERVER_URL + '/mall/vip/login/phone'
+                    'common': ENV.SERVER_URL + '/mall/vip/login',
+                    'phone': ENV.SERVER_URL + '/mall/vip/login/phone'
                 }[data.type];
                 $http.post(url, data.data).success(function(data, status) {
                     if (status === 200 && data.ret) {
@@ -214,17 +214,17 @@ angular.module('maybi.services', [])
                         $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
                             user = data.data;
                             if (user) {
-                              Storage.set('user', data.data);
-                              Storage.set('access_token', data.data.name);
+                                Storage.set('user', data.data);
+                                Storage.set('access_token', data.data.name);
                             }
                             if (data.savePW && data.type === 'common') {
-                              var pws = Storage.get('userPassword') || [];
-                              angular.forEach(pws, function (item) {
-                                if (item.name == data.data.name) {
-                                  item.pwd = data.data.pwd
-                                }
-                              });
-                              Storage.set('userPassword', pws);
+                                var pws = Storage.get('userPassword') || [];
+                                angular.forEach(pws, function(item) {
+                                    if (item.name == data.data.name) {
+                                        item.pwd = data.data.pwd
+                                    }
+                                });
+                                Storage.set('userPassword', pws);
                             }
                             deferred.resolve();
                             $state.go('appIndex')
@@ -336,12 +336,13 @@ angular.module('maybi.services', [])
                     Storage.remove('user');
                     Storage.remove('access_token');
                     // 清空购物车
-                    Storage.set('cart',{
-                      shipping: null,
-                      taxRate: null,
-                      tax: null,
-                      items: [],
-                      selectedItems: []});
+                    Storage.set('cart', {
+                        shipping: null,
+                        taxRate: null,
+                        tax: null,
+                        items: [],
+                        selectedItems: []
+                    });
                     window.location.href = "#/appIndex";
                     deferred.resolve();
                 }).error(function(data) {
@@ -415,10 +416,10 @@ angular.module('maybi.services', [])
                 }).success(function(data, status) {
                     if (status === 200 && data.ret) {
                         isAuthenticated = true;
-                        if(data.data) {
-                          user = data.data;
-                          Storage.set('user', data.data);
-                          Storage.set('access_token', data.data.name);
+                        if (data.data) {
+                            user = data.data;
+                            Storage.set('user', data.data);
+                            Storage.set('access_token', data.data.name);
                         }
                         deferred.resolve();
                         $state.go('appIndex');
@@ -427,7 +428,7 @@ angular.module('maybi.services', [])
                         deferred.reject(data.errmsg);
                     }
                 }).error(function(data) {
-                  deferred.reject();
+                    deferred.reject();
                 });
 
                 return deferred.promise;
@@ -435,17 +436,17 @@ angular.module('maybi.services', [])
             getUser: function() {
                 return user;
             },
-            refreshUser:function () {
-              var deferred = $q.defer();
-              $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
-                  user = data.data;
-                  if (user) {
-                    Storage.set('user', data.data);
-                    Storage.set('access_token', data.data.name);
-                  }
-                  deferred.resolve();
-              });
-              return deferred.promise;
+            refreshUser: function() {
+                var deferred = $q.defer();
+                $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
+                    user = data.data;
+                    if (user) {
+                        Storage.set('user', data.data);
+                        Storage.set('access_token', data.data.name);
+                    }
+                    deferred.resolve();
+                });
+                return deferred.promise;
             }
         };
     })
@@ -580,7 +581,7 @@ angular.module('maybi.services', [])
 
     })
 
-    .factory('Items', function(ENV, $http, $log, $q, $rootScope, Storage) {
+.factory('Items', function(ENV, $http, $log, $q, $rootScope, Storage) {
         // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
         var items = [];
         var currentTab = '';
@@ -599,8 +600,8 @@ angular.module('maybi.services', [])
                     currentPage: 1,
                     pageSize: perPage,
                 };
-                if (query && query.query){
-                  params.name = query.query
+                if (query && query.query) {
+                    params.name = query.query
                 }
                 currentTab && $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                     params: params
@@ -609,7 +610,7 @@ angular.module('maybi.services', [])
                         if (r.data.data.length < perPage) {
                             hasNextPage = false;
                         } else {
-                          hasNextPage = true;
+                            hasNextPage = true;
                         }
                         nextPage = 2;
                         deferred.resolve(r.data.data);
@@ -638,11 +639,11 @@ angular.module('maybi.services', [])
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
-                      if (r.data.data.length < perPage) {
-                          hasNextPage = false;
-                      } else {
-                        hasNextPage = true;
-                      }
+                        if (r.data.data.length < perPage) {
+                            hasNextPage = false;
+                        } else {
+                            hasNextPage = true;
+                        }
                         nextPage = 2;
                         deferred.resolve(r.data.data);
                         if (r.data.data.length === 0) {
@@ -677,10 +678,10 @@ angular.module('maybi.services', [])
                     currentPage: nextPage,
                     pageSize: perPage,
                 };
-                if (query && query.query){
-                  params.name = query.query
+                if (query && query.query) {
+                    params.name = query.query
                 }
-              $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
+                $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
                     params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
@@ -817,54 +818,56 @@ angular.module('maybi.services', [])
     })
     .service('orderOpt', function($rootScope, $http, FetchData, Storage, ENV, $state) {
         return {
-          cancel:cancel,
-          del:del,
-          done:done
+            cancel: cancel,
+            del: del,
+            done: done
         };
 
         function cancel(id, tabId) {
-          FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
-            if(data.ret) {
-              $rootScope.$emit("alert", "订单已取消");
-              $state.go('tab.orders',{
-                  status_id: tabId || 0
-              }, {
-                  reload: true
-              });
-            } else{
-              $rootScope.$emit("alert", data.errmsg || "订单取消出错，请稍后尝试");
-            }
-          })
+            FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
+                if (data.ret) {
+                    $rootScope.$emit("alert", "订单已取消");
+                    $state.go('tab.orders', {
+                        status_id: tabId || 0
+                    }, {
+                        reload: true
+                    });
+                } else {
+                    $rootScope.$emit("alert", data.errmsg || "订单取消出错，请稍后尝试");
+                }
+            })
         }
+
         function del(id, tabId) {
-          FetchData.get('/mall/maorder/delete?id=' + id)
-              .then(function(data) {
-                if(data.ret) {
-                  $rootScope.$emit("alert", "订单删除成功！");
-                  $state.go('tab.orders',{
-                      status_id: tabId || 0
-                  }, {
-                      reload: true
-                  });
-                } else{
-                  $rootScope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
-                }
-              })
+            FetchData.get('/mall/maorder/delete?id=' + id)
+                .then(function(data) {
+                    if (data.ret) {
+                        $rootScope.$emit("alert", "订单删除成功！");
+                        $state.go('tab.orders', {
+                            status_id: tabId || 0
+                        }, {
+                            reload: true
+                        });
+                    } else {
+                        $rootScope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
+                    }
+                })
         }
+
         function done(id, tabId) {
-          FetchData.get('/mall/maorder/confirm?id=' + id)
-              .then(function(data) {
-                if(data.ret) {
-                  $rootScope.$emit("alert", "交易成功！");
-                  $state.go('tab.orders',{
-                      status_id: tabId || 2
-                  }, {
-                      reload: true
-                  });
-                } else{
-                  $rootScope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
-                }
-              })
+            FetchData.get('/mall/maorder/confirm?id=' + id)
+                .then(function(data) {
+                    if (data.ret) {
+                        $rootScope.$emit("alert", "交易成功！");
+                        $state.go('tab.orders', {
+                            status_id: tabId || 2
+                        }, {
+                            reload: true
+                        });
+                    } else {
+                        $rootScope.$emit("alert", data.errmsg || "订单操作出错，请稍后再试");
+                    }
+                })
         }
     })
     .service('ngCart', function($rootScope, $http, ngCartItem, Storage, ENV) {
@@ -889,15 +892,15 @@ angular.module('maybi.services', [])
             };
             this.$express = {
                 name: '普通快递',
-                id:'0'
+                id: '0'
             }
         };
 
         this.setAddress = function(addr) {
-          if(addr) {
-            this.$addr.id = addr.id;
-            this.$addr.data = addr;
-          }
+            if (addr) {
+                this.$addr.id = addr.id;
+                this.$addr.data = addr;
+            }
         };
 
         this.getAddress = function() {
@@ -929,13 +932,12 @@ angular.module('maybi.services', [])
             var item = this.getItemById(id);
 
             $http.post(ENV.SERVER_URL + '/mall/mashopping/save?maProId=' + id + '&num=' + quantity).success(function(res) {
-              if (item) {
-                  item._quantity += +quantity;
-              } else {
-                  _self.$cart.items.push(new ngCartItem(id, name, price, quantity, data));
-              }
-            }).error(function() {
-            }).finally(function() {
+                if (item) {
+                    item._quantity += +quantity;
+                } else {
+                    _self.$cart.items.push(new ngCartItem(id, name, price, quantity, data));
+                }
+            }).error(function() {}).finally(function() {
                 $rootScope.$broadcast('specsModal:hide');
                 $rootScope.$broadcast('ngCart:change', "商品已添加到购物车");
             });
@@ -1063,7 +1065,7 @@ angular.module('maybi.services', [])
                     cart.items.splice(index, 1);
                 }
             });
-            $http.post(ENV.SERVER_URL + '/mall/mashopping/delete?ids='+ id).success(function(data) {
+            $http.post(ENV.SERVER_URL + '/mall/mashopping/delete?ids=' + id).success(function(data) {
                 // _self.$loadCart(res.cart);
             }).error(function() {
 
@@ -1262,45 +1264,45 @@ angular.module('maybi.services', [])
         };
         return item;
     })
-    .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading','$state', 'utils', '$http', 'ENV','AlipayService',function(ngCart, $rootScope, $ionicLoading,$state, utils, $http, ENV, AlipayService) {
+    .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading', '$state', 'utils', '$http', 'ENV', 'AlipayService', function(ngCart, $rootScope, $ionicLoading, $state, utils, $http, ENV, AlipayService) {
 
 
-        this.checkout = function(data,cb) {
-          $http({
-            method:'post',
-            url:ENV.SERVER_URL + '/mall/maorder/save',
-            data: JSON.stringify(data),
-            headers : {
-                'Content-Type': 'application/json;charset=utf-8;'
-            },
-            transformRequest: function(data){
-              return data
-            }
-          }).then(function(res) {
-            if (res.data.ret) {
-              $ionicLoading.show({
-                  template: '订单生成成功',
-                  duration: 3000,
-              });
-              AlipayService.alipayCheckout(res.data.data);
-            } else {
-              $ionicLoading.show({
-                  template: res.data.errmsg,
-                  duration: 3000,
-              });
-            }
-            $state.go('tab.orders',{
-                status_id: 0
-            }, {
-                reload: true
+        this.checkout = function(data, cb) {
+            $http({
+                method: 'post',
+                url: ENV.SERVER_URL + '/mall/maorder/save',
+                data: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8;'
+                },
+                transformRequest: function(data) {
+                    return data
+                }
+            }).then(function(res) {
+                if (res.data.ret) {
+                    $ionicLoading.show({
+                        template: '订单生成成功',
+                        duration: 3000,
+                    });
+                    AlipayService.alipayCheckout(res.data.data);
+                } else {
+                    $ionicLoading.show({
+                        template: res.data.errmsg,
+                        duration: 3000,
+                    });
+                }
+                $state.go('tab.orders', {
+                    status_id: 0
+                }, {
+                    reload: true
+                });
+            }, function(err) {
+                console.log(err);
+                $ionicLoading.show({
+                    template: '订单生成失败，请咨询供应商',
+                    duration: 3000,
+                });
             });
-          },function(err) {
-            console.log(err);
-            $ionicLoading.show({
-                template: '订单生成失败，请咨询供应商',
-                duration: 3000,
-            });
-          });
         };
         // function alipayCheckout(data){
         //   var payInfo = data;
@@ -1331,442 +1333,442 @@ angular.module('maybi.services', [])
 
     }])
 
-    .service('fulfilmentNewOrder', function($rootScope, $http, ngCart, ENV, $injector) {
+.service('fulfilmentNewOrder', function($rootScope, $http, ngCart, ENV, $injector) {
 
-        this.checkout = function(service, settings) {
+    this.checkout = function(service, settings) {
 
-            $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
-            return $http.post(ENV.SERVER_URL + '/api/orders/create_order', {
-                'entries': ngCart.selectedItemsObjects(),
-                'address_id': ngCart.getAddress().id,
-                'coupon_codes': settings.coupon ? [settings.coupon] : [],
-                'logistic_provider': settings.logistic_provider,
-            }).then(function(res) {
-                var provider = $injector.get('fulfilment_' + service);
-                provider.checkout(res.data);
-
-            }, function() {
-                $rootScope.$broadcast('alertEnd');
-                $rootScope.$broadcast('alert', "sorry...something wrong(1)..");
-            });
-        };
-    })
-
-    .service('fulfilmentExistedOrder', function($rootScope, $http, ngCart, ENV, $injector) {
-
-        this.checkout = function(service, settings) {
-            $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
-
+        $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
+        return $http.post(ENV.SERVER_URL + '/api/orders/create_order', {
+            'entries': ngCart.selectedItemsObjects(),
+            'address_id': ngCart.getAddress().id,
+            'coupon_codes': settings.coupon ? [settings.coupon] : [],
+            'logistic_provider': settings.logistic_provider,
+        }).then(function(res) {
             var provider = $injector.get('fulfilment_' + service);
-            return provider.checkout(settings);
-        };
-    })
+            provider.checkout(res.data);
 
-    .service('fulfilmentTransferOrder', function($rootScope, $http, ngCart, ENV, $injector) {
-
-        this.checkout = function(service, settings) {
-
-            $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
-            return $http.post(ENV.SERVER_URL + '/api/orders/update_transfer_order', {
-                'order_id': settings.order_id,
-                'address_id': ngCart.getAddress().id,
-                'coupon_codes': settings.coupon ? [settings.coupon] : [],
-                'logistic_provider': settings.logistic_provider,
-            }).then(function(res) {
-                var provider = $injector.get('fulfilment_' + service);
-                provider.checkout(res.data);
-
-            }, function() {
-                $rootScope.$broadcast('alertEnd');
-                $rootScope.$broadcast('alert', "sorry...something wrong(1)..");
-            });
-        };
-    })
-
-    .service('fulfilment_paypal', function($rootScope, $http, PaypalService, ENV, $state, $timeout) {
-
-        this.checkout = function(data) {
+        }, function() {
             $rootScope.$broadcast('alertEnd');
-            var subject = "Maybi Order " + data.order.sid;
-            PaypalService.initPaymentUI().then(function() {
-                PaypalService.makePayment(data.order.final, subject)
-                    .then(function(payment) {
-                        $http.post(ENV.SERVER_URL + '/payment/paypal/notify', {
-                            payment: payment,
-                            order_id: data.order_id,
-                        }).success(function(res) {
-                            if (res.message == "OK") {
-                                $rootScope.$broadcast('alert', "支付成功");
-                                $timeout(function() {
-                                    $state.go('tab.order_detail', {
-                                        order_id: data.order_id
-                                    }, {
-                                        reload: true
-                                    })
-                                }, 1000);
-                            } else {
-                                $rootScope.$broadcast('alert', "支付失败");
-                            }
-                        }).error(function(error) {
-                            $rootScope.$broadcast('alert', "系统好像出问题。。");
-                        });
+            $rootScope.$broadcast('alert', "sorry...something wrong(1)..");
+        });
+    };
+})
 
-                    }).catch(function(error) {
-                        $rootScope.$broadcast('alert', error);
+.service('fulfilmentExistedOrder', function($rootScope, $http, ngCart, ENV, $injector) {
+
+    this.checkout = function(service, settings) {
+        $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
+
+        var provider = $injector.get('fulfilment_' + service);
+        return provider.checkout(settings);
+    };
+})
+
+.service('fulfilmentTransferOrder', function($rootScope, $http, ngCart, ENV, $injector) {
+
+    this.checkout = function(service, settings) {
+
+        $rootScope.$broadcast('alertStart', "正在处理，请稍等..");
+        return $http.post(ENV.SERVER_URL + '/api/orders/update_transfer_order', {
+            'order_id': settings.order_id,
+            'address_id': ngCart.getAddress().id,
+            'coupon_codes': settings.coupon ? [settings.coupon] : [],
+            'logistic_provider': settings.logistic_provider,
+        }).then(function(res) {
+            var provider = $injector.get('fulfilment_' + service);
+            provider.checkout(res.data);
+
+        }, function() {
+            $rootScope.$broadcast('alertEnd');
+            $rootScope.$broadcast('alert', "sorry...something wrong(1)..");
+        });
+    };
+})
+
+.service('fulfilment_paypal', function($rootScope, $http, PaypalService, ENV, $state, $timeout) {
+
+    this.checkout = function(data) {
+        $rootScope.$broadcast('alertEnd');
+        var subject = "fourdotzero Order " + data.order.sid;
+        PaypalService.initPaymentUI().then(function() {
+            PaypalService.makePayment(data.order.final, subject)
+                .then(function(payment) {
+                    $http.post(ENV.SERVER_URL + '/payment/paypal/notify', {
+                        payment: payment,
+                        order_id: data.order_id,
+                    }).success(function(res) {
+                        if (res.message == "OK") {
+                            $rootScope.$broadcast('alert', "支付成功");
+                            $timeout(function() {
+                                $state.go('tab.order_detail', {
+                                    order_id: data.order_id
+                                }, {
+                                    reload: true
+                                })
+                            }, 1000);
+                        } else {
+                            $rootScope.$broadcast('alert', "支付失败");
+                        }
+                    }).error(function(error) {
+                        $rootScope.$broadcast('alert', "系统好像出问题。。");
+                    });
+
+                }).catch(function(error) {
+                    $rootScope.$broadcast('alert', error);
+                })
+        });
+
+
+    };
+})
+
+.service('fulfilment_wechat', function($rootScope, $http, ENV, $state, $timeout) {
+
+    this.checkout = function(data) {
+
+        $http.post(ENV.SERVER_URL + '/payment/checkout/sdk/' + data.order_id, {
+            'payment_method': 'wechat',
+        }).then(function(r) {
+            $rootScope.$broadcast('alertEnd');
+            var res = r.data.data;
+            var params = {
+                mch_id: res.partnerid, // merchant id
+                prepay_id: res.prepayid, // prepay id
+                nonce: res.noncestr, // nonce
+                timestamp: res.timestamp, // timestamp
+                sign: res.sign, // signed string
+            };
+
+            Wechat.sendPaymentRequest(params, function() {
+                $rootScope.$broadcast('alert', "支付成功");
+                $timeout(function() {
+                    $state.go('tab.order_detail', {
+                        order_id: data.order_id
+                    }, {
+                        reload: true
                     })
+                }, 1000);
+            }, function(reason) {
+                $rootScope.$broadcast('alert', "Failed: " + reason);
             });
 
+        }, function() {
+            $rootScope.$broadcast('alertEnd');
+            $rootScope.$broadcast('alert', "oppps...something wrong(2)..");
+        });
 
-        };
-    })
+    };
+})
 
-    .service('fulfilment_wechat', function($rootScope, $http, ENV, $state, $timeout) {
+.service('AlipayService', function($q, $ionicPlatform, $state, $filter, $timeout) {
 
-        this.checkout = function(data) {
-
-            $http.post(ENV.SERVER_URL + '/payment/checkout/sdk/' + data.order_id, {
-                'payment_method': 'wechat',
-            }).then(function(r) {
-                $rootScope.$broadcast('alertEnd');
-                var res = r.data.data;
-                var params = {
-                    mch_id: res.partnerid, // merchant id
-                    prepay_id: res.prepayid, // prepay id
-                    nonce: res.noncestr, // nonce
-                    timestamp: res.timestamp, // timestamp
-                    sign: res.sign, // signed string
-                };
-
-                Wechat.sendPaymentRequest(params, function() {
-                    $rootScope.$broadcast('alert', "支付成功");
-                    $timeout(function() {
-                        $state.go('tab.order_detail', {
-                            order_id: data.order_id
-                        }, {
-                            reload: true
-                        })
-                    }, 1000);
-                }, function(reason) {
-                    $rootScope.$broadcast('alert', "Failed: " + reason);
-                });
-
-            }, function() {
-                $rootScope.$broadcast('alertEnd');
-                $rootScope.$broadcast('alert', "oppps...something wrong(2)..");
-            });
-
-        };
-    })
-
-    .service('AlipayService', function($q, $ionicPlatform, $state, $filter, $timeout) {
-
-        this.alipayCheckout = function (data){
-          var payInfo = data;
-          cordova.plugins.alipay.payment(payInfo,function success(e){
+    this.alipayCheckout = function(data) {
+        var payInfo = data;
+        cordova.plugins.alipay.payment(payInfo, function success(e) {
             if (e.resultStatus == 9000) {
-              $ionicLoading.show({
-                  template: '订单支付成功',
-                  duration: 3000,
-              });
-              $state.go('tab.orders',{
-                  status_id: 2
-              }, {
-                  reload: true
-              });
+                $ionicLoading.show({
+                    template: '订单支付成功',
+                    duration: 3000,
+                });
+                $state.go('tab.orders', {
+                    status_id: 2
+                }, {
+                    reload: true
+                });
             }
-          },function error(e){
+        }, function error(e) {
             console.log(e.resultStatus)
             console.log(e.memo)
-          });
-          console.log(1)
-           //e.resultStatus  状态代码  e.result  本次操作返回的结果数据 e.memo 提示信息
-           //e.resultStatus  9000  订单支付成功 ;8000 正在处理中  调用function success
-           //e.resultStatus  4000  订单支付失败 ;6001  用户中途取消 ;6002 网络连接出错  调用function error
-           //当e.resultStatus为9000时，请去服务端验证支付结果
-                      /**
-                       * 同步返回的结果必须放置到服务端进行验证（验证的规则请看https://doc.open.alipay.com/doc2/
-                       * detail.htm?spm=0.0.0.0.xdvAU6&treeId=59&articleId=103665&
-                       * docType=1) 建议商户依赖异步通知
-                       */
-          }
-    })
+        });
+        console.log(1)
+            //e.resultStatus  状态代码  e.result  本次操作返回的结果数据 e.memo 提示信息
+            //e.resultStatus  9000  订单支付成功 ;8000 正在处理中  调用function success
+            //e.resultStatus  4000  订单支付失败 ;6001  用户中途取消 ;6002 网络连接出错  调用function error
+            //当e.resultStatus为9000时，请去服务端验证支付结果
+            /**
+             * 同步返回的结果必须放置到服务端进行验证（验证的规则请看https://doc.open.alipay.com/doc2/
+             * detail.htm?spm=0.0.0.0.xdvAU6&treeId=59&articleId=103665&
+             * docType=1) 建议商户依赖异步通知
+             */
+    }
+})
 
-    .factory("appUpdateService", function($ionicPopup, $timeout, $ionicLoading) {
-        var version;
-        var deploy = new Ionic.Deploy();
+.factory("appUpdateService", function($ionicPopup, $timeout, $ionicLoading) {
+    var version;
+    var deploy = new Ionic.Deploy();
 
-        /**
-         * 检查更新
-         */
-        function checkUpdate() {
+    /**
+     * 检查更新
+     */
+    function checkUpdate() {
+        $ionicLoading.show({
+            template: '正在检查更新...',
+            animation: 'fade-in',
+            showBackdrop: true,
+            duration: 3000,
+            showDelay: 0
+        });
+
+        deploy.check().then(function(hasUpdate) {
+
+            if (hasUpdate) {
+                showUpdateConfirm();
+            } else {
+                console.log('already nb');
+            }
+        }, function(err) {
+            console.log(err);
+
+        });
+    }
+
+    function showUpdateConfirm() {
+        $ionicLoading.hide();
+        var confirmPopup = $ionicPopup.confirm({
+            title: '版本升级',
+            cssClass: 'text-center',
+            template: "有新的版本了,是否要升级?",
+            cancelText: '取消',
+            okText: '升级'
+        });
+        confirmPopup.then(function(res) {
             $ionicLoading.show({
-                template: '正在检查更新...',
+                template: '正在更新...',
                 animation: 'fade-in',
                 showBackdrop: true,
-                duration: 3000,
+                //duration: 2000,
                 showDelay: 0
             });
 
-            deploy.check().then(function(hasUpdate) {
-
-                if (hasUpdate) {
-                    showUpdateConfirm();
-                } else {
-                    console.log('already nb');
-                }
-            }, function(err) {
-                console.log(err);
-
-            });
-        }
-
-        function showUpdateConfirm() {
-            $ionicLoading.hide();
-            var confirmPopup = $ionicPopup.confirm({
-                title: '版本升级',
-                cssClass: 'text-center',
-                template: "有新的版本了,是否要升级?",
-                cancelText: '取消',
-                okText: '升级'
-            });
-            confirmPopup.then(function(res) {
-                $ionicLoading.show({
-                    template: '正在更新...',
-                    animation: 'fade-in',
-                    showBackdrop: true,
-                    //duration: 2000,
-                    showDelay: 0
-                });
-
-                if (res) {
-                    deploy.update().then(function(res) {
-                        $ionicLoading.hide();
-                        $ionicLoading.show({
-                            template: '更新成功!',
-                            animation: 'fade-in',
-                            showBackdrop: true,
-                            duration: 2000,
-                            showDelay: 0
-                        });
-                    }, function(err) {
-                        $ionicLoading.hide();
-                        $ionicLoading.show({
-                            template: '更新失败!' + err,
-                            animation: 'fade-in',
-                            showBackdrop: true,
-                            duration: 2000,
-                            showDelay: 0
-                        });
-                    }, function(prog) {
-                        $ionicLoading.show({
-                            template: "已经下载：" + parseInt(prog) + "%"
-                        });
-                    });
-                } else {
+            if (res) {
+                deploy.update().then(function(res) {
                     $ionicLoading.hide();
-                }
-            });
-        };
-
-        function getAppVersion() {
-
-            deploy.info().then(function(data) {
-                var binaryVersion = data.binary_version;
-                var deployUuid = data.deploy_uuid;
-                version = deployUuid != 'NO_DEPLOY_LABEL' ? deployUuid : binaryVersion;
-            });
-        }
-
-
-
-        return {
-            getVersions: function() {
-                getAppVersion();
-                return version;
-            },
-            checkUpdate: function() {
-                checkUpdate();
-            },
-
-            update: function() {
-                showUpdateConfirm();
-            }
-        }
-    })
-
-    .factory('Notification', function(ENV, $http, $log, $q, $rootScope, Storage) {
-        // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
-        var notices = [];
-        var hasNextPage = true;
-        var perPage = 20;
-        var page = 0;
-        var isEmpty = false;
-
-        return {
-            getNotices: function(page) {
-                var deferred = $q.defer();
-                hasNextPage = true;
-                isEmpty = false;
-
-                $http.get(ENV.SERVER_URL + '/api/post/activities', {
-                    params: {
-                        currentPage: page,
-                        pageSize: perPage,
-                    }
-                }).success(function(r, status) {
-                    if (status === 200 && r.message == "OK") {
-                        if (r.notices.length < perPage) {
-                            hasNextPage = false;
-                        }
-                        if (page == 0 && r.notices.length === 0) {
-                            isEmpty = true;
-                        }
-                        deferred.resolve(r);
-                    } else {
-                        deferred.reject();
-                    }
-                }).error(function(data) {
-                    deferred.reject();
+                    $ionicLoading.show({
+                        template: '更新成功!',
+                        animation: 'fade-in',
+                        showBackdrop: true,
+                        duration: 2000,
+                        showDelay: 0
+                    });
+                }, function(err) {
+                    $ionicLoading.hide();
+                    $ionicLoading.show({
+                        template: '更新失败!' + err,
+                        animation: 'fade-in',
+                        showBackdrop: true,
+                        duration: 2000,
+                        showDelay: 0
+                    });
+                }, function(prog) {
+                    $ionicLoading.show({
+                        template: "已经下载：" + parseInt(prog) + "%"
+                    });
                 });
-                return deferred.promise;
-            },
+            } else {
+                $ionicLoading.hide();
+            }
+        });
+    };
 
-            hasNextPage: function() {
-                return hasNextPage;
-            },
+    function getAppVersion() {
 
-            isEmpty: function() {
-                return isEmpty;
-            },
+        deploy.info().then(function(data) {
+            var binaryVersion = data.binary_version;
+            var deployUuid = data.deploy_uuid;
+            version = deployUuid != 'NO_DEPLOY_LABEL' ? deployUuid : binaryVersion;
+        });
+    }
 
-        };
-    })
 
-    .factory('Board', function(ENV, $http, $log, $q, $rootScope, Storage) {
-        // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
-        var notices = [];
-        var hasNextPage = true;
-        var perPage = 5;
-        var page = 0;
-        var isEmpty = false;
 
-        return {
-            getBoards: function(page) {
-                var deferred = $q.defer();
-                hasNextPage = true;
-                isEmpty = false;
+    return {
+        getVersions: function() {
+            getAppVersion();
+            return version;
+        },
+        checkUpdate: function() {
+            checkUpdate();
+        },
 
-                $http.get(ENV.SERVER_URL + '/api/boards', {
-                    params: {
-                        currentPage: page,
-                        pageSize: perPage,
+        update: function() {
+            showUpdateConfirm();
+        }
+    }
+})
+
+.factory('Notification', function(ENV, $http, $log, $q, $rootScope, Storage) {
+    // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
+    var notices = [];
+    var hasNextPage = true;
+    var perPage = 20;
+    var page = 0;
+    var isEmpty = false;
+
+    return {
+        getNotices: function(page) {
+            var deferred = $q.defer();
+            hasNextPage = true;
+            isEmpty = false;
+
+            $http.get(ENV.SERVER_URL + '/api/post/activities', {
+                params: {
+                    currentPage: page,
+                    pageSize: perPage,
+                }
+            }).success(function(r, status) {
+                if (status === 200 && r.message == "OK") {
+                    if (r.notices.length < perPage) {
+                        hasNextPage = false;
                     }
-                }).success(function(r, status) {
-                    if (status === 200 && r.message == "OK") {
-                        if (r.boards.length < perPage) {
-                            hasNextPage = false;
-                        }
-                        if (page == 0 && r.boards.length === 0) {
-                            isEmpty = true;
-                        }
-                        deferred.resolve(r);
-                    } else {
-                        deferred.reject();
+                    if (page == 0 && r.notices.length === 0) {
+                        isEmpty = true;
                     }
-                }).error(function(data) {
+                    deferred.resolve(r);
+                } else {
                     deferred.reject();
-                });
-                return deferred.promise;
-            },
+                }
+            }).error(function(data) {
+                deferred.reject();
+            });
+            return deferred.promise;
+        },
 
-            hasNextPage: function() {
-                return hasNextPage;
-            },
+        hasNextPage: function() {
+            return hasNextPage;
+        },
 
-            isEmpty: function() {
-                return isEmpty;
-            },
+        isEmpty: function() {
+            return isEmpty;
+        },
 
+    };
+})
+
+.factory('Board', function(ENV, $http, $log, $q, $rootScope, Storage) {
+    // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
+    var notices = [];
+    var hasNextPage = true;
+    var perPage = 5;
+    var page = 0;
+    var isEmpty = false;
+
+    return {
+        getBoards: function(page) {
+            var deferred = $q.defer();
+            hasNextPage = true;
+            isEmpty = false;
+
+            $http.get(ENV.SERVER_URL + '/api/boards', {
+                params: {
+                    currentPage: page,
+                    pageSize: perPage,
+                }
+            }).success(function(r, status) {
+                if (status === 200 && r.message == "OK") {
+                    if (r.boards.length < perPage) {
+                        hasNextPage = false;
+                    }
+                    if (page == 0 && r.boards.length === 0) {
+                        isEmpty = true;
+                    }
+                    deferred.resolve(r);
+                } else {
+                    deferred.reject();
+                }
+            }).error(function(data) {
+                deferred.reject();
+            });
+            return deferred.promise;
+        },
+
+        hasNextPage: function() {
+            return hasNextPage;
+        },
+
+        isEmpty: function() {
+            return isEmpty;
+        },
+
+    };
+})
+
+.factory('JPush', function(ENV, $http, $log, $q, $rootScope, appUpdateService) {
+    return {
+        onOpenNotification: onOpenNotification,
+        onReceiveNotification: onReceiveNotification,
+        onReceiveMessage: onReceiveMessage
+    }
+
+    // push notification callback
+    function onOpenNotification(event) {
+        try {
+            var alertContent;
+            if (ionic.Platform.platform() == "Android") {
+                alertContent = window.plugins.jPushPlugin.openNotification.alert;
+            } else {
+                alertContent = event.aps.alert;
+            }
+            console.log("open Notificaiton:" + alertContent);
+        } catch (exception) {
+            console.log("JPushPlugin:onOpenNotification" + exception);
+        }
+    }
+
+    function onReceiveNotification(event) {
+        try {
+            var alertContent;
+            if (ionic.Platform.platform() == "Android") {
+                alertContent = window.plugins.jPushPlugin.receiveNotification.alert;
+            } else {
+                alertContent = event.aps.alert;
+            }
+            console.log("receive Notificaiton:" + alertContent);
+        } catch (exeption) {
+            console.log(exception)
+        }
+    }
+
+    function onReceiveMessage(event) {
+        try {
+            var message;
+            if (ionic.Platform.platform() == "Android") {
+                message = window.plugins.jPushPlugin.receiveMessage.message;
+            } else {
+                message = event.content;
+            }
+            console.log("receive message:" + message);
+            if (message == 'update') {
+                appUpdateService.checkUpdate();
+            }
+        } catch (exception) {
+            console.log("JPushPlugin:onReceiveMessage-->" + exception);
+        }
+    }
+
+})
+
+.factory('backButtonOverride', function($rootScope, $ionicPlatform) {
+    // 二维码返回按钮
+    var results = {};
+
+    function _setup($scope, customBackFunction) {
+
+        var oldSoftBack = $rootScope.$ionicGoBack;
+
+        $rootScope.$ionicGoBack = function() {
+            customBackFunction();
         };
-    })
-
-    .factory('JPush', function(ENV, $http, $log, $q, $rootScope, appUpdateService) {
-        return {
-            onOpenNotification: onOpenNotification,
-            onReceiveNotification: onReceiveNotification,
-            onReceiveMessage: onReceiveMessage
-        }
-
-        // push notification callback
-        function onOpenNotification(event) {
-            try {
-                var alertContent;
-                if (ionic.Platform.platform() == "Android") {
-                    alertContent = window.plugins.jPushPlugin.openNotification.alert;
-                } else {
-                    alertContent = event.aps.alert;
-                }
-                console.log("open Notificaiton:" + alertContent);
-            } catch (exception) {
-                console.log("JPushPlugin:onOpenNotification" + exception);
-            }
-        }
-
-        function onReceiveNotification(event) {
-            try {
-                var alertContent;
-                if (ionic.Platform.platform() == "Android") {
-                    alertContent = window.plugins.jPushPlugin.receiveNotification.alert;
-                } else {
-                    alertContent = event.aps.alert;
-                }
-                console.log("receive Notificaiton:" + alertContent);
-            } catch (exeption) {
-                console.log(exception)
-            }
-        }
-
-        function onReceiveMessage(event) {
-            try {
-                var message;
-                if (ionic.Platform.platform() == "Android") {
-                    message = window.plugins.jPushPlugin.receiveMessage.message;
-                } else {
-                    message = event.content;
-                }
-                console.log("receive message:" + message);
-                if (message == 'update') {
-                    appUpdateService.checkUpdate();
-                }
-            } catch (exception) {
-                console.log("JPushPlugin:onReceiveMessage-->" + exception);
-            }
-        }
-
-    })
-
-    .factory('backButtonOverride', function ($rootScope, $ionicPlatform) {
-      // 二维码返回按钮
-      var results = {};
-
-      function _setup($scope, customBackFunction) {
-
-          var oldSoftBack = $rootScope.$ionicGoBack;
-
-          $rootScope.$ionicGoBack = function () {
-              customBackFunction();
-          };
-          var deregisterSoftBack = function () {
-              $rootScope.$ionicGoBack = oldSoftBack;
-          };
-          var deregisterHardBack = $ionicPlatform.registerBackButtonAction(
-              customBackFunction, 101
-          );
-          $scope.$on('$destroy', function () {
-              deregisterHardBack();
-              deregisterSoftBack();
-          });
-      }
-      results.setup = _setup;
-      return results;
-    })
+        var deregisterSoftBack = function() {
+            $rootScope.$ionicGoBack = oldSoftBack;
+        };
+        var deregisterHardBack = $ionicPlatform.registerBackButtonAction(
+            customBackFunction, 101
+        );
+        $scope.$on('$destroy', function() {
+            deregisterHardBack();
+            deregisterSoftBack();
+        });
+    }
+    results.setup = _setup;
+    return results;
+})

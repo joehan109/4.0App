@@ -1,6 +1,6 @@
 'use strict';
 
-var controllersModule = angular.module('maybi.controllers', [])
+var controllersModule = angular.module('fourdotzero.controllers', [])
 
 function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
     Photogram, PhotoService, $timeout, geoService, FetchData, $ionicSlideBoxDelegate, $interval, Storage) {
@@ -14,6 +14,10 @@ function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
         { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline', pic: 'limit' }
     ];
     $scope.goto = function(item) {
+        if (!Storage.get('access_token')) {
+            $rootScope.showAuthBox();
+            return;
+        }
         if (item.url === 'shopTab.cateHome') {
             Storage.set('shopOrSell', 'shop');
             Storage.set('cateHomeOrigin', 'index');
@@ -1476,40 +1480,45 @@ function forgotPWCtrl($rootScope, $scope, AuthService, $http, ENV, $interval) {
 
 function signupCtrl($rootScope, $scope, AuthService, $state, $http, ENV) {
     $scope.signupForm = {
-        email: '',
+        password: '',
         name: '',
         phone: ''
     };
     $scope.form = {
-        email: false,
+        password: false,
         name: false,
         phone: false
     }
     $scope.canRe = function() {
-        return !($scope.form.email && $scope.form.name && $scope.form.phone);
+        return !($scope.form.password && $scope.form.name && $scope.form.phone && $scope.signupForm.password1);
     };
     $scope.validate = function(type) {
         var url = ENV.SERVER_URL + '/mall/vip/app/check/' + type + "?" + type + '=';
         var reg = {
-            email: /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/,
+            // email: /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/,
+            password: /^[a-zA-Z0-9_]{6,16}$/,
             phone: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,
-            name: /([A-Za-z0-9]{1,20})|([\u4e00-\u9fa5]{2,10})|([\u4e00-\u9fa5][\w\W]{2})/
+            name: /([A-Za-z0-9]{4,20})|([\u4e00-\u9fa5]{2,10})|([\u4e00-\u9fa5][\w\W]{2})/
         }[type];
         var name = {
-            email: '邮箱',
+            password: '密码，至少6位，只支持数字字母和下划线',
             phone: '手机号',
-            name: '用户名'
+            name: '用户名，最少4位字符'
         }[type]
         if ($scope.signupForm[type]) {
             if (reg.test($scope.signupForm[type])) {
-                $http.get(url + $scope.signupForm[type]).success(function(res) {
-                    if (!res.ret) {
-                        $scope.$emit('alert', res.errmsg);
-                        $scope.form[type] = false;
-                    } else {
-                        $scope.form[type] = true;
-                    }
-                })
+                if (type !== 'password') {
+                    $http.get(url + $scope.signupForm[type]).success(function(res) {
+                        if (!res.ret) {
+                            $scope.$emit('alert', res.errmsg, {}, 3000);
+                            $scope.form[type] = false;
+                        } else {
+                            $scope.form[type] = true;
+                        }
+                    })
+                } else {
+                    $scope.form[type] = true;
+                }
             } else {
                 $scope.$emit('alert', "请输入正确的" + name);
             }
@@ -1517,6 +1526,10 @@ function signupCtrl($rootScope, $scope, AuthService, $state, $http, ENV) {
     };
     $scope.signup = function() {
         // call register from service
+        if ($scope.signupForm.password !== $scope.signupForm.password1) {
+            $scope.$emit('alert', "两次输入的密码需保持一致");
+            return;
+        }
         AuthService.register($scope.signupForm)
             // handle success
             .then(function() {
@@ -1980,12 +1993,21 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
             $scope.orderType = $stateParams.status_id
         }
         FetchData.get('/mall/maorder/query?code=&status=' + $scope.orderType).then(function(data) {
+            if ($scope.orderType == '0') {
+                angular.forEach(data.data.data, function(item) {
+                    item.endTime = (new Date(item.createTime).getTime()) + 30 * 60 * 1000
+                })
+            }
             $scope.orders = data.data.data;
         });
     });
-
     $scope.ngCart = ngCart;
     $scope.orderType = $stateParams.status_id || '0';
+    $scope.finished = function(id) {
+        $state.go('tab.orders', {
+            status_id: 0
+        });
+    }
     $scope.setType = function(type) {
         if (type !== $scope.orderType) {
             $scope.orderType = type;

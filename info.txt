@@ -5,7 +5,7 @@ Cordova version: 5.4.1
 Config.xml file: 
 
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="cn.maybi.ionicapp" version="1.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="cn.fourdotzero.ionicapp" version="1.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>美比</name>
   <description>
         An Ionic Framework and Cordova project.
@@ -22,7 +22,7 @@ Config.xml file:
   <preference name="BackupWebStorage" value="none"/>
   <preference name="SplashScreen" value="screen"/>
   <preference name="SplashScreenDelay" value="3000"/>
-  <preference name="REDIRECTURI" value="http://m.maybi.cn/account/oauth/weibo"/>
+  <preference name="REDIRECTURI" value="http://m.fourdotzero.cn/account/oauth/weibo"/>
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
   </feature>

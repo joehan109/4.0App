@@ -1,6 +1,6 @@
 'use strict';
 
-var photogramModule = angular.module('maybi.photogram', [])
+var photogramModule = angular.module('fourdotzero.photogram', [])
 
 photogramModule.factory('Photogram', PhotogramFactory);
 photogramModule.directive('photoList', photoList);
@@ -56,7 +56,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
                 per_page: perPage,
             }
         }).success(function(r, status) {
-            if (status === 200 && r.message == "OK"){
+            if (status === 200 && r.message == "OK") {
                 if (r.posts.length < perPage) {
                     hasNextPage = false;
                 }
@@ -65,7 +65,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
             } else {
                 deferred.reject();
             }
-        }).error(function (data){
+        }).error(function(data) {
             deferred.reject();
         });
         return deferred.promise;
@@ -83,11 +83,11 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
                 per_page: perPage,
             }
         }).success(function(r, status) {
-            if (status === 200 && r.message == "OK"){
+            if (status === 200 && r.message == "OK") {
                 if (r.posts.length < perPage) {
                     hasNextPage = false;
                 }
-                nextPage=1;
+                nextPage = 1;
                 if (r.posts.length === 0) {
                     isEmpty = true;
                 }
@@ -96,7 +96,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
             } else {
                 deferred.reject();
             }
-        }).error(function (data){
+        }).error(function(data) {
             deferred.reject();
         });
         return deferred.promise;
@@ -114,7 +114,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
                 user_id: userId,
             }
         }).success(function(r, status) {
-            if (status === 200 && r.message == "OK"){
+            if (status === 200 && r.message == "OK") {
                 if (r.posts.length < perPage) {
                     hasNextPage = false;
                 }
@@ -125,7 +125,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
             } else {
                 deferred.reject();
             }
-        }).error(function (data){
+        }).error(function(data) {
             deferred.reject();
         });
         return deferred.promise;
@@ -143,7 +143,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
                 user_id: userId,
             }
         }).success(function(r, status) {
-            if (status === 200 && r.message == "OK"){
+            if (status === 200 && r.message == "OK") {
                 if (r.posts.length < perPage) {
                     hasNextPage = false;
                 }
@@ -154,7 +154,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
             } else {
                 deferred.reject();
             }
-        }).error(function (data){
+        }).error(function(data) {
             deferred.reject();
         });
         return deferred.promise;
@@ -173,7 +173,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
                 title: query,
             }
         }).success(function(r, status) {
-            if (status === 200 && r.message == "OK"){
+            if (status === 200 && r.message == "OK") {
                 if (r.posts.length < perPage) {
                     hasNextPage = false;
                 }
@@ -185,7 +185,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
             } else {
                 deferred.reject();
             }
-        }).error(function (data){
+        }).error(function(data) {
             deferred.reject();
         });
         return deferred.promise;
@@ -196,37 +196,39 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
         var primary_filename = 'primary/' + new Date().getTime() + ".jpeg";
 
         PhotoService.upload(form.primary_image, primary_filename,
-            function(data){
+            function(data) {
                 $http.post(ENV.SERVER_URL + '/api/post/image_uploaded', {
                     url: primary_filename,
                     type: 'primary_image',
                 });
                 $rootScope.$broadcast('alert', "发送成功");
 
-            }, function(error){
+            },
+            function(error) {
                 $rootScope.$broadcast('alert', "发送失败，请重试");
                 deferred.reject(error);
                 return deferred.promise;
             });
 
-        form.primary_image = 'http://assets.maybi.cn/'+primary_filename;
+        form.primary_image = 'http://assets.fourdotzero.cn/' + primary_filename;
 
         var photos = [];
-        angular.forEach(form.photos, function(img, index){
-            var filename = 'photo/'+index+'/' + new Date().getTime() + ".jpeg";
+        angular.forEach(form.photos, function(img, index) {
+            var filename = 'photo/' + index + '/' + new Date().getTime() + ".jpeg";
             PhotoService.upload(img, filename,
-                function(data){
+                function(data) {
                     $http.post(ENV.SERVER_URL + '/api/post/image_uploaded', {
                         url: filename,
                         type: 'photos',
                     });
 
-                }, function(error){
+                },
+                function(error) {
                     deferred.reject(error);
                     return deferred.promise;
                 });
 
-            photos.push('http://assets.maybi.cn/'+filename);
+            photos.push('http://assets.fourdotzero.cn/' + filename);
 
         });
 
@@ -235,7 +237,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
         FetchData.post('/api/post/create', form)
             .then(function(r) {
                 deferred.resolve(r);
-            }).catch(function (error){
+            }).catch(function(error) {
                 deferred.reject(error);
             });
 
@@ -247,9 +249,9 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
     function delPost(postId) {
         var deferred = $q.defer();
 
-        FetchData.post('/api/post/delete/'+ postId).then(function(r) {
+        FetchData.post('/api/post/delete/' + postId).then(function(r) {
             deferred.resolve(r);
-        }).catch(function (error){
+        }).catch(function(error) {
             deferred.reject(error);
         });
 
@@ -262,7 +264,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
         FetchData.get('/api/post/detail/' + postId)
             .then(function(r) {
                 deferred.resolve(r);
-            }).catch(function (error){
+            }).catch(function(error) {
                 deferred.reject(error);
             });
 
@@ -277,7 +279,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
             content: text,
         }).then(function(r) {
             deferred.resolve(r);
-        }).catch(function (error){
+        }).catch(function(error) {
             deferred.reject(error);
         });
 
@@ -292,7 +294,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
             post_id: postId,
         }).then(function(r) {
             deferred.resolve(r);
-        }).catch(function (error){
+        }).catch(function(error) {
             deferred.reject(error);
         });
 
@@ -302,10 +304,10 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
     function like(postId) {
         var deferred = $q.defer();
 
-        FetchData.post('/api/post/like/'+postId)
+        FetchData.post('/api/post/like/' + postId)
             .then(function(r) {
                 deferred.resolve(r);
-            }).catch(function (error){
+            }).catch(function(error) {
                 deferred.reject(error);
             });
 
@@ -315,10 +317,10 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
     function unlike(postId) {
         var deferred = $q.defer();
 
-        FetchData.post('/api/post/unlike/'+postId)
+        FetchData.post('/api/post/unlike/' + postId)
             .then(function(r) {
                 deferred.resolve(r);
-            }).catch(function (error){
+            }).catch(function(error) {
                 deferred.reject(error);
             });
 
@@ -333,7 +335,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
             subject: subject
         }).then(function(r) {
             deferred.resolve(r);
-        }).catch(function (error){
+        }).catch(function(error) {
             deferred.reject(error);
         });
 
@@ -341,7 +343,7 @@ function PhotogramFactory(FetchData, ENV, $http, $q, $rootScope, Storage, PhotoS
     }
 }
 
-function photoList(Photogram, $q, $timeout, $rootScope, $state, photoShare){
+function photoList(Photogram, $q, $timeout, $rootScope, $state, photoShare) {
     return {
         restrict: 'E',
         scope: {
@@ -350,61 +352,59 @@ function photoList(Photogram, $q, $timeout, $rootScope, $state, photoShare){
         },
         replace: true,
         link: function(scope, elem, attrs) {
-            scope.like = function(){
-                if (scope.post.is_liked){
+            scope.like = function() {
+                if (scope.post.is_liked) {
                     scope.post.is_liked = false;
                     scope.post.num_likes -= 1;
                     Photogram.unlike(scope.post.post_id)
-                        .then(function(data){
-                        }).catch(function(error){
+                        .then(function(data) {}).catch(function(error) {
                             scope.post.is_liked = true;
                             scope.post.num_likes += 1;
                         });
                 } else {
-                    scope.post.is_liked= true;
+                    scope.post.is_liked = true;
                     scope.post.num_likes += 1;
                     Photogram.like(scope.post.post_id)
-                        .then(function(data){
-                        }).catch(function(error){
-                            scope.post.is_liked= false;
+                        .then(function(data) {}).catch(function(error) {
+                            scope.post.is_liked = false;
                             scope.post.num_likes -= 1;
                         });
                 }
             };
             scope.goPost = function() {
-                for(var name in $state.current.views) {
+                for (var name in $state.current.views) {
                     var name = name;
                 }
 
-                if (name=="tab-explore"){
-                    $state.go('tab.postDetail', {postID: scope.post.post_id});
+                if (name == "tab-explore") {
+                    $state.go('tab.postDetail', { postID: scope.post.post_id });
                 } else {
-                    $state.go('tab.myPostDetail', {postID: scope.post.post_id});
+                    $state.go('tab.myPostDetail', { postID: scope.post.post_id });
                 }
             };
-            scope.actions = function(){
+            scope.actions = function() {
                 photoShare.popup(scope.post);
             }
             scope.zoom = function() {
                 if (ionic.Platform.isAndroid()) {
                     PhotoViewer.show(scope.post.primary_image, ''); //cordova photoviewer
                 } else {
-                    ImageViewer.show(scope.post.primary_image);    // cordova ImageViewer for IOS
+                    ImageViewer.show(scope.post.primary_image); // cordova ImageViewer for IOS
                 }
             };
 
-            scope.goUser = function(){
-                $state.go('tab.userDetail', {userID: scope.post.user.id});
+            scope.goUser = function() {
+                $state.go('tab.userDetail', { userID: scope.post.user.id });
             };
 
-            scope.searchTag = function(tag){
+            scope.searchTag = function(tag) {
 
             };
         },
 
 
         templateUrl: function(element, attrs) {
-            if ( typeof attrs.withAffix == 'undefined' ) {
+            if (typeof attrs.withAffix == 'undefined') {
                 return 'photogram/photoList.html';
             } else {
                 return 'photogram/photoListNoAffix.html';
@@ -415,80 +415,80 @@ function photoList(Photogram, $q, $timeout, $rootScope, $state, photoShare){
 }
 
 function photoShare($rootScope, Photogram, $ionicActionSheet, $cordovaSocialSharing,
-        sheetShare, AuthService, $ionicPopup){
+    sheetShare, AuthService, $ionicPopup) {
 
     this.popup = function(post) {
-      var sheet = {};
-      sheet.destructiveText = '<i class="icon fa fa-info-circle"></i> 举报';
-      sheet.cancelText = '取消';
-      sheet.buttonClicked = buttonClicked;
-      sheet.destructiveButtonClicked = destructiveButtonClicked;
-      sheet.cssClass = 'actions-menu';
-      sheet.buttons = [{
-        text: '<i class="icon fa fa-share-alt"></i> 分享'
-      }];
-      if (post.user.id == AuthService.getUser().id) {
-          sheet.buttons.push({
-            text: '<i class="icon fa fa-trash"></i> 删除'
-          })
-      }
-
-      $ionicActionSheet.show(sheet);
-
-      function destructiveButtonClicked(){
-        var buttons = [
-            { text: '垃圾广告' },
-            { text: '虚假信息' },
-            { text: '恶意攻击' },
-            { text: '暴力色情' },
-            { text: '触犯法规' },
-            { text: '其他原因' },
-        ];
-        $ionicActionSheet.show({
-            buttons: buttons,
-            titleText: '举报原因',
-            cssClass: 'actions-menu',
-            cancelText: '取消',
-            buttonClicked: function(index) {
-                var subject = buttons[index].text;
-                Photogram.report(post.post_id, subject).then(function(data){
-                    $rootScope.$emit('alert', "已举报");
-                });
-                return true;
-            }
-        });
-        return true;
-      }
-
-      function buttonClicked(index) {
-
-        if (index == 0){
-            if ($rootScope.IsWechatInstalled && $rootScope.IsQQInstalled){
-                sheetShare.popup(post, 'post');
-            } else {
-                var message = "分享图片",
-                    subject = '分享',
-                    file = post.primary_image,
-                    link = "http://www.may.bi";
-
-                $cordovaSocialSharing
-                    .share(message, subject, file, link) // Share via native share sheet
-                    .then(function(result) {
-                        console.log('result:' + result);
-                    }, function(err) {
-                        $rootScope.$emit('alert', err);
-                    });
-            }
-
-        } else if (index == 1) {
-            Photogram.delPost(post.post_id).then(function(data){
-                $rootScope.$emit('alert', "删除成功");
+        var sheet = {};
+        sheet.destructiveText = '<i class="icon fa fa-info-circle"></i> 举报';
+        sheet.cancelText = '取消';
+        sheet.buttonClicked = buttonClicked;
+        sheet.destructiveButtonClicked = destructiveButtonClicked;
+        sheet.cssClass = 'actions-menu';
+        sheet.buttons = [{
+            text: '<i class="icon fa fa-share-alt"></i> 分享'
+        }];
+        if (post.user.id == AuthService.getUser().id) {
+            sheet.buttons.push({
+                text: '<i class="icon fa fa-trash"></i> 删除'
             })
+        }
+
+        $ionicActionSheet.show(sheet);
+
+        function destructiveButtonClicked() {
+            var buttons = [
+                { text: '垃圾广告' },
+                { text: '虚假信息' },
+                { text: '恶意攻击' },
+                { text: '暴力色情' },
+                { text: '触犯法规' },
+                { text: '其他原因' },
+            ];
+            $ionicActionSheet.show({
+                buttons: buttons,
+                titleText: '举报原因',
+                cssClass: 'actions-menu',
+                cancelText: '取消',
+                buttonClicked: function(index) {
+                    var subject = buttons[index].text;
+                    Photogram.report(post.post_id, subject).then(function(data) {
+                        $rootScope.$emit('alert', "已举报");
+                    });
+                    return true;
+                }
+            });
+            return true;
+        }
+
+        function buttonClicked(index) {
+
+            if (index == 0) {
+                if ($rootScope.IsWechatInstalled && $rootScope.IsQQInstalled) {
+                    sheetShare.popup(post, 'post');
+                } else {
+                    var message = "分享图片",
+                        subject = '分享',
+                        file = post.primary_image,
+                        link = "http://www.may.bi";
+
+                    $cordovaSocialSharing
+                        .share(message, subject, file, link) // Share via native share sheet
+                        .then(function(result) {
+                            console.log('result:' + result);
+                        }, function(err) {
+                            $rootScope.$emit('alert', err);
+                        });
+                }
+
+            } else if (index == 1) {
+                Photogram.delPost(post.post_id).then(function(data) {
+                    $rootScope.$emit('alert', "删除成功");
+                })
+
+            }
+            return true;
 
         }
-        return true;
-
-      }
     }
 
 
