@@ -603,7 +603,7 @@ angular.module('fourdotzero.services', [])
                 if (query && query.query) {
                     params.name = query.query
                 }
-                currentTab && $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
+                currentTab && $http.get(ENV.SERVER_URL + '/mall/mapro/query', {
                     params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
@@ -630,7 +630,7 @@ angular.module('fourdotzero.services', [])
                 var deferred = $q.defer();
                 hasNextPage = true;
                 isEmpty = false;
-                $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
+                $http.get(ENV.SERVER_URL + '/mall/mapro/query', {
                     params: {
                         sub_category: sub_category,
                         currentPage: page,
@@ -681,7 +681,7 @@ angular.module('fourdotzero.services', [])
                 if (query && query.query) {
                     params.name = query.query
                 }
-                $http.get(ENV.SERVER_URL + '/mall/mapro/app/query', {
+                $http.get(ENV.SERVER_URL + '/mall/mapro/query', {
                     params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {

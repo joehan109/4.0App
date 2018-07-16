@@ -684,7 +684,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         }
     });
 
-    FetchData.get('/mall/mapro/app/getAll').then(function(res) {
+    FetchData.get('/mall/mapro/getAll').then(function(res) {
         $scope.tuijian = res.data;
         $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').update();
     });
@@ -1774,7 +1774,7 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal, ngCa
         $scope.buyDialog.close();
     })
 
-    FetchData.get('/mall/mapro/app/get?id=' + $stateParams.id).then(function(data) {
+    FetchData.get('/mall/mapro/get?id=' + $stateParams.id).then(function(data) {
         $scope.item = data.data;
         // $scope.specs = data.data.specs;
         // $scope.selectedSpec = data.data.specs[0];
