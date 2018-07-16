@@ -20,13 +20,13 @@
 
             <div ng-if="showCode">
                 <p style="font-size:18px;letter-spacing:10px">开锁密码</p>
-                <div>
+                <div style="margin-bottom:20px">
                     <button class="button button-assertive">{{openCode[0]}}</button>
                     <button class="button button-assertive">{{openCode[1]}}</button>
                     <button class="button button-assertive">{{openCode[2]}}</button>
                     <button class="button button-assertive">{{openCode[3]}}</button>
                 </div>
-                <p style="font-size:18px;letter-spacing:10px">这是您第{{num}}次获取开锁密码</p>
+                <p style="font-size:18px;">第<span class="energized">{{num}}</span>次获取开锁密码</p>
             </div>
 
             <div ng-if="alreadyShow">

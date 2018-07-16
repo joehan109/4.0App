@@ -14737,13 +14737,15 @@ input.ion-google-place[readonly] {
   display: flex;
   border-bottom: 0 none !important; }
   .item-bottom-bar .only-btn {
-    margin: 0 10px;
+    margin: 4px 10px;
     width: 40px;
     text-align: center; }
   .item-bottom-bar i.icon {
-    font-size: 24px;
+    font-size: 20px;
     display: block;
     text-align: center; }
+    .item-bottom-bar i.icon::before {
+      font-weight: bold; }
   .item-bottom-bar span {
     font-size: 6px; }
   .item-bottom-bar .item-bar-icon {
@@ -14802,6 +14804,12 @@ input.ion-google-place[readonly] {
 
 .bar .button-clear::before {
   font-size: 24px !important; }
+
+.tab-item .icon {
+  height: 28px; }
+  .tab-item .icon::before {
+    font-size: 26px;
+    font-weight: 600; }
 
 .assertive {
   color: #6fd6b9; }

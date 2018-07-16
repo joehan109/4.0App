@@ -98,7 +98,7 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
             cancelText: '否', // String (默认: 'Cancel')。一个取消按钮的文字。
             cancelType: 'button-default', // String (默认: 'button-default')。取消按钮的类型。
             okText: '是', // String (默认: 'OK')。OK按钮的文字。
-            okType: 'button-positive'
+            okType: 'button-energized'
         });
         confirmPopup.then(function(res) {
             if (res) {
@@ -1936,9 +1936,7 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
     };
 
     $scope.loadMore = function() {
-        debugger
         Items.searchItems(query, sub_cate, page).then(function(data) {
-            debugger
             $scope.items = $scope.items.concat(data);
             $scope.$broadcast('scroll.infiniteScrollComplete');
             page++;
@@ -2013,6 +2011,11 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
         if (type !== $scope.orderType) {
             $scope.orderType = type;
             FetchData.get('/mall/maorder/query?code=&status=' + type).then(function(data) {
+              if (type == '0') {
+                  angular.forEach(data.data.data, function(item) {
+                      item.endTime = (new Date(item.createTime).getTime()) + 30 * 60 * 1000
+                  })
+              }
                 $scope.orders = data.data.data;
             });
         }

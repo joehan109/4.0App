@@ -50,11 +50,11 @@
     </ion-content>
     <div class="bar bar-footer bar-light item-bottom-bar">
         <a ng-click="favor(item.id)" class="only-btn">
-            <i class="icon ion-ios-star" ng-class="{'like-icon energized':item.collectFlag, 'dark':!item.collectFlag}"></i>
+            <i class="icon" ng-class="{'like-icon energized ion-ios-star':item.collectFlag, 'dark ion-ios-star-outline':!item.collectFlag}"></i>
             <span>收藏</span>
         </a>
         <a href="#/cart" class="only-btn">
-            <i class="icon ion-ios-cart"></i>
+            <i class="icon ion-ios-cart-outline"></i>
             <span>购物车</span>
         </a>
         <a class="add-to-cart item-bar-icon" ng-click="showSpecsBox()">

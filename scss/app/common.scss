@@ -153,14 +153,17 @@
     display: flex;
     border-bottom: 0 none!important;
     .only-btn {
-        margin: 0 10px;
+        margin: 4px 10px;
         width: 40px;
         text-align: center
     }
     i.icon {
-        font-size: 24px;
+        font-size: 20px;
         display: block;
         text-align: center;
+        &::before{
+          font-weight: bold;
+        }
     }
     span {
         font-size: 6px;
@@ -238,4 +241,11 @@
     &::before {
         font-size: 24px!important;
     }
+}
+.tab-item .icon{
+  height: 28px;
+  &::before{
+    font-size:26px;
+    font-weight: 600;
+  }
 }

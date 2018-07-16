@@ -57,7 +57,10 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
             var confirmPopup = $ionicPopup.confirm({
                 template: '你确定要退出应用吗?',
                 okText: '取消',
-                cancelText: '退出'
+                cancelText: '退出',
+                okType: 'button-energized',
+                cancelType: 'button-default'
+
             });
 
             confirmPopup.then(function(res) {
