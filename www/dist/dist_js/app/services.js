@@ -713,7 +713,7 @@ angular.module('fourdotzero.services', [])
 
 
     }])
-    .factory('FetchData', ['$rootScope', '$http', '$q', 'ENV', '$ionicLoading', '$state', function($rootScope, $http, $q, ENV, $ionicLoading, $state) {
+    .factory('FetchData', ['$rootScope', '$http', '$q', 'ENV', '$ionicLoading', '$state', 'Storage', function($rootScope, $http, $q, ENV, $ionicLoading, $state, Storage) {
         return {
             get: function(url, kargs) {
                 var server_url = ENV.SERVER_URL + url;
@@ -734,18 +734,28 @@ angular.module('fourdotzero.services', [])
                         //$ionicLoading.hide();
                         d.resolve(res);
                     } else {
-                        if (status == 404 || status == 302 || !res.ret) {
+                        if (res.data === 'login') {
                             $ionicLoading.show({
                                 template: res.errmsg || '请先登录',
                                 duration: 1000
                             });
+                            Storage.remove('user');
+                            Storage.remove('access_token');
+                            // 清空购物车
+                            Storage.set('cart', {
+                                shipping: null,
+                                taxRate: null,
+                                tax: null,
+                                items: [],
+                                selectedItems: []
+                            });
+                            $state.go('appIndex');
                         } else {
                             $ionicLoading.show({
                                 template: res.errmsg || '出错了',
                                 duration: 1000
                             });
                         }
-                        $state.go('appIndex');
                         d.reject();
                     }
                 }).error(function(data, status) {
@@ -777,18 +787,28 @@ angular.module('fourdotzero.services', [])
                         //$ionicLoading.hide();
                         d.resolve(res);
                     } else {
-                        if (status == 404 || status == 302) {
+                        if (res.data === 'login') {
                             $ionicLoading.show({
                                 template: res.errmsg || '请先登录',
                                 duration: 1000
                             });
+                            Storage.remove('user');
+                            Storage.remove('access_token');
+                            // 清空购物车
+                            Storage.set('cart', {
+                                shipping: null,
+                                taxRate: null,
+                                tax: null,
+                                items: [],
+                                selectedItems: []
+                            });
+                            $state.go('appIndex');
                         } else {
                             $ionicLoading.show({
                                 template: res.errmsg || '出错了',
                                 duration: 1000
                             });
                         }
-                        $state.go('appIndex');
                         d.reject();
                     }
                 }).error(function(data, status) {

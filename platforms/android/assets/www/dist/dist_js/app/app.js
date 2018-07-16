@@ -512,7 +512,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     })
 
     .state('tab.order_detail', {
-        url: '/order/:order_id',
+        url: '/order/:order_id?status_id',
         views: {
             'tab-account': {
                 templateUrl: 'order.html',
@@ -523,7 +523,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     })
 
     .state('tab.order_logistic', {
-        url: '/order/logistics/:order_id',
+        url: '/order/logistics/:order_id?status_id',
         views: {
             'tab-account': {
                 templateUrl: 'logistics.html',

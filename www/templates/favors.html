@@ -19,13 +19,13 @@
                     <div>{{ item.name }}</div>
                     {{ item.price | currency:'￥' }}
                 </td>
-                <td class="price-cell" style="vertical-align: bottom;padding-bottom:10px;">
+                <td class="price-cell favorIcon" style="vertical-align: bottom;padding-bottom:10px;padding-right: 15px;">
                     <span style="float:right;font-size:20px;">
                         <i class="icon ion-ios-star like-icon energized"
                             ng-click="unfavor(item)"></i>
-                        <i class="icon ion-ios-cart dark"
+                        <i class="icon ion-ios-cart-outline dark"
                             ng-click="addToCart(item)"
-                            style="margin-left:5px;"
+                            style="margin-left:10px;"
                             ></i>
                     </span>
                 </td>

@@ -14747,7 +14747,8 @@ input.ion-google-place[readonly] {
     .item-bottom-bar i.icon::before {
       font-weight: bold; }
   .item-bottom-bar span {
-    font-size: 6px; }
+    font-size: 6px;
+    font-weight: 600; }
   .item-bottom-bar .item-bar-icon {
     flex: 1;
     text-align: center;
@@ -14810,6 +14811,12 @@ input.ion-google-place[readonly] {
   .tab-item .icon::before {
     font-size: 26px;
     font-weight: 600; }
+
+.tab-item span {
+  font-weight: 600; }
+
+.favorIcon i::before {
+  font-weight: 600; }
 
 .assertive {
   color: #6fd6b9; }

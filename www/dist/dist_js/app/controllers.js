@@ -37,7 +37,7 @@ calculateCtrl.$inject = ['$rootScope', '$scope', '$location', 'FetchData'];
 expressCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', 'AuthService', '$state', 'expressList'];
 expressItemAddCtrl.$inject = ['$rootScope', '$scope', 'expressList'];
 orderDetailCtrl.$inject = ['$rootScope', '$scope', '$state', '$stateParams', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt'];
-logisticsDetailCtrl.$inject = ['$rootScope', '$scope', '$stateParams', '$state', 'FetchData', 'ngCart', '$http'];
+logisticsDetailCtrl.$inject = ['$rootScope', '$scope', '$stateParams', '$state', 'FetchData', 'ngCart', '$location', '$timeout'];
 cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage', '$ionicPopup'];
 checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart'];
 addressCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
@@ -179,6 +179,7 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
                         if (res.data.pwdFlag) {
                             $scope.showCode = true;
                             $scope.openCode = res.data.sonPwd;
+                            $scope.num = res.data.num || 0;
                         } else {
                             $scope.showOpen = true;
                         }
@@ -2054,11 +2055,11 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
         if (type !== $scope.orderType) {
             $scope.orderType = type;
             FetchData.get('/mall/maorder/query?code=&status=' + type).then(function(data) {
-              if (type == '0') {
-                  angular.forEach(data.data.data, function(item) {
-                      item.endTime = (new Date(item.createTime).getTime()) + 30 * 60 * 1000
-                  })
-              }
+                if (type == '0') {
+                    angular.forEach(data.data.data, function(item) {
+                        item.endTime = (new Date(item.createTime).getTime()) + 30 * 60 * 1000
+                    })
+                }
                 $scope.orders = data.data.data;
             });
         }
@@ -2121,6 +2122,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.statusId = $stateParams.status_id || '';
     });
 
     $scope.ngCart = ngCart;
@@ -2131,6 +2133,15 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
             $scope.order.endTime = (new Date($scope.order.createTime).getTime()) + 30 * 60 * 1000
         }
     });
+    $scope.goTab = function() {
+        if ($scope.statusId) {
+            $state.go('tab.orders', {
+                status_id: $scope.statusId
+            });
+        } else {
+            $scope.$ionicGoBack();
+        }
+    };
     // A confirm dialog
     $scope.cancelOrder = function() {
         var confirmPopup = $ionicPopup.confirm({
@@ -2182,21 +2193,35 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     };
 }
 
-function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData, ngCart, $http) {
+function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData, ngCart, $location, $timeout) {
     //商品详情
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.nodata = false;
+        $scope.statusId = $stateParams.status_id || '';
     });
 
     FetchData.get('/mall/maorder/query?code=' + $stateParams.order_id + '&status=').then(function(res) {
         $scope.order = res.data.data[0];
-        // var url = 'http://api.kuaidi100.com/api?id=[]&show=0&muti=1&order=desc&com='+$scope.order.trackingCode+'&nu='+$scope.order.trackingNum
         var url = '/mall/maorder/express/query?id'
         FetchData.get('/mall/maorder/express/query?id=' + $scope.order.id).then(function(res) {
             $scope.logistics = res.data.data;
             $scope.logisticDetail = res.data;
+        }, function() {
+            $timeout(function() {
+                $scope.goTab();
+            }, 3000)
         });
     });
+    $scope.goTab = function() {
+        if ($scope.statusId) {
+            $state.go('tab.orders', {
+                status_id: $scope.statusId
+            });
+        } else {
+            $scope.$ionicGoBack();
+        }
+    };
 
     $scope.allStatus = [];
     // FetchData.get('/api/orders/get/' + $stateParams.order_id).then(function(data) {
@@ -2209,14 +2234,14 @@ function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData
     // });
 
     $scope.currTab = 0;
-    $scope.goTab = function(index, lo) {
-        $scope.currTab = index;
-        $scope.logistic = lo;
-        angular.forEach($scope.logistic.all_status, function(status, index) {
-            $scope.allStatus.push(status.status);
-        });
+    // $scope.goTab = function(index, lo) {
+    //     $scope.currTab = index;
+    //     $scope.logistic = lo;
+    //     angular.forEach($scope.logistic.all_status, function(status, index) {
+    //         $scope.allStatus.push(status.status);
+    //     });
 
-    }
+    // }
 
     $scope.addr = ngCart.getAddress();
     $scope.gotoAddress = function() {

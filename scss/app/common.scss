@@ -161,12 +161,13 @@
         font-size: 20px;
         display: block;
         text-align: center;
-        &::before{
-          font-weight: bold;
+        &::before {
+            font-weight: bold;
         }
     }
     span {
         font-size: 6px;
+        font-weight: 600;
     }
     .item-bar-icon {
         flex: 1;
@@ -242,10 +243,24 @@
         font-size: 24px!important;
     }
 }
-.tab-item .icon{
-  height: 28px;
-  &::before{
-    font-size:26px;
-    font-weight: 600;
-  }
+
+.tab-item {
+    .icon {
+        height: 28px;
+        &::before {
+            font-size: 26px;
+            font-weight: 600;
+        }
+    }
+    span {
+        font-weight: 600;
+    }
+}
+
+.favorIcon {
+    i {
+        &::before {
+            font-weight: 600;
+        }
+    }
 }
