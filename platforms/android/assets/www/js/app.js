@@ -13,7 +13,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
 ])
 
 .run(function($ionicPlatform, $rootScope, $state, JPush,
-    $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast,
+    $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast, $cordovaKeyboard,
     amMoment, AuthService, ngCart, Storage, FetchData, $location, $ionicPopup) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -50,18 +50,28 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
 
     // 注册安卓返回键
     $ionicPlatform.registerBackButtonAction(function(e) {
+
         e.preventDefault();
 
         function showConfirm() {
             var confirmPopup = $ionicPopup.confirm({
-                title: '<strong>退出应用?</strong>',
                 template: '你确定要退出应用吗?',
-                okText: '退出',
-                cancelText: '取消'
+                okText: '取消',
+                cancelText: '退出'
             });
 
             confirmPopup.then(function(res) {
-                if (res) {
+                if (!res) {
+                    Storage.remove('user');
+                    Storage.remove('access_token');
+                    // 清空购物车
+                    Storage.set('cart', {
+                        shipping: null,
+                        taxRate: null,
+                        tax: null,
+                        items: [],
+                        selectedItems: []
+                    });
                     ionic.Platform.exitApp();
                 } else {
                     // Don't close
@@ -165,17 +175,17 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     });
 
     $rootScope.$on('alert', function(event, msg, options, duration) {
-        if (window.cordova) {
-            $cordovaToast.show(msg, 'short', 'center');
-        } else {
-            var o = options || {};
-            angular.extend(o, {
-                template: msg || '<ion-spinner icon="spiral"></ion-spinner>',
-                duration: duration || 1000,
-            });
+        // if (window.cordova) {
+        //     $cordovaToast.show(msg, 'short', 'center');
+        // } else {
+        var o = options || {};
+        angular.extend(o, {
+            template: msg || '<ion-spinner icon="spiral"></ion-spinner>',
+            duration: duration || 1000,
+        });
 
-            $ionicLoading.show(o);
-        }
+        $ionicLoading.show(o);
+        // }
     });
 
     // if (Storage.get('introPage') !== 'alreadyShow') {

@@ -13,7 +13,7 @@
                     <div class="address-info-1">
                         <div class="row">
                             <div class="col">{{addr.name}}</div>
-                            <div class="col">{{addr.phone}}</div>
+                            <div class="col" style="text-align: right">{{addr.phone}}</div>
                         </div>
                         <div class="row">
                             <div class="col">{{addr.detail}}</div>
@@ -27,11 +27,11 @@
                             <span ng-if="addr.flag">默认地址</span>
                         </div>
                         <div class="col" address-form addr-id="addr.id" addresses="addresses">
-                            <i class="icon ion-ios-compose-outline"></i>
+                            <i class="icon ion-ios-compose-outline" style="width:16px"></i>
                             <a href>编辑</a>
                         </div>
                         <div class="col" ng-click="removeAddr(addr.id)">
-                            <i class="icon ion-ios-trash-outline"></i>
+                            <i class="icon ion-ios-trash-outline" style="width:16px"></i>
                             <span>删除</span>
                         </div>
                     </div>

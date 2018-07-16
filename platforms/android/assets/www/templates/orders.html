@@ -62,19 +62,23 @@
                         </tr>
                         <tr style="height:40px">
                             <td colspan="3" class="status-cell" style="text-align:right;padding-right:10px;">
+                                <div class="orderTimer" ng-if="order.status=='0'">
+                                    <i class="icon ion-ios-timer-outline placeholder-icon" style="font-size:16px;padding-left: 10px"></i>
+                                    <timer end-time="order.endTime" finish-callback="finished(order.id)">{{minutes}}分{{seconds}}秒</timer>
+                                </div>
                                 <a class="button button-default button-small" style="border:1px solid #aaa" ng-if="order.status=='0'" ng-click="orderCancel(order)">
                                     取消订单
                                 </a>
                                 <a class="button button-default button-small" style="border:1px solid #aaa" ng-if="order.status=='1' || order.status=='2'" ng-href="#/order/logistics/{{order.code}}">
                                     查看物流
                                 </a>
-                                <a class="button button-energized button-small" ng-if="order.status=='0'" ng-href="#/order/{{order.code}}">
+                                <a class="button button-energized button-small" style="border:1px solid #ff3300;padding:2px 10px 0" ng-if="order.status=='0'" ng-href="#/order/{{order.code}}">
                                     去付款
                                 </a>
-                                <a class="button button-energized button-small" ng-if="order.status=='1' || order.status=='2'" ng-click="orderDone(order)">
+                                <a class="button button-energized button-small" style="border:1px solid #ff3300" ng-if="order.status=='1' || order.status=='2'" ng-click="orderDone(order)">
                                     确认收货
                                 </a>
-                                <a class="button button-energized button-small" ng-if="order.status=='3'" ng-click="orderDel(order)">
+                                <a class="button button-energized button-small" style="border:1px solid #ff3300" ng-if="order.status=='3'" ng-click="orderDel(order)">
                                     删除订单
                                 </a>
                             </td>

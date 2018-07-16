@@ -101,7 +101,7 @@ angular.module('fourdotzero.directives', [])
             link: function(scope, element, attrs) {
                 scope.ngCart = ngCart;
 
-                scope.payInfo = attrs.ordertype == 'new' ? '提交订单' : '去付款';
+                scope.payInfo = attrs.ordertype == 'new' ? '提交订单' : '现在支付';
 
                 scope.showPaymentMethods = function() {
 

@@ -2,7 +2,7 @@
 <ion-modal-view>
     <div class="bar bar-header">
         <button class="button button-clear icon ion-ios-arrow-back" ng-click="closeModal()"></button>
-        <div class="title">编辑地址</div>
+        <div class="title">{{addr.id ? '编辑' : '新增'}}收货地址</div>
     </div>
 
     <ion-content class="has-header" style="overflow-y:hidden;">
@@ -72,10 +72,10 @@
                 </div>
             </form>
         </section>
-        <div>
-            <button class="button button-clear button-dark" ng-click="saveAddress()">
-            保存收货地址
-        </button>
+        <div style="text-align: center; margin-top: 50px">
+            <button class="button button-energized" style="padding:0 50px;" ng-click="saveAddress()">
+                保存收货地址
+            </button>
         </div>
     </ion-content>
 
