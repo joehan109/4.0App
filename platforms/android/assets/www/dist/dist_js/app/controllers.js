@@ -147,7 +147,8 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
             if (res) {
                 FetchData.get('/mall/mascan/getPwd?id=' + $scope.data.id).then(function(res) {
                     if (res.ret) {
-                        $scope.openCode = res.data.split('');
+                        $scope.openCode = res.data.sonPwd.split('');
+                        $scope.num = res.data.num || 0;
                         $scope.showOpen = false;
                         $scope.showCode = true;
                     } else {
