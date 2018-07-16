@@ -713,7 +713,7 @@ angular.module('fourdotzero.services', [])
 
 
     })
-    .factory('FetchData', function($rootScope, $http, $q, ENV, $ionicLoading) {
+    .factory('FetchData', function($rootScope, $http, $q, ENV, $ionicLoading, $state) {
         return {
             get: function(url, kargs) {
                 var server_url = ENV.SERVER_URL + url;
@@ -745,6 +745,7 @@ angular.module('fourdotzero.services', [])
                                 duration: 1000
                             });
                         }
+                        $state.go('appIndex');
                         d.reject();
                     }
                 }).error(function(data, status) {
@@ -787,6 +788,7 @@ angular.module('fourdotzero.services', [])
                                 duration: 1000
                             });
                         }
+                        $state.go('appIndex');
                         d.reject();
                     }
                 }).error(function(data, status) {
