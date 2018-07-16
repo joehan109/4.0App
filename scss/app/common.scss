@@ -233,3 +233,9 @@
     color: $energized;
     line-height: 30px;
 }
+
+.bar .button-clear {
+    &::before {
+        font-size: 24px!important;
+    }
+}

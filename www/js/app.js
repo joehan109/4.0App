@@ -175,17 +175,17 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     });
 
     $rootScope.$on('alert', function(event, msg, options, duration) {
-        if (window.cordova) {
-            $cordovaToast.show(msg, 'short', 'center');
-        } else {
-            var o = options || {};
-            angular.extend(o, {
-                template: msg || '<ion-spinner icon="spiral"></ion-spinner>',
-                duration: duration || 1000,
-            });
+        // if (window.cordova) {
+        //     $cordovaToast.show(msg, 'short', 'center');
+        // } else {
+        var o = options || {};
+        angular.extend(o, {
+            template: msg || '<ion-spinner icon="spiral"></ion-spinner>',
+            duration: duration || 1000,
+        });
 
-            $ionicLoading.show(o);
-        }
+        $ionicLoading.show(o);
+        // }
     });
 
     // if (Storage.get('introPage') !== 'alreadyShow') {

@@ -73,6 +73,10 @@
                 <div class="">
                     创建时间: {{order.createTime}}
                 </div>
+                <div class="energized">
+                    剩余支付时间:
+                    <timer end-time="order.endTime" finish-callback="finished(order.id)">{{minutes}}分{{seconds}}秒</timer>
+                </div>
             </div>
         </section>
     </ion-content>
@@ -83,7 +87,7 @@
         <h1 class="title"></h1>
         <div class="buttons orderButtons">
             <ngcart-checkout ng-if="order.status=='0'" settings="{ order_id: order.id , order_type: 'existed'}" ordertype="existed" orderid={{order.id}}>
-                去付款
+                付款
             </ngcart-checkout>
             <button class="button button-default" style="border:1px solid #aaa" href="#/order/logistics/{{order.code}}" ng-if="order.status=='1' || order.status=='2'">
                 查看物流

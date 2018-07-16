@@ -2123,6 +2123,9 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
 
     FetchData.get('/mall/maorder/query?code=' + $stateParams.order_id + '&status=').then(function(data) {
         $scope.order = data.data.data[0];
+        if ($scope.order.status == '0') {
+            $scope.order.endTime = (new Date($scope.order.createTime).getTime()) + 30 * 60 * 1000
+        }
     });
     // A confirm dialog
     $scope.cancelOrder = function() {
