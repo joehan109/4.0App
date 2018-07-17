@@ -1768,10 +1768,12 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal, ngCa
     };
 
     $scope.$on('specsModal:hide', function(event) {
+        $scope.quantity = 1;
         $scope.specsDialog.close();
     })
 
     $scope.$on('specsBuyModal:hide', function(event) {
+        $scope.quantity = 1;
         $scope.buyDialog.close();
     })
 
@@ -2511,7 +2513,7 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage, $ionicPopup) {
         confirmPopup.then(function(res) {
             if (res) {
                 ngCart.getSelectedItems().forEach(function(item) {
-                    ngCart.removeItemById(item._id);
+                    ngCart.removeItemById(item._data.id);
                 })
             } else {
                 console.log('You are not sure');
@@ -2522,8 +2524,8 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage, $ionicPopup) {
     $scope.selectAllEntries = function() {
         if ($scope.isSelectedAll === false) {
             angular.forEach(ngCart.getCart().items, function(item, index) {
-                if (!ngCart.getSelectedItemById(item.getId())) {
-                    ngCart.selectItem(item.getId());
+                if (!ngCart.getSelectedItemById(item._data.id)) {
+                    ngCart.selectItem(item._data.id);
                 }
             });
         } else {
@@ -2540,6 +2542,9 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
         $scope.addr = ngCart.getAddress();
+        if ($rootScope.provider_prices) {
+            ngCart.setExpress($rootScope.provider_prices[0]);
+        }
     });
     $scope.provider_prices = [{
         name: '普通快递',

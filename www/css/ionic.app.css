@@ -14779,9 +14779,11 @@ input.ion-google-place[readonly] {
   height: 230px; }
 
 .itemTab {
-  padding-bottom: 15px;
+  padding-bottom: 13px;
   padding-top: 15px;
-  padding-left: 45px; }
+  padding-left: 45px;
+  font-weight: 600;
+  font-size: 14px; }
   .itemTab .icon {
     font-size: 20px;
     font-weight: bold;
@@ -14813,10 +14815,14 @@ input.ion-google-place[readonly] {
     font-weight: 600; }
 
 .tab-item span {
-  font-weight: 600; }
+  font-weight: bolder; }
 
 .favorIcon i::before {
   font-weight: 600; }
+
+.bar-header .icon.ion-ios-arrow-back::before {
+  font-size: 20px !important;
+  color: #b2b2b2 !important; }
 
 .assertive {
   color: #6fd6b9; }

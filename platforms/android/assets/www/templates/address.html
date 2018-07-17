@@ -25,8 +25,8 @@
                             <span ng-if="addr.flag">已选择</span>
                             <span ng-if="!addr.flag">选择该地址</span>
                         </div>
-                        <div class="col">
-                            <i class="icon ion-ios-compose-outline" style="width:16px"></i>
+                        <div class="col" style="text-align: right;margin-right: 10px">
+                            <i class="icon ion-ios-compose-outline" style="width:16px;float:inherit"></i>
                             <a href address-form addr-id="addr.id" addresses="addresses">修改地址</a>
                         </div>
                     </div>
@@ -48,7 +48,7 @@
 
     </ion-content>
 
-    <ion-footer-bar class="bar-assertive footer-button" ng-click="confirmAddress()">
+    <ion-footer-bar class="bar-energized footer-button" ng-click="confirmAddress()">
         <div class="title" style="text-align:center">确定</div>
     </ion-footer-bar>
 </ion-view>

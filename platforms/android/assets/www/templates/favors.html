@@ -16,8 +16,9 @@
                     </div>
                 </td>
                 <td class="info-cell" ng-click="goItem(item.id)" style="padding-left:30px">
-                    <div>{{ item.name }}</div>
-                    {{ item.price | currency:'￥' }}
+                    <div style="margin-bottom: 5px;">{{ item.name }}</div>
+                    <span style="color:#ff3300">{{ item.price | currency:'￥' }}</span>
+
                 </td>
                 <td class="price-cell favorIcon" style="vertical-align: bottom;padding-bottom:10px;padding-right: 15px;">
                     <span style="float:right;font-size:20px;">

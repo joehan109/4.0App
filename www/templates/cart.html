@@ -34,9 +34,9 @@
                 <tbody>
                     <tr ng-repeat="item in ngCart.getCart().items track by $index">
                         <td class="check-cell">
-                            <span class="close-icon" ng-show="editShown" ng-click="ngCart.removeItemById(item.getId())">
+                            <span class="close-icon" ng-show="editShown" ng-click="ngCart.removeItemById(item._data.id)">
                     </span>
-                            <i class="icon select-icon" ng-class=" ngCart.getSelectedItemById(item.getId())? 'ion-ios-checkmark selected':'ion-ios-circle-outline'" ng-hide="editShown" ng-click="selectEntry(item.getId())">
+                            <i class="icon select-icon" ng-class=" ngCart.getSelectedItemById(item._data.id)? 'ion-ios-checkmark selected':'ion-ios-circle-outline'" ng-hide="editShown" ng-click="selectEntry(item._data.id)">
                     </i>
 
                         </td>

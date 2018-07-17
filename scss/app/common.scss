@@ -207,9 +207,11 @@
 }
 
 .itemTab {
-    padding-bottom: 15px;
+    padding-bottom: 13px;
     padding-top: 15px;
     padding-left: 45px;
+    font-weight: 600;
+    font-size: 14px;
     .icon {
         font-size: 20px;
         font-weight: bold;
@@ -253,7 +255,7 @@
         }
     }
     span {
-        font-weight: 600;
+        font-weight: bolder;
     }
 }
 
@@ -261,6 +263,15 @@
     i {
         &::before {
             font-weight: 600;
+        }
+    }
+}
+
+.bar-header {
+    .icon.ion-ios-arrow-back {
+        &::before {
+            font-size: 20px!important;
+            color: #b2b2b2!important;
         }
     }
 }

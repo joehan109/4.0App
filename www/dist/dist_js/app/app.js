@@ -51,8 +51,6 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     // 注册安卓返回键
     $ionicPlatform.registerBackButtonAction(function(e) {
 
-        e.preventDefault();
-
         function showConfirm() {
             var confirmPopup = $ionicPopup.confirm({
                 template: '你确定要退出应用吗?',
@@ -85,12 +83,17 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         // Is there a page to go back to?
         if ($location.path() == '/appIndex') {
             showConfirm();
+        } else if ($location.path() == '/shopTab/cateHome') {
+            $state.go('appIndex')
+        } else if ($location.path() == '/shopTab/account') {
+            $state.go('shopTab.cateHome')
         } else if ($ionicHistory.backView()) {
             $ionicHistory.goBack();
         } else {
             // This is the last page: Show confirmation popup
             showConfirm();
         }
+        e.preventDefault();
 
         return false;
     }, 101);
@@ -100,14 +103,10 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     // ngCart
     $rootScope.$on('ngCart:change', function(event, msg) {
         ngCart.$save();
-        if (window.cordova) {
-            $cordovaToast.show(msg, 'short', 'center');
-        } else {
-            $ionicLoading.show({
-                template: msg,
-                duration: 1000,
-            });
-        }
+        $ionicLoading.show({
+            template: msg,
+            duration: 1000,
+        });
     });
 
     $rootScope.$state = $state;

@@ -986,7 +986,7 @@ angular.module('fourdotzero.services', [])
             var build = false;
 
             angular.forEach(items, function(item) {
-                if (item.getId() === itemId) {
+                if (item._data.id === itemId) {
                     build = item;
                 }
             });
@@ -996,9 +996,8 @@ angular.module('fourdotzero.services', [])
         this.getSelectedItemById = function(itemId) {
             var items = this.getCart().selectedItems;
             var build = false;
-
             angular.forEach(items, function(item) {
-                if (item.getId() === itemId) {
+                if (item._data.id === itemId) {
                     build = item;
                 }
             });
@@ -1083,24 +1082,23 @@ angular.module('fourdotzero.services', [])
             var _self = this;
             var cart = this.getCart();
             angular.forEach(cart.items, function(item, index) {
-                if (item.getId() === id) {
+                if (item._data.id === id) {
                     cart.items.splice(index, 1);
+                    _self.removeSelectedItemById(id);
                 }
             });
             $http.post(ENV.SERVER_URL + '/mall/mashopping/delete?ids=' + id).success(function(data) {
-                // _self.$loadCart(res.cart);
+                _self.$save();
+                $rootScope.$broadcast('ngCart:change', "商品已从购物车清除");
             }).error(function() {
 
-            }).finally(function() {
-                this.$save();
-                $rootScope.$broadcast('ngCart:change', "商品已从购物车清除");
-            });
+            }).finally(function() {});
         };
 
         this.removeSelectedItemById = function(id) {
             var cart = this.getCart();
             angular.forEach(cart.selectedItems, function(item, index) {
-                if (item.getId() === id) {
+                if (item._data.id === id) {
                     cart.selectedItems.splice(index, 1);
                 }
             });
@@ -1288,7 +1286,6 @@ angular.module('fourdotzero.services', [])
     })
     .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading', '$state', 'utils', '$http', 'ENV', 'AlipayService', function(ngCart, $rootScope, $ionicLoading, $state, utils, $http, ENV, AlipayService) {
 
-
         this.checkout = function(data, cb) {
             $http({
                 method: 'post',
@@ -1306,7 +1303,7 @@ angular.module('fourdotzero.services', [])
                         template: '订单生成成功',
                         duration: 3000,
                     });
-                    AlipayService.alipayCheckout(res.data.data);
+                    // AlipayService.alipayCheckout(res.data.data);
                 } else {
                     $ionicLoading.show({
                         template: res.data.errmsg,
