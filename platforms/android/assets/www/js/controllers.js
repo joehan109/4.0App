@@ -127,26 +127,32 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
             .scan()
             .then(function(barcodeData) {
                 $scope.barcodeData = barcodeData;
-                $scope.barcodeData.text && FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text).then(function(res) {
-                    if (res.ret) {
-                        console.log(res.data)
-                        $scope.data = res.data;
-                        $scope.imgUrl = res.data.proUrl;
-                        $scope.getDetail = true;
-                        if (res.data.pwdFlag) {
-                            $scope.showCode = true;
-                            $scope.openCode = res.data.sonPwd;
-                            $scope.num = res.data.num || 0;
-                        } else {
-                            $scope.showOpen = true;
+                if (barcodeData.text) {
+                    FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text).then(function(res) {
+                        if (res.ret) {
+                            console.log(res.data)
+                            $scope.data = res.data;
+                            $scope.imgUrl = res.data.proUrl;
+                            $scope.getDetail = true;
+                            if (res.data.pwdFlag) {
+                                $scope.showCode = true;
+                                $scope.openCode = res.data.sonPwd;
+                                $scope.num = res.data.num || 0;
+                            } else {
+                                $scope.showOpen = true;
+                            }
                         }
-                    }
-                }, function(res) {
-                    console.log(res)
+                    }, function(res) {
+                        // 查询数据出错
+                        $state.go('appIndex');
+                        $scope.$emit("alert", '数据不存在，请重新扫码');
+                    });
+                } else {
+                    // 未扫到码
                     $state.go('appIndex');
-                    $scope.$emit("alert", '数据不存在，请重新扫码');
-                });
+                }
             }, function(error) {
+                // 扫码出现异常
                 $state.go('appIndex');
             });
 

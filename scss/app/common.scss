@@ -275,3 +275,13 @@
         }
     }
 }
+
+.orderCheckBtn {
+    display: inline-block;
+    Button {
+        min-height: 30px;
+        line-height: 32px;
+        font-size: 12px;
+        padding: 0;
+    }
+}

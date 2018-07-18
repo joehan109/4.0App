@@ -63,8 +63,8 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
 
             confirmPopup.then(function(res) {
                 if (!res) {
-                    Storage.remove('user');
-                    Storage.remove('access_token');
+                    Storage.set('user', null);
+                    Storage.set('access_token', null);
                     // 清空购物车
                     Storage.set('cart', {
                         shipping: null,
@@ -88,7 +88,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         } else if ($location.path() == '/shopTab/account') {
             $state.go('shopTab.cateHome')
         } else if ($ionicHistory.backView()) {
-            $ionicHistory.goBack();
+            $rootScope.$ionicGoBack();
         } else {
             // This is the last page: Show confirmation popup
             showConfirm();
@@ -96,7 +96,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         e.preventDefault();
 
         return false;
-    }, 101);
+    }, 501);
     // set moment locale
     amMoment.changeLocale('zh-cn');
 
