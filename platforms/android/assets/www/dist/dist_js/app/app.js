@@ -12,9 +12,9 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     'fourdotzero.constants', 'fourdotzero.filters', 'tag-select', 'timer'
 ])
 
-.run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$location', '$ionicPopup', function($ionicPlatform, $rootScope, $state, JPush,
+.run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$location', '$ionicPopup', '$timeout', function($ionicPlatform, $rootScope, $state, JPush,
     $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast, $cordovaKeyboard,
-    amMoment, AuthService, ngCart, Storage, FetchData, $location, $ionicPopup) {
+    amMoment, AuthService, ngCart, Storage, FetchData, $location, $ionicPopup, $timeout) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -54,15 +54,15 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         function showConfirm() {
             var confirmPopup = $ionicPopup.confirm({
                 template: '你确定要退出应用吗?',
-                okText: '取消',
-                cancelText: '退出',
-                okType: 'button-energized',
-                cancelType: 'button-default'
+                cancelText: '取消',
+                okText: '退出',
+                cancelType: 'button-energized',
+                okType: 'button-default'
 
             });
 
             confirmPopup.then(function(res) {
-                if (!res) {
+                if (res) {
                     Storage.set('user', null);
                     Storage.set('access_token', null);
                     // 清空购物车
@@ -99,12 +99,24 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         });
         // Is there a page to go back to?
         if (!hasDialog) {
-            if ($location.path() == '/appIndex') {
-                showConfirm();
+            if ($ionicHistory.forwardView()) {
+                // 解决有的机型扫一扫返回直接退出了
+                if (!$rootScope.canExitFromScan && ($ionicHistory.forwardView().url === '/scan')) {
+                    $rootScope.canExitFromScan = true;
+                    $ionicHistory.forwardView().url = null;
+                    $timeout(function() {
+                        $rootScope.canExitFromScan = false;
+                    }, 2000)
+                    e.preventDefault();
+                    return false;
+                }
+            }
+            if ($location.path() == '/shopTab/account') {
+                $state.go('shopTab.cateHome')
             } else if ($location.path() == '/shopTab/cateHome') {
                 $state.go('appIndex')
-            } else if ($location.path() == '/shopTab/account') {
-                $state.go('shopTab.cateHome')
+            } else if ($location.path() == '/appIndex') {
+                showConfirm();
             } else if ($ionicHistory.backView()) {
                 $rootScope.$ionicGoBack();
             } else {
@@ -140,11 +152,11 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     //     });
     // }
     // ngCart.init();
-    FetchData.get('/mall/mashopping/getAll').then(function(data) {
-        ngCart.$loadCart(data.data);
-    }, function(err) {
-        $rootScope.authDialog.show();
-    });
+    $timeout(function() {
+        if (!Storage.get('access_token')) {
+            $rootScope.authDialog.show();
+        }
+    }, 100);
 
     // // 初始化会员信息、登录信息
     // Storage.remove('user');

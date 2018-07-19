@@ -50,13 +50,14 @@
 
 .codeBtn {
     background-color: #fff;
-    border: 1px solid $assertive!important;
-    margin: 0!important;
-    padding: 0px 10px!important;
+    border: 1px solid #6fd6b9 !important;
+    margin: 0 !important;
+    padding: 0px 10px !important;
     height: 32px;
-    min-height: 20px!important;
+    min-height: 20px !important;
+    min-width: 80px !important;
     line-height: 32px;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .disableCodeBtn {
@@ -284,4 +285,8 @@
         font-size: 12px;
         padding: 0;
     }
+}
+
+.item-input-inset .item-input-wrapper input {
+    font-size: 16px;
 }

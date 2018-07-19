@@ -190,8 +190,9 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
                         $state.go('appIndex');
                         $scope.$emit("alert", '数据不存在，请重新扫码');
                     });
-                } else {
-                    // 未扫到码
+                }
+                if (barcodeData.cancelled) {
+                    // 点击返回 
                     $state.go('appIndex');
                 }
             }, function(error) {
@@ -718,6 +719,9 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
+        FetchData.get('/mall/mashopping/getAll').then(function(data) {
+            ngCart.$loadCart(data.data);
+        }, function(err) {});
         $rootScope.hideTabs = '';
         $scope.searchQuery = '';
         if (Storage.get('cateHomeOrigin') == 'index') {

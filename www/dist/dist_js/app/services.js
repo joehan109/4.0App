@@ -344,6 +344,7 @@ angular.module('fourdotzero.services', [])
                         selectedItems: []
                     });
                     window.location.href = "#/appIndex";
+                    $rootScope.authDialog.show();
                     deferred.resolve();
                 }).error(function(data) {
                     isAuthenticated = false;
