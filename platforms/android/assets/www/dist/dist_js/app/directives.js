@@ -291,15 +291,15 @@ angular.module('fourdotzero.directives', [])
                 scope: scope,
                 animation: 'slide-in-right'
             }).then(function(modal) {
-                scope.addressModal = modal;
+                $rootScope.addressModal = modal;
             });
             scope.closeModal = function() {
-                scope.addressModal.hide();
+                $rootScope.addressModal.hide();
 
             };
 
             element.bind('click', function() {
-                scope.addressModal.show();
+                $rootScope.addressModal.show();
             })
 
             // FetchData.get('/api/address/hierarchy').then(function(data){

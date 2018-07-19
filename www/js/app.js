@@ -80,23 +80,42 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
             });
         }
 
+        // 如果有弹窗，先关闭弹窗
+        var hasDialog = false;
+        angular.forEach([
+            $rootScope.addressModal,
+            $rootScope.bindEmailDialog,
+            $rootScope.signupDialog,
+            $rootScope.forgotPWDialog,
+            $rootScope.passwordDialog,
+            $rootScope.phoneDialog,
+            $rootScope.authDialog
+        ], function(item) {
+            if (item && item._isShown && !hasDialog) {
+                item.hide();
+                hasDialog = true;
+                return;
+            }
+        });
         // Is there a page to go back to?
-        if ($location.path() == '/appIndex') {
-            showConfirm();
-        } else if ($location.path() == '/shopTab/cateHome') {
-            $state.go('appIndex')
-        } else if ($location.path() == '/shopTab/account') {
-            $state.go('shopTab.cateHome')
-        } else if ($ionicHistory.backView()) {
-            $rootScope.$ionicGoBack();
-        } else {
-            // This is the last page: Show confirmation popup
-            showConfirm();
+        if (!hasDialog) {
+            if ($location.path() == '/appIndex') {
+                showConfirm();
+            } else if ($location.path() == '/shopTab/cateHome') {
+                $state.go('appIndex')
+            } else if ($location.path() == '/shopTab/account') {
+                $state.go('shopTab.cateHome')
+            } else if ($ionicHistory.backView()) {
+                $rootScope.$ionicGoBack();
+            } else {
+                // This is the last page: Show confirmation popup
+                showConfirm();
+            }
         }
         e.preventDefault();
 
         return false;
-    }, 501);
+    }, 201);
     // set moment locale
     amMoment.changeLocale('zh-cn');
 

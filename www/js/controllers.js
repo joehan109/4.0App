@@ -2,7 +2,7 @@
 
 var controllersModule = angular.module('fourdotzero.controllers', [])
 
-function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
+function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
     Photogram, PhotoService, $timeout, geoService, FetchData, $ionicSlideBoxDelegate, $interval, Storage) {
     // 解决每次路由切换轮播停止
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -64,7 +64,7 @@ function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
     $scope.delegateHandle = $ionicSlideBoxDelegate;
 }
 
-function shopTabsCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
+function shopTabsCtrl($scope, $rootScope, $state, $cordovaToast,
     Photogram, PhotoService, $timeout, geoService, FetchData) {
 
     $scope.form = {
@@ -80,7 +80,7 @@ function shopTabsCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
 
 }
 
-function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
+function scanCtrl($scope, $rootScope, $state, $cordovaToast,
     Photogram, $ionicPopup, $timeout, geoService, FetchData, $cordovaBarcodeScanner) {
 
     // 每次一进页面就调用照相机
@@ -671,7 +671,7 @@ function userListCtrl($scope, $rootScope, $state, FetchData, $stateParams,
 }
 
 function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
-    $ionicModal, $ionicScrollDelegate, ngCart,
+    $ionicScrollDelegate, ngCart,
     Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -846,7 +846,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 }
 
 function homeCtrl($scope, $rootScope, $log, $timeout, $state,
-    $ionicModal, ngCart, $ionicSlideBoxDelegate, Board,
+    ngCart, $ionicSlideBoxDelegate, Board,
     Items, FetchData, Categories) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -914,9 +914,7 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
 }
 
 
-function exploreCtrl($scope, $rootScope, $state, $ionicModal,
-    $ionicPopover,
-    Photogram, FetchData) {
+function exploreCtrl($scope, $rootScope, $state, $ionicPopover, Photogram, FetchData) {
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
     });
@@ -970,9 +968,7 @@ function exploreCtrl($scope, $rootScope, $state, $ionicModal,
     };
 }
 
-function myPostsCtrl($scope, $rootScope, $state, $ionicModal,
-    $ionicPopover, AuthService,
-    Photogram) {
+function myPostsCtrl($scope, $rootScope, AuthService, Photogram) {
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
     });
@@ -1013,8 +1009,7 @@ function myPostsCtrl($scope, $rootScope, $state, $ionicModal,
     };
 }
 
-function likePostsCtrl($scope, $rootScope, $state, $ionicModal,
-    $ionicPopover, AuthService, Photogram) {
+function likePostsCtrl($scope, $rootScope, AuthService, Photogram) {
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
     });
@@ -1131,7 +1126,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
                 $rootScope.authDialog.hide()
                 $scope.$emit('alert', "登录成功");
             }).catch(function() {
-                $scope.$emit('alert', "Invalid username and/or password");
+                $scope.$emit('alert', "请输入正确的用户名和密码");
                 $scope.disabled = false;
             });
 
@@ -1197,19 +1192,19 @@ function authCtrl($rootScope, $scope, FetchData, $state,
             scope: $scope,
             focusFirstInput: true,
         }).then(function(modal) {
-            $scope.signupDialog = modal;
-            $scope.signupDialog.show();
+            $rootScope.signupDialog = modal;
+            $rootScope.signupDialog.show();
         });
     };
 
     $scope.closeSignupBox = function() {
-        $scope.signupDialog.hide();
-        $scope.signupDialog.remove();
+        $rootScope.signupDialog.hide();
+        $rootScope.signupDialog.remove();
     };
 
     $scope.$on('signupModal:hide', function(event) {
-        $scope.signupDialog.hide();
-        $scope.signupDialog.remove();
+        $rootScope.signupDialog.hide();
+        $rootScope.signupDialog.remove();
     })
 
 
@@ -1233,19 +1228,19 @@ function authCtrl($rootScope, $scope, FetchData, $state,
             scope: $scope,
             focusFirstInput: true,
         }).then(function(modal) {
-            $scope.forgotPWDialog = modal;
-            $scope.forgotPWDialog.show();
+            $rootScope.forgotPWDialog = modal;
+            $rootScope.forgotPWDialog.show();
         });
     };
 
     $scope.closeForgotPWBox = function() {
-        $scope.forgotPWDialog.hide();
-        $scope.forgotPWDialog.remove();
+        $rootScope.forgotPWDialog.hide();
+        $rootScope.forgotPWDialog.remove();
     };
 
     $scope.$on('forgotPWModal:hide', function(event) {
-        $scope.forgotPWDialog.hide();
-        $scope.forgotPWDialog.remove();
+        $rootScope.forgotPWDialog.hide();
+        $rootScope.forgotPWDialog.remove();
     })
 
 }
@@ -1572,20 +1567,20 @@ function settingsCtrl($rootScope, $scope, $state, AuthService, $ionicModal, Stor
             scope: $scope,
             focusFirstInput: true,
         }).then(function(modal) {
-            $scope.passwordDialog = modal;
-            $scope.passwordDialog.show();
+            $rootScope.passwordDialog = modal;
+            $rootScope.passwordDialog.show();
         });
     };
 
     $scope.closePasswordModifyBox = function() {
-        $scope.passwordDialog.hide();
-        $scope.passwordDialog.remove();
+        $rootScope.passwordDialog.hide();
+        $rootScope.passwordDialog.remove();
         $scope.defaultPhone = Storage.get('user').phone
     };
 
     $scope.$on('changePWModal:hide', function(event) {
-        $scope.passwordDialog.hide();
-        $scope.passwordDialog.remove();
+        $rootScope.passwordDialog.hide();
+        $rootScope.passwordDialog.remove();
         $scope.defaultPhone = Storage.get('user').phone
     })
 
@@ -1595,19 +1590,19 @@ function settingsCtrl($rootScope, $scope, $state, AuthService, $ionicModal, Stor
             scope: $scope,
             focusFirstInput: true,
         }).then(function(modal) {
-            $scope.phoneDialog = modal;
-            $scope.phoneDialog.show();
+            $rootScope.phoneDialog = modal;
+            $rootScope.phoneDialog.show();
         });
     };
 
     $scope.closePhoneModifyBox = function() {
-        $scope.phoneDialog.hide();
-        $scope.phoneDialog.remove();
+        $rootScope.phoneDialog.hide();
+        $rootScope.phoneDialog.remove();
     };
 
     $scope.$on('changePhoneModal:hide', function(event) {
-        $scope.phoneDialog.hide();
-        $scope.phoneDialog.remove();
+        $rootScope.phoneDialog.hide();
+        $rootScope.phoneDialog.remove();
     })
 
 
@@ -1708,7 +1703,7 @@ function paymentCancelCtrl() {
 }
 
 
-function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal, ngCart,
+function itemCtrl($scope, $rootScope, $stateParams, FetchData,
     $ionicSlideBoxDelegate, sheetShare, $cordovaSocialSharing, $ionicPopup) {
     //商品详情
     //
@@ -2173,9 +2168,9 @@ function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData
             $scope.logistics = res.data.data;
             $scope.logisticDetail = res.data;
         }, function() {
-            $timeout(function() {
-                $scope.goTab();
-            }, 3000)
+            // $timeout(function() {
+            //     $scope.goTab();
+            // }, 3000)
         });
     });
     $scope.goTab = function() {

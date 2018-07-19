@@ -1,18 +1,18 @@
 'use strict';
 
-appIndexCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$cordovaToast', 'Photogram', 'PhotoService', '$timeout', 'geoService', 'FetchData', '$ionicSlideBoxDelegate', '$interval', 'Storage'];
-homeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicModal', 'ngCart', '$ionicSlideBoxDelegate', 'Board', 'Items', 'FetchData', 'Categories'];
-cateHomeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicModal', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
+appIndexCtrl.$inject = ['$scope', '$rootScope', '$state', '$cordovaToast', 'Photogram', 'PhotoService', '$timeout', 'geoService', 'FetchData', '$ionicSlideBoxDelegate', '$interval', 'Storage'];
+homeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', 'ngCart', '$ionicSlideBoxDelegate', 'Board', 'Items', 'FetchData', 'Categories'];
+cateHomeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
 introCtrl.$inject = ['$rootScope', '$scope', '$state', 'FetchData', '$ionicSlideBoxDelegate', 'Storage'];
-exploreCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$ionicPopover', 'Photogram', 'FetchData'];
+exploreCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicPopover', 'Photogram', 'FetchData'];
 notificationCtrl.$inject = ['$rootScope', '$scope', '$state', 'Notification'];
-myPostsCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$ionicPopover', 'AuthService', 'Photogram'];
-likePostsCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$ionicPopover', 'AuthService', 'Photogram'];
+myPostsCtrl.$inject = ['$scope', '$rootScope', 'AuthService', 'Photogram'];
+likePostsCtrl.$inject = ['$scope', '$rootScope', 'AuthService', 'Photogram'];
 postDetailCtrl.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'Photogram', 'AuthService', '$ionicPopup', 'photoShare'];
 userDetailCtrl.$inject = ['$scope', '$rootScope', '$state', 'FetchData', '$stateParams', 'AuthService', 'Photogram', 'User', '$ionicScrollDelegate'];
 userListCtrl.$inject = ['$scope', '$rootScope', '$state', 'FetchData', '$stateParams', 'AuthService', 'User'];
 tabsCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$cordovaToast', 'Photogram', 'PhotoService', '$timeout', 'geoService', 'FetchData', '$cordovaBarcodeScanner'];
-shopTabsCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$cordovaToast', 'Photogram', 'PhotoService', '$timeout', 'geoService', 'FetchData'];
+shopTabsCtrl.$inject = ['$scope', '$rootScope', '$state', '$cordovaToast', 'Photogram', 'PhotoService', '$timeout', 'geoService', 'FetchData'];
 feedbackCtrl.$inject = ['$scope', 'FetchData', '$rootScope'];
 csCtrl.$inject = ['$rootScope', '$scope'];
 faqCtrl.$inject = ['$rootScope', '$scope'];
@@ -28,7 +28,7 @@ changePWCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV'];
 changePhoneCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV', '$interval', 'Storage'];
 settingsCtrl.$inject = ['$rootScope', '$scope', '$state', 'AuthService', '$ionicModal', 'Storage'];
 paymentSuccessCtrl.$inject = ['$location', '$timeout'];
-itemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionicModal', 'ngCart', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup'];
+itemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup'];
 itemsCtrl.$inject = ['$rootScope', '$scope', 'Items', '$state', '$stateParams'];
 boardCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$state'];
 favorCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart'];
@@ -42,10 +42,10 @@ cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage', '$
 checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart'];
 addressCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
 aboutCtrl.$inject = ['$rootScope', '$scope', '$state', 'appUpdateService'];
-scanCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicModal', '$cordovaToast', 'Photogram', '$ionicPopup', '$timeout', 'geoService', 'FetchData', '$cordovaBarcodeScanner'];
+scanCtrl.$inject = ['$scope', '$rootScope', '$state', '$cordovaToast', 'Photogram', '$ionicPopup', '$timeout', 'geoService', 'FetchData', '$cordovaBarcodeScanner'];
 var controllersModule = angular.module('fourdotzero.controllers', [])
 
-function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
+function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
     Photogram, PhotoService, $timeout, geoService, FetchData, $ionicSlideBoxDelegate, $interval, Storage) {
     // 解决每次路由切换轮播停止
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -107,7 +107,7 @@ function appIndexCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
     $scope.delegateHandle = $ionicSlideBoxDelegate;
 }
 
-function shopTabsCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
+function shopTabsCtrl($scope, $rootScope, $state, $cordovaToast,
     Photogram, PhotoService, $timeout, geoService, FetchData) {
 
     $scope.form = {
@@ -123,7 +123,7 @@ function shopTabsCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
 
 }
 
-function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
+function scanCtrl($scope, $rootScope, $state, $cordovaToast,
     Photogram, $ionicPopup, $timeout, geoService, FetchData, $cordovaBarcodeScanner) {
 
     // 每次一进页面就调用照相机
@@ -170,26 +170,32 @@ function scanCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
             .scan()
             .then(function(barcodeData) {
                 $scope.barcodeData = barcodeData;
-                $scope.barcodeData.text && FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text).then(function(res) {
-                    if (res.ret) {
-                        console.log(res.data)
-                        $scope.data = res.data;
-                        $scope.imgUrl = res.data.proUrl;
-                        $scope.getDetail = true;
-                        if (res.data.pwdFlag) {
-                            $scope.showCode = true;
-                            $scope.openCode = res.data.sonPwd;
-                            $scope.num = res.data.num || 0;
-                        } else {
-                            $scope.showOpen = true;
+                if (barcodeData.text) {
+                    FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text).then(function(res) {
+                        if (res.ret) {
+                            console.log(res.data)
+                            $scope.data = res.data;
+                            $scope.imgUrl = res.data.proUrl;
+                            $scope.getDetail = true;
+                            if (res.data.pwdFlag) {
+                                $scope.showCode = true;
+                                $scope.openCode = res.data.sonPwd;
+                                $scope.num = res.data.num || 0;
+                            } else {
+                                $scope.showOpen = true;
+                            }
                         }
-                    }
-                }, function(res) {
-                    console.log(res)
+                    }, function(res) {
+                        // 查询数据出错
+                        $state.go('appIndex');
+                        $scope.$emit("alert", '数据不存在，请重新扫码');
+                    });
+                } else {
+                    // 未扫到码
                     $state.go('appIndex');
-                    $scope.$emit("alert", '数据不存在，请重新扫码');
-                });
+                }
             }, function(error) {
+                // 扫码出现异常
                 $state.go('appIndex');
             });
 
@@ -708,7 +714,7 @@ function userListCtrl($scope, $rootScope, $state, FetchData, $stateParams,
 }
 
 function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
-    $ionicModal, $ionicScrollDelegate, ngCart,
+    $ionicScrollDelegate, ngCart,
     Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -883,7 +889,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 }
 
 function homeCtrl($scope, $rootScope, $log, $timeout, $state,
-    $ionicModal, ngCart, $ionicSlideBoxDelegate, Board,
+    ngCart, $ionicSlideBoxDelegate, Board,
     Items, FetchData, Categories) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -951,9 +957,7 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
 }
 
 
-function exploreCtrl($scope, $rootScope, $state, $ionicModal,
-    $ionicPopover,
-    Photogram, FetchData) {
+function exploreCtrl($scope, $rootScope, $state, $ionicPopover, Photogram, FetchData) {
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
     });
@@ -1007,9 +1011,7 @@ function exploreCtrl($scope, $rootScope, $state, $ionicModal,
     };
 }
 
-function myPostsCtrl($scope, $rootScope, $state, $ionicModal,
-    $ionicPopover, AuthService,
-    Photogram) {
+function myPostsCtrl($scope, $rootScope, AuthService, Photogram) {
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
     });
@@ -1050,8 +1052,7 @@ function myPostsCtrl($scope, $rootScope, $state, $ionicModal,
     };
 }
 
-function likePostsCtrl($scope, $rootScope, $state, $ionicModal,
-    $ionicPopover, AuthService, Photogram) {
+function likePostsCtrl($scope, $rootScope, AuthService, Photogram) {
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
     });
@@ -1168,7 +1169,7 @@ function authCtrl($rootScope, $scope, FetchData, $state,
                 $rootScope.authDialog.hide()
                 $scope.$emit('alert', "登录成功");
             }).catch(function() {
-                $scope.$emit('alert', "Invalid username and/or password");
+                $scope.$emit('alert', "请输入正确的用户名和密码");
                 $scope.disabled = false;
             });
 
@@ -1234,19 +1235,19 @@ function authCtrl($rootScope, $scope, FetchData, $state,
             scope: $scope,
             focusFirstInput: true,
         }).then(function(modal) {
-            $scope.signupDialog = modal;
-            $scope.signupDialog.show();
+            $rootScope.signupDialog = modal;
+            $rootScope.signupDialog.show();
         });
     };
 
     $scope.closeSignupBox = function() {
-        $scope.signupDialog.hide();
-        $scope.signupDialog.remove();
+        $rootScope.signupDialog.hide();
+        $rootScope.signupDialog.remove();
     };
 
     $scope.$on('signupModal:hide', function(event) {
-        $scope.signupDialog.hide();
-        $scope.signupDialog.remove();
+        $rootScope.signupDialog.hide();
+        $rootScope.signupDialog.remove();
     })
 
 
@@ -1270,19 +1271,19 @@ function authCtrl($rootScope, $scope, FetchData, $state,
             scope: $scope,
             focusFirstInput: true,
         }).then(function(modal) {
-            $scope.forgotPWDialog = modal;
-            $scope.forgotPWDialog.show();
+            $rootScope.forgotPWDialog = modal;
+            $rootScope.forgotPWDialog.show();
         });
     };
 
     $scope.closeForgotPWBox = function() {
-        $scope.forgotPWDialog.hide();
-        $scope.forgotPWDialog.remove();
+        $rootScope.forgotPWDialog.hide();
+        $rootScope.forgotPWDialog.remove();
     };
 
     $scope.$on('forgotPWModal:hide', function(event) {
-        $scope.forgotPWDialog.hide();
-        $scope.forgotPWDialog.remove();
+        $rootScope.forgotPWDialog.hide();
+        $rootScope.forgotPWDialog.remove();
     })
 
 }
@@ -1609,20 +1610,20 @@ function settingsCtrl($rootScope, $scope, $state, AuthService, $ionicModal, Stor
             scope: $scope,
             focusFirstInput: true,
         }).then(function(modal) {
-            $scope.passwordDialog = modal;
-            $scope.passwordDialog.show();
+            $rootScope.passwordDialog = modal;
+            $rootScope.passwordDialog.show();
         });
     };
 
     $scope.closePasswordModifyBox = function() {
-        $scope.passwordDialog.hide();
-        $scope.passwordDialog.remove();
+        $rootScope.passwordDialog.hide();
+        $rootScope.passwordDialog.remove();
         $scope.defaultPhone = Storage.get('user').phone
     };
 
     $scope.$on('changePWModal:hide', function(event) {
-        $scope.passwordDialog.hide();
-        $scope.passwordDialog.remove();
+        $rootScope.passwordDialog.hide();
+        $rootScope.passwordDialog.remove();
         $scope.defaultPhone = Storage.get('user').phone
     })
 
@@ -1632,19 +1633,19 @@ function settingsCtrl($rootScope, $scope, $state, AuthService, $ionicModal, Stor
             scope: $scope,
             focusFirstInput: true,
         }).then(function(modal) {
-            $scope.phoneDialog = modal;
-            $scope.phoneDialog.show();
+            $rootScope.phoneDialog = modal;
+            $rootScope.phoneDialog.show();
         });
     };
 
     $scope.closePhoneModifyBox = function() {
-        $scope.phoneDialog.hide();
-        $scope.phoneDialog.remove();
+        $rootScope.phoneDialog.hide();
+        $rootScope.phoneDialog.remove();
     };
 
     $scope.$on('changePhoneModal:hide', function(event) {
-        $scope.phoneDialog.hide();
-        $scope.phoneDialog.remove();
+        $rootScope.phoneDialog.hide();
+        $rootScope.phoneDialog.remove();
     })
 
 
@@ -1745,7 +1746,7 @@ function paymentCancelCtrl() {
 }
 
 
-function itemCtrl($scope, $rootScope, $stateParams, FetchData, $ionicModal, ngCart,
+function itemCtrl($scope, $rootScope, $stateParams, FetchData,
     $ionicSlideBoxDelegate, sheetShare, $cordovaSocialSharing, $ionicPopup) {
     //商品详情
     //
@@ -2210,9 +2211,9 @@ function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData
             $scope.logistics = res.data.data;
             $scope.logisticDetail = res.data;
         }, function() {
-            $timeout(function() {
-                $scope.goTab();
-            }, 3000)
+            // $timeout(function() {
+            //     $scope.goTab();
+            // }, 3000)
         });
     });
     $scope.goTab = function() {

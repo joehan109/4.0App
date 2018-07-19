@@ -46,9 +46,9 @@
           <i class="icon ion-ios-locked-outline placeholder-icon" style="font-size:24px"></i>
           <input type="text" placeholder="请输入验证码" ng-model="validateCode">
         </label>
-                <button class="button codeBtn" ng-class="{'assertive':!sendStatus}" ng-click="getValidateCode()" ng-disabled="sendStatus">
-          {{validateTime}}
-        </button>
+                <a class="button codeBtn" ng-class="{'assertive':!sendStatus}" ng-click="getValidateCode()" ng-disabled="sendStatus">
+        {{validateTime}}
+        </a>
             </div>
         </div>
 
