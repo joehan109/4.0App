@@ -103,7 +103,6 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
                 // 解决有的机型扫一扫返回直接退出了
                 if (!$rootScope.canExitFromScan && ($ionicHistory.forwardView().url === '/scan')) {
                     $rootScope.canExitFromScan = true;
-                    $ionicHistory.forwardView().url = null;
                     $timeout(function() {
                         $rootScope.canExitFromScan = false;
                     }, 2000)
