@@ -1437,9 +1437,10 @@ function forgotPWCtrl($rootScope, $scope, AuthService, $http, ENV, $interval) {
     $scope.validateCode = '';
     $scope.sendStatus = false;
     $scope.timeout = null;
+    $scope.params = {}
     $scope.getValidateCode = function() {
-        if ($scope.phone) {
-            $http.get(ENV.SERVER_URL + '/mall/vip/login/getCode?type=3&phone=' + $scope.phone).success(function(data) {
+        if ($scope.params.phone) {
+            $http.get(ENV.SERVER_URL + '/mall/vip/login/getCode?type=3&phone=' + $scope.params.phone).success(function(data) {
                 if (data.ret) {
                     $scope.$emit('alert', "发送验证码成功");
                     var timeRemaining;
@@ -1466,9 +1467,9 @@ function forgotPWCtrl($rootScope, $scope, AuthService, $http, ENV, $interval) {
         }
     };
     $scope.submit = function() {
-        if ($scope.password && ($scope.password === $scope.password1)) {
+        if ($scope.params.password && ($scope.params.password === $scope.params.password1)) {
             $http.post(ENV.SERVER_URL + '/mall/vip/app/resetPwd?code=' +
-                    $scope.validateCode + '&phone=' + $scope.phone + '&newPwd=' + $scope.password)
+                    $scope.validateCode + '&phone=' + $scope.params.phone + '&newPwd=' + $scope.params.password)
                 .success(function(res) {
                     if (res.ret) {
                         $scope.$emit('alert', res.data || "修改成功，请重新登录");
@@ -1481,7 +1482,7 @@ function forgotPWCtrl($rootScope, $scope, AuthService, $http, ENV, $interval) {
         }
     };
     $scope.canSave = function() {
-        return $scope.phone && $scope.validateCode && $scope.password && $scope.password1
+        return $scope.params.phone && $scope.validateCode && $scope.params.password && $scope.params.password1
     }
 }
 
@@ -2737,6 +2738,7 @@ function addressCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup)
             angular.forEach($scope.addresses, function(addr, index) {
                 if (addr.id === addr_id) {
                     addr.flag = 1;
+                    ngCart.setAddress(addr);
                 } else {
                     addr.flag = 0;
                 }

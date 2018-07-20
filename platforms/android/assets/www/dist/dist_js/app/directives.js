@@ -277,7 +277,6 @@ angular.module('fourdotzero.directives', [])
         link: function(scope, element, attrs) {
             scope.ngCart = ngCart;
             scope.addr = {};
-
             var addr_id = scope.addrId;
             if (addr_id && scope.addresses) {
                 scope.addresses.forEach(function(item) {
@@ -287,19 +286,20 @@ angular.module('fourdotzero.directives', [])
                 })
             }
             var isFisrt = !scope.addresses.length;
-            $ionicModal.fromTemplateUrl('add_address.html', {
-                scope: scope,
-                animation: 'slide-in-right'
-            }).then(function(modal) {
-                $rootScope.addressModal = modal;
-            });
             scope.closeModal = function() {
                 $rootScope.addressModal.hide();
 
             };
 
             element.bind('click', function() {
-                $rootScope.addressModal.show();
+                $ionicModal.fromTemplateUrl('add_address.html', {
+                    scope: scope,
+                    animation: 'slide-in-right'
+                }).then(function(modal) {
+                    $rootScope.addressModal = modal;
+                }).then(function() {
+                    $rootScope.addressModal.show();
+                });
             })
 
             // FetchData.get('/api/address/hierarchy').then(function(data){
@@ -324,7 +324,7 @@ angular.module('fourdotzero.directives', [])
                         'postcode': scope.addr.postcode,
                         'phone': scope.addr.phone,
                     })).then(function(data) {
-                        scope.addressModal.hide();
+                        $rootScope.addressModal.hide();
                         $state.transitionTo($state.current, $state.$current.params, { reload: true, inherit: true, notify: true });
                     });
                 } else {
@@ -335,7 +335,7 @@ angular.module('fourdotzero.directives', [])
                         'postcode': scope.addr.postcode,
                         'phone': scope.addr.phone,
                     })).then(function(data) {
-                        scope.addressModal.hide();
+                        $rootScope.addressModal.hide();
                         $state.transitionTo($state.current, $state.$current.params, { reload: true, inherit: true, notify: true });
                     });
 

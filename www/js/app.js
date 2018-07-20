@@ -56,8 +56,8 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
                 template: '你确定要退出应用吗?',
                 cancelText: '取消',
                 okText: '退出',
-                cancelType: 'button-energized',
-                okType: 'button-default'
+                okType: 'button-energized',
+                cancelType: 'button-default'
 
             });
 
