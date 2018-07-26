@@ -3,3 +3,4 @@ bower_components
 .idea
 .gradle
 **/debug/
+gradle-4.4-all.zip
