@@ -1,0 +1,26 @@
+<ion-view>
+  <div class="bar bar-header">
+      <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button>
+      <div class="title">关于我们</div>
+  </div>
+  <ion-content class="has-header account">
+    <ion-list>
+        <div class="about">
+          <div class="logo"></div>
+        </div>
+
+      <ion-item class="item item-icon-left">
+          <i class="icon ion-ios-flag"></i>
+          版本号
+          <span class="item-note">
+              {{appUpdateService.getVersions()}}
+          </span>
+      </ion-item>
+      <div class="copyright">
+        <p>Copyright @ 2018</p>
+        <p>北京四点零酒业有限公司</p>
+
+      </div>
+    </ion-list>
+  </ion-content>
+</ion-view>

@@ -14836,6 +14836,21 @@ input.ion-google-place[readonly] {
 .item-input-inset .item-input-wrapper input {
   font-size: 16px; }
 
+#index-footer {
+  bottom: 0;
+  border-bottom: 0 none;
+  background: url("../img/icons/index_bg.png") no-repeat #F8F8F8;
+  background-size: 100% 100%;
+  min-height: 190px;
+  text-align: center; }
+  #index-footer .chooseType {
+    display: inline-block;
+    padding-top: 35px; }
+    #index-footer .chooseType .icon1 {
+      height: 90px;
+      width: 80px;
+      background-size: 80px; }
+
 .assertive {
   color: #6fd6b9; }
 

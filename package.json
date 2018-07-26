@@ -6,8 +6,9 @@
     "@ionic-native/http": "^4.9.0",
     "angular-moment": "^1.0.0-beta.3",
     "angular-timer": "^1.3.5",
+    "com.telerik.plugins.wkwebview": "~0.6.10",
     "cordova-android": "^6.4.0",
-    "cordova-ios": "^4.5.4",
+    "cordova-ios": "^3.9.2",
     "cordova-plugin-advanced-http": "^1.11.1",
     "cordova-plugin-alipay-v2": "0.0.4",
     "cordova-plugin-camera": "git+https://github.com/apache/cordova-plugin-camera.git",
@@ -18,7 +19,9 @@
     "cordova-plugin-ionic-keyboard": "2.0.5",
     "cordova-plugin-ionic-webview": "1.1.19",
     "cordova-plugin-splashscreen": "5.0.2",
+    "cordova-plugin-webserver": "^1.0.3",
     "cordova-plugin-whitelist": "git+https://github.com/apache/cordova-plugin-whitelist.git",
+    "cordova-plugin-wkwebview": "^0.6.10",
     "cordova-plugin-x-toast": "^2.6.2",
     "gulp": "^3.5.6",
     "gulp-concat": "^2.2.0",
@@ -65,7 +68,6 @@
   ],
   "cordova": {
     "platforms": [
-      "ios",
       "android"
     ],
     "plugins": {
@@ -87,7 +89,8 @@
       "cordova-plugin-alipay-v2": {
         "APP_ID": "2018051560119605"
       },
-      "cordova-plugin-x-toast": {}
+      "cordova-plugin-x-toast": {},
+      "com.telerik.plugins.wkwebview": {}
     }
   }
 }

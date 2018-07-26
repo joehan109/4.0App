@@ -48,6 +48,10 @@
     "phonegap-plugin-barcodescanner": {
       "ANDROID_SUPPORT_V4_VERSION": "27.+",
       "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "com.telerik.plugins.wkwebview": {
+      "WKWEBVIEW_SERVER_PORT": "12344",
+      "PACKAGE_NAME": "io.ionic.starter"
     }
   },
   "dependent_plugins": {

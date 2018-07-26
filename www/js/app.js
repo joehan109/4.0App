@@ -335,14 +335,11 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         }
     })
 
-    .state('tab.userDetail', {
-            url: '/userDetail/:userID',
-            views: {
-                'tab-explore': {
-                    templateUrl: 'userDetail.html',
-                    controller: 'userDetailCtrl'
-                }
-            }
+    .state('userDetail', {
+            url: '/userDetail',
+            templateUrl: 'userDetail.html',
+            controller: 'userDetailCtrl',
+            loginRequired: true
         })
         .state('tab.accountUserDetail', {
             url: '/userDetail/:userID',

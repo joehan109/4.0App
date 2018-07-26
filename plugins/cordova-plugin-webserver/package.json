@@ -1,0 +1,97 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "cordova-plugin-webserver",
+        "scope": null,
+        "escapedName": "cordova-plugin-webserver",
+        "name": "cordova-plugin-webserver",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/hanqiang.han/joe/workspace/4.0App"
+    ]
+  ],
+  "_cnpm_publish_time": 1433342775202,
+  "_from": "cordova-plugin-webserver@latest",
+  "_hasShrinkwrap": false,
+  "_id": "cordova-plugin-webserver@1.0.3",
+  "_inCache": true,
+  "_location": "/cordova-plugin-webserver",
+  "_nodeVersion": "0.12.3",
+  "_npmUser": {
+    "name": "galexandrov",
+    "email": "georgi.alexandrov@telerik.com"
+  },
+  "_npmVersion": "2.9.1",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "cordova-plugin-webserver",
+    "scope": null,
+    "escapedName": "cordova-plugin-webserver",
+    "name": "cordova-plugin-webserver",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "http://npmrepo.corp.qunar.com/cordova-plugin-webserver/-/cordova-plugin-webserver-1.0.3.tgz",
+  "_shasum": "18a0d7a81ef7840ea279cfba86894928241e939e",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-webserver",
+  "_where": "/Users/hanqiang.han/joe/workspace/4.0App",
+  "author": {
+    "name": "Telerik"
+  },
+  "bugs": {
+    "url": "https://github.com/icenium/cordova-plugin-webserver/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-webserver",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "description": "Cordova WebServer Plugin",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "18a0d7a81ef7840ea279cfba86894928241e939e",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-webserver/-/cordova-plugin-webserver-1.0.3.tgz"
+  },
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "homepage": "https://github.com/icenium/cordova-plugin-webserver#readme",
+  "keywords": [
+    "cordova",
+    "webserver",
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "galexandrov",
+      "email": "georgi.alexandrov@telerik.com"
+    }
+  ],
+  "name": "cordova-plugin-webserver",
+  "optionalDependencies": {},
+  "readme": "# cordova-plugin-webserver\ncordova-plugin-webserver\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/icenium/cordova-plugin-webserver.git"
+  },
+  "scripts": {},
+  "version": "1.0.3"
+}

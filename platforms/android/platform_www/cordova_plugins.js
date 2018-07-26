@@ -337,7 +337,8 @@ module.exports.metadata =
   "cordova-plugin-whitelist": "1.3.4-dev",
   "cordova-plugin-x-toast": "2.6.2",
   "ionic-plugin-deploy": "0.6.7",
-  "phonegap-plugin-barcodescanner": "7.1.2"
+  "phonegap-plugin-barcodescanner": "7.1.2",
+  "com.telerik.plugins.wkwebview": "0.6.10"
 };
 // BOTTOM OF METADATA
 });

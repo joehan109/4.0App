@@ -9,22 +9,23 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
         $ionicSlideBoxDelegate.start();
     });
     $scope.types = [
-        { name: '扫一扫', url: 'scan', icon: 'qr-scanner', pic: 'category' },
+        // { name: '扫一扫', url: 'scan', icon: 'qr-scanner', pic: 'category' },
         { name: '4.0 商城', url: 'shopTab.cateHome', icon: 'ios-home-outline', pic: 'calculate' },
-        { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline', pic: 'limit' }
+        { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline', pic: 'limit' },
+        { name: '会员中心', url: 'userDetail', icon: 'qr-scanner', pic: 'send' }
     ];
-    $scope.goto = function(item) {
+    $scope.goto = function(url) {
         if (!Storage.get('access_token')) {
             $rootScope.showAuthBox();
             return;
         }
-        if (item.url === 'shopTab.cateHome') {
+        if (url === 'shopTab.cateHome') {
             Storage.set('shopOrSell', 'shop');
             Storage.set('cateHomeOrigin', 'index');
-        } else if (item.url === 'tab.home') {
+        } else if (url === 'tab.home') {
             Storage.set('shopOrSell', 'sell')
         } else {}
-        $state.go(item.url);
+        $state.go(url);
     }
     $scope.form = {
         title: '',
@@ -434,20 +435,22 @@ function postDetailCtrl($scope, $rootScope, $state, $stateParams, Photogram,
 function userDetailCtrl($scope, $rootScope, $state, FetchData, $stateParams, AuthService,
     Photogram, User, $ionicScrollDelegate) {
     $scope.$on('$ionicView.beforeEnter', function() {
-        $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.$emit('alert', '该功能正在开发，请以后版本尝试')
+        $state.go('appIndex')
+        $rootScope.hideTabs = '';
     });
 
-    FetchData.get('/api/users/user_info/' + $stateParams.userID).then(function(data) {
-        $scope.user = data.user;
-    });
+    // FetchData.get('/api/users/user_info/' + $stateParams.userID).then(function(data) {
+    //     $scope.user = data.user;
+    // });
 
-    $scope.onUserDetailContentScroll = onUserDetailContentScroll;
+    // $scope.onUserDetailContentScroll = onUserDetailContentScroll;
 
-    function onUserDetailContentScroll() {
-        var scrollDelegate = $ionicScrollDelegate.$getByHandle('userDetailContent');
-        var scrollView = scrollDelegate.getScrollView();
-        $scope.$broadcast('userDetailContent.scroll', scrollView);
-    }
+    // function onUserDetailContentScroll() {
+    //     var scrollDelegate = $ionicScrollDelegate.$getByHandle('userDetailContent');
+    //     var scrollView = scrollDelegate.getScrollView();
+    //     $scope.$broadcast('userDetailContent.scroll', scrollView);
+    // }
 
     $scope.gridStyle = 'list';
     $scope.switchListStyle = function(style) {
@@ -497,10 +500,10 @@ function userDetailCtrl($scope, $rootScope, $state, FetchData, $stateParams, Aut
     var userId = $stateParams.userID;
     var page = 0;
 
-    Photogram.getUserPosts(userId, page).then(function(data) {
-        $scope.posts = data.posts;
-        page++;
-    });
+    // Photogram.getUserPosts(userId, page).then(function(data) {
+    //     $scope.posts = data.posts;
+    //     page++;
+    // });
 
     $scope.doRefresh = function() {
         page = 0;
@@ -533,9 +536,10 @@ function userListCtrl($scope, $rootScope, $state, FetchData, $stateParams,
     AuthService, User) {
 
     $scope.$on('$ionicView.beforeEnter', function() {
-        $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.$emit('alert', '该功能正在开发，请以后版本尝试')
+        $state.go('appIndex')
+        $rootScope.hideTabs = '';
     });
-
     $scope.currentUserID = AuthService.getUser().id;
 
     $scope.follow = function(user) {

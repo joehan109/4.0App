@@ -1,0 +1,38 @@
+<ion-view>
+    <div class="bar bar-header">
+        <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button>
+        <div class="title">扫码开锁</div>
+    </div>
+    <ion-content class="has-header account">
+        <div style="display:flex;flex-direction:row" ng-if="getDetail">
+            <img style="height:150px;width:150px;" ng-src="{{imgUrl}}" alt="">
+            <div style="display: flex;flex-direction: column;justify-content: space-around;margin: 10px 5px;">
+                <p>{{data.proName}}</p>
+                <!-- <p>这是产品介绍这是产品介绍这是产品介绍这是产品介绍这是产品介绍{{data.proName}}</p> -->
+                <p>香型：{{data.proType}}</p>
+                <p>产地：{{data.proArea}}</p>
+            </div>
+        </div>
+        <div style="margin-top:50px;text-align:center">
+            <button class="button button-assertive" ng-if="showOpen" ng-click="getCode()" style="width:60%">
+                获取开锁密码
+           </button>
+
+            <div ng-if="showCode">
+                <p style="font-size:18px;letter-spacing:10px">开锁密码</p>
+                <div style="margin-bottom:20px">
+                    <button class="button button-assertive">{{openCode[0]}}</button>
+                    <button class="button button-assertive">{{openCode[1]}}</button>
+                    <button class="button button-assertive">{{openCode[2]}}</button>
+                    <button class="button button-assertive">{{openCode[3]}}</button>
+                </div>
+                <p style="font-size:18px;">第<span class="energized">{{num}}</span>次获取开锁密码</p>
+            </div>
+
+            <div ng-if="alreadyShow">
+                <p>您已获取过开锁密码</p>
+                <p>开锁密码为：{{password}}</p>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
