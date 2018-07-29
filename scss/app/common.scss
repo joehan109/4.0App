@@ -66,10 +66,10 @@
 
 .appIndex {
     .indexSlide {
-        height: 150px;
+        height: 100%;
         .box {
             img {
-                height: 150px;
+                height: 100%;
                 width: 100%;
             }
         }
@@ -116,11 +116,11 @@
 }
 
 .cateHomeSlide {
-    height: 150px;
+    height: 100%;
     margin-bottom: 10px;
     .box {
         img {
-            height: 200px;
+            height: 100%;
             width: 100%;
         }
     }

@@ -14673,9 +14673,9 @@ input.ion-google-place[readonly] {
   border: 1px solid #eee !important; }
 
 .appIndex .indexSlide {
-  height: 150px; }
+  height: 100%; }
   .appIndex .indexSlide .box img {
-    height: 150px;
+    height: 100%;
     width: 100%; }
 
 .appIndex .chooseTypes {
@@ -14712,10 +14712,10 @@ input.ion-google-place[readonly] {
     background-size: 36px; }
 
 .cateHomeSlide {
-  height: 150px;
+  height: 100%;
   margin-bottom: 10px; }
   .cateHomeSlide .box img {
-    height: 200px;
+    height: 100%;
     width: 100%; }
 
 .itemCart {

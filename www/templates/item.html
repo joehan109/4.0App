@@ -5,12 +5,13 @@
     </div>
 
     <ion-content class="item-page has-footer">
-
-        <ion-slide-box delegate-handle="image-viewer" ng-style="{'height':(item.mainList.length?'200px':'0px'),'padding-top':(item.mainList.length?'0':'100%')}">
-            <ion-slide ng-repeat="img in item.mainList track by $index">
-                <img ng-src="{{ img.imgUrl }}" ng-click="zoom(img.url)" />
-            </ion-slide>
-        </ion-slide-box>
+        <div scroll-height rate="1/2">
+            <ion-slide-box delegate-handle="image-viewer" ng-style="{'padding-top':(item.mainList.length?'0':'100%')}" style="height:100%">
+                <ion-slide ng-repeat="img in item.mainList track by $index">
+                    <img ng-src="{{ img.imgUrl }}" ng-click="zoom(img.url)" />
+                </ion-slide>
+            </ion-slide-box>
+        </div>
 
         <ion-item class="item item-details">
             <div class="item-title" style="color:red">

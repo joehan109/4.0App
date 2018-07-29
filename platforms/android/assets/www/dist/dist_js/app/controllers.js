@@ -745,6 +745,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     FetchData.get('/mall/mapro/getAll').then(function(res) {
         $scope.tuijian = res.data;
         $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').update();
+        $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').loop(true);
     });
 
     $scope.ngCart = ngCart;

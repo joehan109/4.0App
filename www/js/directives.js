@@ -2,49 +2,65 @@
 
 angular.module('fourdotzero.directives', [])
 
-.directive('ngcartAddtocart', function(ngCart) {
-    return {
-        restrict: 'E',
-        scope: {
-            id: '@',
-            name: '@',
-            quantity: '@',
-            quantityMax: '@',
-            price: '@',
-            data: '='
-        },
-        transclude: true,
-        templateUrl: function(element, attrs) {
-            if (typeof attrs.templateUrl == 'undefined') {
-                return 'ngCart/addtocart.html';
-            } else {
-                return attrs.templateUrl;
+.directive('scrollHeight', function($window) {
+        return {
+            restrict: 'AE',
+            scope: {
+                rate: '@'
+            },
+            link: function(scope, element, attr) {
+                var rate = scope.rate;
+                if (rate.split('/')) {
+                    rate = scope.rate.split('/')[0] / scope.rate.split('/')[1]
+                }
+                // 根据屏幕宽度按比例设置高度
+                element[0].style.height = ($window.innerWidth * +rate) + 'px';
             }
-        },
-        link: function(scope, element, attrs) {
-            scope.ngCart = ngCart;
-            scope.attrs = attrs;
-            scope.inCart = function() {
-                return ngCart.getItemById(attrs.id);
-            };
-
-            if (scope.inCart()) {
-                scope.q = ngCart.getItemById(attrs.id).getQuantity();
-            } else {
-                scope.q = parseInt(scope.quantity);
-            }
-
-            scope.qtyOpt = [];
-            for (var i = 1; i <= scope.quantityMax; i++) {
-                scope.qtyOpt.push(i);
-            }
-
-            scope.alertWarning = function() {
-                scope.$emit('alert', '请选择有效商品');
-            };
         }
-    };
-})
+    })
+    .directive('ngcartAddtocart', function(ngCart) {
+        return {
+            restrict: 'E',
+            scope: {
+                id: '@',
+                name: '@',
+                quantity: '@',
+                quantityMax: '@',
+                price: '@',
+                data: '='
+            },
+            transclude: true,
+            templateUrl: function(element, attrs) {
+                if (typeof attrs.templateUrl == 'undefined') {
+                    return 'ngCart/addtocart.html';
+                } else {
+                    return attrs.templateUrl;
+                }
+            },
+            link: function(scope, element, attrs) {
+                scope.ngCart = ngCart;
+                scope.attrs = attrs;
+                scope.inCart = function() {
+                    return ngCart.getItemById(attrs.id);
+                };
+
+                if (scope.inCart()) {
+                    scope.q = ngCart.getItemById(attrs.id).getQuantity();
+                } else {
+                    scope.q = parseInt(scope.quantity);
+                }
+
+                scope.qtyOpt = [];
+                for (var i = 1; i <= scope.quantityMax; i++) {
+                    scope.qtyOpt.push(i);
+                }
+
+                scope.alertWarning = function() {
+                    scope.$emit('alert', '请选择有效商品');
+                };
+            }
+        };
+    })
 
 .directive('ngcartBuyrightnow', function(ngCart, $state, $rootScope) {
     return {
