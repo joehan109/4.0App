@@ -32,7 +32,7 @@ itemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionic
 itemsCtrl.$inject = ['$rootScope', '$scope', 'Items', '$state', '$stateParams'];
 boardCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$state'];
 favorCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart'];
-ordersCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', '$stateParams', '$state'];
+ordersCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', '$stateParams', '$state', 'utils'];
 calculateCtrl.$inject = ['$rootScope', '$scope', '$location', 'FetchData'];
 expressCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', 'AuthService', '$state', 'expressList'];
 expressItemAddCtrl.$inject = ['$rootScope', '$scope', 'expressList'];
@@ -733,19 +733,18 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
             Storage.remove('cateHomeOrigin');
             $scope.banners && $scope.changeTab($scope.banners[0], 0);
         }
-        $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
+        FetchData.get('/mall/mapro/getAll').then(function(res) {
+            $scope.tuijian = res.data;
+            $ionicSlideBoxDelegate.update();
+            $ionicSlideBoxDelegate.loop(true);
+        });
+
     });
     $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
         if (r.ret) {
             $scope.banners = r.data;
             $scope.changeTab($scope.banners[0], 0);
         }
-    });
-
-    FetchData.get('/mall/mapro/getAll').then(function(res) {
-        $scope.tuijian = res.data;
-        $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').update();
-        $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').loop(true);
     });
 
     $scope.ngCart = ngCart;
@@ -2039,7 +2038,7 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
     };
 }
 
-function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt, $stateParams, $state) {
+function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt, $stateParams, $state, utils) {
     //订单列表
     //
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -2051,7 +2050,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
         FetchData.get('/mall/maorder/query?code=&status=' + $scope.orderType).then(function(data) {
             if ($scope.orderType == '0') {
                 angular.forEach(data.data.data, function(item) {
-                    item.endTime = (new Date(item.createTime).getTime()) + 30 * 60 * 1000
+                    item.endTime = (utils.getTimeAdapt(item.createTime).getTime()) + 30 * 60 * 1000
                 })
             }
             $scope.orders = data.data.data;
@@ -2070,7 +2069,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
             FetchData.get('/mall/maorder/query?code=&status=' + type).then(function(data) {
                 if (type == '0') {
                     angular.forEach(data.data.data, function(item) {
-                        item.endTime = (new Date(item.createTime).getTime()) + 30 * 60 * 1000
+                        item.endTime = (utils.getTimeAdapt(item.createTime).getTime()) + 30 * 60 * 1000
                     })
                 }
                 $scope.orders = data.data.data;
@@ -2143,7 +2142,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     FetchData.get('/mall/maorder/query?code=' + $stateParams.order_id + '&status=').then(function(data) {
         $scope.order = data.data.data[0];
         if ($scope.order.status == '0') {
-            $scope.order.endTime = (new Date($scope.order.createTime).getTime()) + 30 * 60 * 1000
+            $scope.order.endTime = (utils.getTimeAdapt($scope.order.createTime).getTime()) + 30 * 60 * 1000
         }
     });
     $scope.goTab = function() {

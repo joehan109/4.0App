@@ -32,7 +32,7 @@ itemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionic
 itemsCtrl.$inject = ['$rootScope', '$scope', 'Items', '$state', '$stateParams'];
 boardCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$state'];
 favorCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart'];
-ordersCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', '$stateParams', '$state'];
+ordersCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', '$stateParams', '$state', 'utils'];
 calculateCtrl.$inject = ['$rootScope', '$scope', '$location', 'FetchData'];
 expressCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', 'AuthService', '$state', 'expressList'];
 expressItemAddCtrl.$inject = ['$rootScope', '$scope', 'expressList'];
@@ -52,22 +52,23 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
         $ionicSlideBoxDelegate.start();
     });
     $scope.types = [
-        { name: '扫一扫', url: 'scan', icon: 'qr-scanner', pic: 'category' },
+        // { name: '扫一扫', url: 'scan', icon: 'qr-scanner', pic: 'category' },
         { name: '4.0 商城', url: 'shopTab.cateHome', icon: 'ios-home-outline', pic: 'calculate' },
-        { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline', pic: 'limit' }
+        { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline', pic: 'limit' },
+        { name: '会员中心', url: 'userDetail', icon: 'qr-scanner', pic: 'send' }
     ];
-    $scope.goto = function(item) {
+    $scope.goto = function(url) {
         if (!Storage.get('access_token')) {
             $rootScope.showAuthBox();
             return;
         }
-        if (item.url === 'shopTab.cateHome') {
+        if (url === 'shopTab.cateHome') {
             Storage.set('shopOrSell', 'shop');
             Storage.set('cateHomeOrigin', 'index');
-        } else if (item.url === 'tab.home') {
+        } else if (url === 'tab.home') {
             Storage.set('shopOrSell', 'sell')
         } else {}
-        $state.go(item.url);
+        $state.go(url);
     }
     $scope.form = {
         title: '',
@@ -477,20 +478,22 @@ function postDetailCtrl($scope, $rootScope, $state, $stateParams, Photogram,
 function userDetailCtrl($scope, $rootScope, $state, FetchData, $stateParams, AuthService,
     Photogram, User, $ionicScrollDelegate) {
     $scope.$on('$ionicView.beforeEnter', function() {
-        $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.$emit('alert', '该功能正在开发，请以后版本尝试')
+        $state.go('appIndex')
+        $rootScope.hideTabs = '';
     });
 
-    FetchData.get('/api/users/user_info/' + $stateParams.userID).then(function(data) {
-        $scope.user = data.user;
-    });
+    // FetchData.get('/api/users/user_info/' + $stateParams.userID).then(function(data) {
+    //     $scope.user = data.user;
+    // });
 
-    $scope.onUserDetailContentScroll = onUserDetailContentScroll;
+    // $scope.onUserDetailContentScroll = onUserDetailContentScroll;
 
-    function onUserDetailContentScroll() {
-        var scrollDelegate = $ionicScrollDelegate.$getByHandle('userDetailContent');
-        var scrollView = scrollDelegate.getScrollView();
-        $scope.$broadcast('userDetailContent.scroll', scrollView);
-    }
+    // function onUserDetailContentScroll() {
+    //     var scrollDelegate = $ionicScrollDelegate.$getByHandle('userDetailContent');
+    //     var scrollView = scrollDelegate.getScrollView();
+    //     $scope.$broadcast('userDetailContent.scroll', scrollView);
+    // }
 
     $scope.gridStyle = 'list';
     $scope.switchListStyle = function(style) {
@@ -540,10 +543,10 @@ function userDetailCtrl($scope, $rootScope, $state, FetchData, $stateParams, Aut
     var userId = $stateParams.userID;
     var page = 0;
 
-    Photogram.getUserPosts(userId, page).then(function(data) {
-        $scope.posts = data.posts;
-        page++;
-    });
+    // Photogram.getUserPosts(userId, page).then(function(data) {
+    //     $scope.posts = data.posts;
+    //     page++;
+    // });
 
     $scope.doRefresh = function() {
         page = 0;
@@ -576,9 +579,10 @@ function userListCtrl($scope, $rootScope, $state, FetchData, $stateParams,
     AuthService, User) {
 
     $scope.$on('$ionicView.beforeEnter', function() {
-        $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.$emit('alert', '该功能正在开发，请以后版本尝试')
+        $state.go('appIndex')
+        $rootScope.hideTabs = '';
     });
-
     $scope.currentUserID = AuthService.getUser().id;
 
     $scope.follow = function(user) {
@@ -729,18 +733,18 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
             Storage.remove('cateHomeOrigin');
             $scope.banners && $scope.changeTab($scope.banners[0], 0);
         }
-        $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
+        FetchData.get('/mall/mapro/getAll').then(function(res) {
+            $scope.tuijian = res.data;
+            $ionicSlideBoxDelegate.update();
+            $ionicSlideBoxDelegate.loop(true);
+        });
+
     });
     $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
         if (r.ret) {
             $scope.banners = r.data;
             $scope.changeTab($scope.banners[0], 0);
         }
-    });
-
-    FetchData.get('/mall/mapro/getAll').then(function(res) {
-        $scope.tuijian = res.data;
-        $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').update();
     });
 
     $scope.ngCart = ngCart;
@@ -2034,7 +2038,7 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
     };
 }
 
-function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt, $stateParams, $state) {
+function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt, $stateParams, $state, utils) {
     //订单列表
     //
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -2046,7 +2050,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
         FetchData.get('/mall/maorder/query?code=&status=' + $scope.orderType).then(function(data) {
             if ($scope.orderType == '0') {
                 angular.forEach(data.data.data, function(item) {
-                    item.endTime = (new Date(item.createTime).getTime()) + 30 * 60 * 1000
+                    item.endTime = (utils.getTimeAdapt(item.createTime).getTime()) + 30 * 60 * 1000
                 })
             }
             $scope.orders = data.data.data;
@@ -2065,7 +2069,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
             FetchData.get('/mall/maorder/query?code=&status=' + type).then(function(data) {
                 if (type == '0') {
                     angular.forEach(data.data.data, function(item) {
-                        item.endTime = (new Date(item.createTime).getTime()) + 30 * 60 * 1000
+                        item.endTime = (utils.getTimeAdapt(item.createTime).getTime()) + 30 * 60 * 1000
                     })
                 }
                 $scope.orders = data.data.data;
@@ -2138,7 +2142,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     FetchData.get('/mall/maorder/query?code=' + $stateParams.order_id + '&status=').then(function(data) {
         $scope.order = data.data.data[0];
         if ($scope.order.status == '0') {
-            $scope.order.endTime = (new Date($scope.order.createTime).getTime()) + 30 * 60 * 1000
+            $scope.order.endTime = (utils.getTimeAdapt($scope.order.createTime).getTime()) + 30 * 60 * 1000
         }
     });
     $scope.goTab = function() {

@@ -71,14 +71,6 @@
     "is_top_level": true,
     "variables": {}
   },
-  "ionic-plugin-deploy": {
-    "source": {
-      "type": "registry",
-      "id": "ionic-plugin-deploy"
-    },
-    "is_top_level": true,
-    "variables": {}
-  },
   "cordova-plugin-advanced-http": {
     "source": {
       "type": "registry",
@@ -105,20 +97,28 @@
     "is_top_level": true,
     "variables": {}
   },
-  "com.telerik.plugins.wkwebview": {
-    "source": {
-      "type": "registry",
-      "id": "cordova-plugin-wkwebview@^0.6.10"
-    },
-    "is_top_level": true,
-    "variables": {}
-  },
   "cordova-plugin-webserver": {
     "source": {
       "type": "registry",
       "id": "cordova-plugin-webserver"
     },
     "is_top_level": false,
+    "variables": {}
+  },
+  "cordova-plugin-ionic": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-ionic@5.0.3"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "ionic-plugin-deploy": {
+    "source": {
+      "type": "registry",
+      "id": "ionic-plugin-deploy@^0.6.7"
+    },
+    "is_top_level": true,
     "variables": {}
   }
 }

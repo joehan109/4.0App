@@ -305,19 +305,19 @@ module.exports = [
     ]
   },
   {
-    "id": "ionic-plugin-deploy.IonicDeploy",
-    "file": "plugins/ionic-plugin-deploy/www/ionicdeploy.js",
-    "pluginId": "ionic-plugin-deploy",
-    "clobbers": [
-      "IonicDeploy"
-    ]
-  },
-  {
     "id": "phonegap-plugin-barcodescanner.BarcodeScanner",
     "file": "plugins/phonegap-plugin-barcodescanner/www/barcodescanner.js",
     "pluginId": "phonegap-plugin-barcodescanner",
     "clobbers": [
       "cordova.plugins.barcodeScanner"
+    ]
+  },
+  {
+    "id": "ionic-plugin-deploy.IonicDeploy",
+    "file": "plugins/ionic-plugin-deploy/www/ionicdeploy.js",
+    "pluginId": "ionic-plugin-deploy",
+    "clobbers": [
+      "IonicDeploy"
     ]
   }
 ];
@@ -336,9 +336,8 @@ module.exports.metadata =
   "cordova-plugin-splashscreen": "5.0.2",
   "cordova-plugin-whitelist": "1.3.4-dev",
   "cordova-plugin-x-toast": "2.6.2",
-  "ionic-plugin-deploy": "0.6.7",
   "phonegap-plugin-barcodescanner": "7.1.2",
-  "com.telerik.plugins.wkwebview": "0.6.10"
+  "ionic-plugin-deploy": "0.6.7"
 };
 // BOTTOM OF METADATA
 });

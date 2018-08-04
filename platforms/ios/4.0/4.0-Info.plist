@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleDisplayName</key>
-    <string>${PRODUCT_NAME}</string>
+    <string>4.0</string>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleIcons</key>
@@ -32,6 +32,8 @@
     <string/>
     <key>NSMainNibFile~ipad</key>
     <string/>
+    <key>NSCameraUsageDescription</key>
+    <string>Used to scan barcodes</string>
     <key>UISupportedInterfaceOrientations</key>
     <array>
       <string>UIInterfaceOrientationPortrait</string>
@@ -47,6 +49,19 @@
     </array>
     <key>UIRequiresFullScreen</key>
     <true/>
+    <key>UILaunchStoryboardName</key>
+    <string>CDVLaunchScreen</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>alipay</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>ali2018051560119605</string>
+        </array>
+      </dict>
+    </array>
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSExceptionDomains</key>
@@ -60,20 +75,5 @@
       <key>NSAllowsArbitraryLoads</key>
       <true/>
     </dict>
-    <key>UILaunchStoryboardName</key>
-    <string>CDVLaunchScreen</string>
-    <key>WKWebViewPluginEmbeddedServerPort</key>
-    <string>12344</string>
-    <key>CFBundleURLTypes</key>
-    <array>
-      <dict>
-        <key>CFBundleURLName</key>
-        <string>alipay</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>ali2018051560119605</string>
-        </array>
-      </dict>
-    </array>
   </dict>
 </plist>

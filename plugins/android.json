@@ -42,15 +42,11 @@
     "cordova-plugin-x-toast": {
       "PACKAGE_NAME": "io.ionic.starter"
     },
-    "ionic-plugin-deploy": {
-      "PACKAGE_NAME": "io.ionic.starter"
-    },
     "phonegap-plugin-barcodescanner": {
       "ANDROID_SUPPORT_V4_VERSION": "27.+",
       "PACKAGE_NAME": "io.ionic.starter"
     },
-    "com.telerik.plugins.wkwebview": {
-      "WKWEBVIEW_SERVER_PORT": "12344",
+    "ionic-plugin-deploy": {
       "PACKAGE_NAME": "io.ionic.starter"
     }
   },

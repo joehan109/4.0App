@@ -96,5 +96,5 @@
     <plugin name="cordova-plugin-advanced-http" spec="^1.11.1" />
     <plugin name="cordova-plugin-x-toast" spec="^2.6.2" />
     <engine name="android" spec="^6.4.0" />
-    <plugin name="com.telerik.plugins.wkwebview" spec="~0.6.10" />
+    <engine name="ios" spec="^4.5.5" />
 </widget>

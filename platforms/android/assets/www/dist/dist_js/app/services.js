@@ -12,7 +12,8 @@ angular.module('fourdotzero.services', [])
     })
     .service('utils', ['$rootScope', function($rootScope) {
         return {
-            formatGetParams: formatGetParams
+            formatGetParams: formatGetParams,
+            getTimeAdapt: getTimeAdapt
         };
 
         function formatGetParams(obj) {
@@ -21,6 +22,11 @@ angular.module('fourdotzero.services', [])
                 params += [key, '=', obj[key], '&'].join('')
             }
             return params.slice(0, -1)
+        }
+
+        function getTimeAdapt(dateFormat) {
+            // 适配sarafi和chrome的获取时间格式（ios需要中间有个T）
+            return new Date(dateFormat.substr(0, 10) + "T" + dateFormat.substr(11, 8));
         }
     }])
     .service('sheetShare', ['$rootScope', '$bottomSheet', function($rootScope, $bottomSheet) {
@@ -190,7 +196,7 @@ angular.module('fourdotzero.services', [])
             }
         };
     })
-    .factory('AuthService', ['ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function(ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
+    .factory('AuthService', ['$rootScope', 'ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function($rootScope, ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
         var isAuthenticated = false;
         var user = Storage.get('user') || {};
         return {

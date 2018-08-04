@@ -1,0 +1,40 @@
+<ion-view class="appIndex">
+    <div class="bar bar-header">
+        <!-- <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button> -->
+        <div class="title">4.0</div>
+    </div>
+    <ion-content class="has-header content" style="background-color: #F8F8F8">
+        <div scroll-height rate="2/5">
+            <ion-slide-box class="indexSlide" on-slide-changed="slideHasChanged($index)" auto-play="true" does-continue="true" slide-interval=2000 show-pager="true" pager-click="pageClick(index)" active-slide="model.activeIndex" delegate-handle="delegateHandler"
+                ng-click="coverFlowClick()">
+                <ion-slide>
+                    <div class="box">
+                        <img src="../www/img/icons/slider/1.jpg" />
+                    </div>
+                </ion-slide>
+                <ion-slide>
+                    <div class="box">
+                        <img src="../www/img/icons/slider/2.jpg" />
+                    </div>
+                </ion-slide>
+                <ion-slide>
+                    <div class="box">
+                        <img src="../www/img/icons/slider/3.jpg" />
+                    </div>
+                </ion-slide>
+            </ion-slide-box>
+        </div>
+        <div class="chooseTypes">
+            <div class="chooseType" ng-click="goto(item.url)" ng-repeat="item in types track by $index">
+                <div class='icon1 {{item.pic}}' style='height: 60px;width: 50px;background-size: 50px;'></div>
+                <span>{{item.name}}</span>
+            </div>
+        </div>
+    </ion-content>
+    <div class="bar bar-subfooter bar-stable" id="index-footer">
+        <div class="chooseType" ng-click="goto('scan')">
+            <div class='icon1 category'></div>
+            <span>扫一扫</span>
+        </div>
+    </div>
+</ion-view>

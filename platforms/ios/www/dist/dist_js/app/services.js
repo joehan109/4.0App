@@ -12,7 +12,8 @@ angular.module('fourdotzero.services', [])
     })
     .service('utils', ['$rootScope', function($rootScope) {
         return {
-            formatGetParams: formatGetParams
+            formatGetParams: formatGetParams,
+            getTimeAdapt: getTimeAdapt
         };
 
         function formatGetParams(obj) {
@@ -21,6 +22,11 @@ angular.module('fourdotzero.services', [])
                 params += [key, '=', obj[key], '&'].join('')
             }
             return params.slice(0, -1)
+        }
+
+        function getTimeAdapt(dateFormat) {
+            // 适配sarafi和chrome的获取时间格式（ios需要中间有个T）
+            return new Date(dateFormat.substr(0, 10) + "T" + dateFormat.substr(11, 8));
         }
     }])
     .service('sheetShare', ['$rootScope', '$bottomSheet', function($rootScope, $bottomSheet) {
@@ -130,7 +136,7 @@ angular.module('fourdotzero.services', [])
         function buttonClicked(index) {
 
             var title = item.title;
-            var description = "美比，给您比邻中国的海外生活。";
+            var description = "4.0酒";
             var url = "http://may.bi/#/items/" + item.item_id;
             var image = item.small_thumbnail;
 
@@ -168,7 +174,7 @@ angular.module('fourdotzero.services', [])
                 args.title = title;
                 args.description = description;
                 args.imageUrl = image;
-                args.appName = "美比客户端";
+                args.appName = "4.0客户端";
                 window.YCQQ.shareToQQ(function() {}, failCallback, args);
             }
 
@@ -190,7 +196,7 @@ angular.module('fourdotzero.services', [])
             }
         };
     })
-    .factory('AuthService', ['ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function(ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
+    .factory('AuthService', ['$rootScope', 'ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function($rootScope, ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
         var isAuthenticated = false;
         var user = Storage.get('user') || {};
         return {
@@ -762,9 +768,10 @@ angular.module('fourdotzero.services', [])
                 }).error(function(data, status) {
                     //$ionicLoading.hide();
                     $ionicLoading.show({
-                        template: "网络出错, " + status,
+                        template: "网络连接失败, " + status,
                         duration: 1000
                     });
+                    $state.go('appIndex');
                     d.reject();
                 });
                 return d.promise;
