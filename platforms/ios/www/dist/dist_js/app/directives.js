@@ -124,7 +124,7 @@ angular.module('fourdotzero.directives', [])
                     var sheet = {};
                     sheet.buttonClicked = buttonClicked;
                     sheet.buttons = [{
-                        text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付$'
+                        text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付'
                     }];
                     sheet.cancelOnStateChange = true;
 
@@ -158,7 +158,7 @@ angular.module('fourdotzero.directives', [])
                                 scope.$emit('alert', '请选择收货地址');
                                 return;
                             }
-                            fulfilmentProvider.checkout(order, function() {
+                            fulfilmentProvider.checkout(order, attrs.orderid, function() {
                                 $ionicActionSheet.hide();
                             })
                         } else if (attrs.ordertype == 'existed') {

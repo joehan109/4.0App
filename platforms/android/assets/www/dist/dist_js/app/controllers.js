@@ -1305,6 +1305,8 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
         $rootScope.hideTabs = '';
     });
 
+    $scope.isX = $rootScope.isIphoneX;
+
     $scope.login = function() {
         AuthService.login();
     };

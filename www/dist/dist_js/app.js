@@ -12,9 +12,9 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     'fourdotzero.constants', 'fourdotzero.filters', 'tag-select', 'timer'
 ])
 
-.run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$location', '$ionicPopup', '$timeout', function($ionicPlatform, $rootScope, $state, JPush,
+.run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$location', '$ionicPopup', '$timeout', '$http', 'ENV', function($ionicPlatform, $rootScope, $state, JPush,
     $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast, $cordovaKeyboard,
-    amMoment, AuthService, ngCart, Storage, FetchData, $location, $ionicPopup, $timeout) {
+    amMoment, AuthService, ngCart, Storage, FetchData, $location, $ionicPopup, $timeout, $http, ENV) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -151,11 +151,33 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     //     });
     // }
     // ngCart.init();
-    $timeout(function() {
-        if (!Storage.get('access_token')) {
+    // 检测是否登录
+    $http({
+        method: "GET",
+        url: ENV.SERVER_URL + '/mall/mashopping/getAll'
+    }).success(function(res, status) {
+        if (status === 200 && res.ret) {} else {
+            if (res.data === 'login') {
+                Storage.remove('user');
+                Storage.remove('access_token');
+                // 清空购物车
+                Storage.set('cart', {
+                    shipping: null,
+                    taxRate: null,
+                    tax: null,
+                    items: [],
+                    selectedItems: []
+                });
+            }
             $rootScope.authDialog.show();
         }
-    }, 100);
+    });
+
+    // $timeout(function() {
+    //     if (!Storage.get('access_token')) {
+    //         $rootScope.authDialog.show();
+    //     }
+    // }, 100);
 
     // // 初始化会员信息、登录信息
     // Storage.remove('user');
@@ -751,7 +773,7 @@ itemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionic
 itemsCtrl.$inject = ['$rootScope', '$scope', 'Items', '$state', '$stateParams'];
 boardCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$state'];
 favorCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart'];
-ordersCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', '$stateParams', '$state'];
+ordersCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', '$stateParams', '$state', 'utils'];
 calculateCtrl.$inject = ['$rootScope', '$scope', '$location', 'FetchData'];
 expressCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', 'AuthService', '$state', 'expressList'];
 expressItemAddCtrl.$inject = ['$rootScope', '$scope', 'expressList'];
@@ -1452,19 +1474,18 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
             Storage.remove('cateHomeOrigin');
             $scope.banners && $scope.changeTab($scope.banners[0], 0);
         }
-        $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').start();
+        FetchData.get('/mall/mapro/getAll').then(function(res) {
+            $scope.tuijian = res.data;
+            $ionicSlideBoxDelegate.update();
+            $ionicSlideBoxDelegate.loop(true);
+        });
+
     });
     $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
         if (r.ret) {
             $scope.banners = r.data;
             $scope.changeTab($scope.banners[0], 0);
         }
-    });
-
-    FetchData.get('/mall/mapro/getAll').then(function(res) {
-        $scope.tuijian = res.data;
-        $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').update();
-        $ionicSlideBoxDelegate.$getByHandle('delegateHandler2').loop(true);
     });
 
     $scope.ngCart = ngCart;
@@ -2758,7 +2779,7 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
     };
 }
 
-function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt, $stateParams, $state) {
+function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt, $stateParams, $state, utils) {
     //订单列表
     //
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -2770,7 +2791,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
         FetchData.get('/mall/maorder/query?code=&status=' + $scope.orderType).then(function(data) {
             if ($scope.orderType == '0') {
                 angular.forEach(data.data.data, function(item) {
-                    item.endTime = (new Date(item.createTime).getTime()) + 30 * 60 * 1000
+                    item.endTime = (utils.getTimeAdapt(item.createTime).getTime()) + 30 * 60 * 1000
                 })
             }
             $scope.orders = data.data.data;
@@ -2789,7 +2810,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
             FetchData.get('/mall/maorder/query?code=&status=' + type).then(function(data) {
                 if (type == '0') {
                     angular.forEach(data.data.data, function(item) {
-                        item.endTime = (new Date(item.createTime).getTime()) + 30 * 60 * 1000
+                        item.endTime = (utils.getTimeAdapt(item.createTime).getTime()) + 30 * 60 * 1000
                     })
                 }
                 $scope.orders = data.data.data;
@@ -2862,7 +2883,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     FetchData.get('/mall/maorder/query?code=' + $stateParams.order_id + '&status=').then(function(data) {
         $scope.order = data.data.data[0];
         if ($scope.order.status == '0') {
-            $scope.order.endTime = (new Date($scope.order.createTime).getTime()) + 30 * 60 * 1000
+            $scope.order.endTime = (utils.getTimeAdapt($scope.order.createTime).getTime()) + 30 * 60 * 1000
         }
     });
     $scope.goTab = function() {
@@ -3769,7 +3790,8 @@ angular.module('fourdotzero.services', [])
     })
     .service('utils', ['$rootScope', function($rootScope) {
         return {
-            formatGetParams: formatGetParams
+            formatGetParams: formatGetParams,
+            getTimeAdapt: getTimeAdapt
         };
 
         function formatGetParams(obj) {
@@ -3778,6 +3800,11 @@ angular.module('fourdotzero.services', [])
                 params += [key, '=', obj[key], '&'].join('')
             }
             return params.slice(0, -1)
+        }
+
+        function getTimeAdapt(dateFormat) {
+            // 适配sarafi和chrome的获取时间格式（ios需要中间有个T）
+            return new Date(dateFormat.substr(0, 10) + "T" + dateFormat.substr(11, 8));
         }
     }])
     .service('sheetShare', ['$rootScope', '$bottomSheet', function($rootScope, $bottomSheet) {
@@ -3947,7 +3974,7 @@ angular.module('fourdotzero.services', [])
             }
         };
     })
-    .factory('AuthService', ['ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function(ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
+    .factory('AuthService', ['$rootScope', 'ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function($rootScope, ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
         var isAuthenticated = false;
         var user = Storage.get('user') || {};
         return {
@@ -5045,7 +5072,7 @@ angular.module('fourdotzero.services', [])
     }])
     .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading', '$state', 'utils', '$http', 'ENV', 'AlipayService', function(ngCart, $rootScope, $ionicLoading, $state, utils, $http, ENV, AlipayService) {
 
-        this.checkout = function(data, cb) {
+        this.checkout = function(data, id, cb) {
             $http({
                 method: 'post',
                 url: ENV.SERVER_URL + '/mall/maorder/save',
@@ -5058,11 +5085,16 @@ angular.module('fourdotzero.services', [])
                 }
             }).then(function(res) {
                 if (res.data.ret) {
-                    $ionicLoading.show({
-                        template: '订单生成成功',
-                        duration: 3000,
+                    $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + id).success(function(r, status) {
+                        $ionicLoading.show({
+                            template: '订单生成成功',
+                            duration: 3000,
+                        });
+                        if (r.ret) {
+                            AlipayService.alipayCheckout(r.data)
+                        }
                     });
-                    // AlipayService.alipayCheckout(res.data.data);
+
                 } else {
                     $ionicLoading.show({
                         template: res.data.errmsg,
@@ -5550,7 +5582,6 @@ angular.module('fourdotzero.services', [])
     results.setup = _setup;
     return results;
 }])
-
 "use strict";
 
 angular.module('fourdotzero.directives', [])
@@ -5677,7 +5708,7 @@ angular.module('fourdotzero.directives', [])
                     var sheet = {};
                     sheet.buttonClicked = buttonClicked;
                     sheet.buttons = [{
-                        text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付$'
+                        text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付'
                     }];
                     sheet.cancelOnStateChange = true;
 
@@ -5711,7 +5742,7 @@ angular.module('fourdotzero.directives', [])
                                 scope.$emit('alert', '请选择收货地址');
                                 return;
                             }
-                            fulfilmentProvider.checkout(order, function() {
+                            fulfilmentProvider.checkout(order, attrs.orderid, function() {
                                 $ionicActionSheet.hide();
                             })
                         } else if (attrs.ordertype == 'existed') {

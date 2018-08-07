@@ -1294,7 +1294,7 @@ angular.module('fourdotzero.services', [])
     })
     .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading', '$state', 'utils', '$http', 'ENV', 'AlipayService', function(ngCart, $rootScope, $ionicLoading, $state, utils, $http, ENV, AlipayService) {
 
-        this.checkout = function(data, cb) {
+        this.checkout = function(data, id, cb) {
             $http({
                 method: 'post',
                 url: ENV.SERVER_URL + '/mall/maorder/save',
@@ -1307,11 +1307,16 @@ angular.module('fourdotzero.services', [])
                 }
             }).then(function(res) {
                 if (res.data.ret) {
-                    $ionicLoading.show({
-                        template: '订单生成成功',
-                        duration: 3000,
+                    $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + id).success(function(r, status) {
+                        $ionicLoading.show({
+                            template: '订单生成成功',
+                            duration: 3000,
+                        });
+                        if (r.ret) {
+                            AlipayService.alipayCheckout(r.data)
+                        }
                     });
-                    // AlipayService.alipayCheckout(res.data.data);
+
                 } else {
                     $ionicLoading.show({
                         template: res.data.errmsg,

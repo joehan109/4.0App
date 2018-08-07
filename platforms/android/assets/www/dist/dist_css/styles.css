@@ -14748,7 +14748,7 @@ input.ion-google-place[readonly] {
     .item-bottom-bar i.icon::before {
       font-weight: bold; }
   .item-bottom-bar span {
-    font-size: 6px;
+    font-size: 12px;
     font-weight: 600; }
   .item-bottom-bar .item-bar-icon {
     flex: 1;

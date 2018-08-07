@@ -12,9 +12,9 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     'fourdotzero.constants', 'fourdotzero.filters', 'tag-select', 'timer'
 ])
 
-.run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$location', '$ionicPopup', '$timeout', function($ionicPlatform, $rootScope, $state, JPush,
+.run(['$ionicPlatform', '$rootScope', '$state', 'JPush', '$ionicHistory', '$ionicModal', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', 'amMoment', 'AuthService', 'ngCart', 'Storage', 'FetchData', '$location', '$ionicPopup', '$timeout', '$http', 'ENV', function($ionicPlatform, $rootScope, $state, JPush,
     $ionicHistory, $ionicModal, $ionicLoading, $cordovaToast, $cordovaKeyboard,
-    amMoment, AuthService, ngCart, Storage, FetchData, $location, $ionicPopup, $timeout) {
+    amMoment, AuthService, ngCart, Storage, FetchData, $location, $ionicPopup, $timeout, $http, ENV) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -151,11 +151,40 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     //     });
     // }
     // ngCart.init();
-    $timeout(function() {
-        if (!Storage.get('access_token')) {
+    // 检测是否登录
+    $http({
+        method: "GET",
+        url: ENV.SERVER_URL + '/mall/mashopping/getAll'
+    }).success(function(res, status) {
+        if (status === 200 && res.ret) {} else {
+            if (res.data === 'login') {
+                Storage.remove('user');
+                Storage.remove('access_token');
+                // 清空购物车
+                Storage.set('cart', {
+                    shipping: null,
+                    taxRate: null,
+                    tax: null,
+                    items: [],
+                    selectedItems: []
+                });
+            }
             $rootScope.authDialog.show();
         }
-    }, 100);
+    });
+
+    // 判断是否是iPhoneX
+    if (window.device) {
+        if (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0) {
+            $rootScope.isIphoneX = true
+        }
+    }
+
+    // $timeout(function() {
+    //     if (!Storage.get('access_token')) {
+    //         $rootScope.authDialog.show();
+    //     }
+    // }, 100);
 
     // // 初始化会员信息、登录信息
     // Storage.remove('user');
