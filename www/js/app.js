@@ -175,9 +175,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
 
     // 判断是否是iPhoneX
     if (window.device) {
-        if (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0) {
-            $rootScope.isIphoneX = true
-        }
+        $rootScope.isIphoneX = ['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0
     }
 
     // $timeout(function() {
@@ -259,7 +257,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
 
     //$ionicConfigProvider.scrolling.jsScrolling(false);
     $ionicConfigProvider.views.maxCache(5);
-
+    $ionicConfigProvider.views.swipeBackEnabled(false);
     // Ionic uses AngularUI Router which uses the concept of states
     // Learn more here: https://github.com/angular-ui/ui-router
     // Set up the various states which the app can be in.

@@ -697,10 +697,21 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         });
 
     });
+    $scope.isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
+    $scope.style = {
+        "margin-top": ($scope.isX ? 15 : 0) + 'px'
+    }
     $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
         if (r.ret) {
             $scope.banners = r.data;
             $scope.changeTab($scope.banners[0], 0);
+        }
+        if ($scope.isX) {
+            var ele = document.getElementsByClassName('fourdotzero-tabs')[0];
+            var tabs = ele.getElementsByClassName('tabs')[0];
+            var list = ele.getElementsByClassName('has-tabs')[0];
+            tabs.style.marginBottom = '10px';
+            list.style.bottom = '69px';
         }
     });
 
@@ -1262,7 +1273,14 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
         $rootScope.hideTabs = '';
     });
 
-    $scope.isX = $rootScope.isIphoneX;
+    $scope.isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
+    $scope.style = {
+        "margin-top": ($scope.isX ? 15 : 0) + 'px'
+    }
+    if ($scope.isX) {
+        var ele = document.getElementsByClassName('fourdotzero-tabs')[0].getElementsByClassName('tabs')[0]
+        ele.style.marginBottom = '10px';
+    }
 
     $scope.login = function() {
         AuthService.login();

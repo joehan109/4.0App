@@ -273,12 +273,23 @@
 }
 
 .bar-header {
+    //适配iPhoneX
+    /* Status bar height on iOS 11.0 */
+    // top: constant(safe-area-inset-top);
+    // // padding-bottom: constant(safe-area-inset-bottom);
+    // /* Status bar height on iOS 11+ */
+    // top: env(safe-area-inset-top);
+    // padding-bottom: env(safe-area-inset-bottom);
     .icon.ion-ios-arrow-back {
         &::before {
             font-size: 20px!important;
             color: #b2b2b2!important;
         }
     }
+}
+
+.view-container {
+    background-color: #f8f8f8!important;
 }
 
 .orderCheckBtn {

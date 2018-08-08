@@ -8,7 +8,17 @@
    <meta http-equiv="Content-Security-Policy" content="default-src gap://ready file://* *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *">
        <meta name = "format-detection" content = "telephone=no">
        <title></title>
-
+       <style>
+        body {
+            /* Status bar height on iOS 11.0 */
+            padding-top: constant(safe-area-inset-top);
+            padding-bottom: constant(safe-area-inset-bottom);
+            /* Status bar height on iOS 11+ */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            backgroud-color: #000;
+        }
+        </style>
     <link rel="stylesheet" href="dist_css/styles.css">
 
     <script src="dist_js/vendor.js"></script>

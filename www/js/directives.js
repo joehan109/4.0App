@@ -158,7 +158,7 @@ angular.module('fourdotzero.directives', [])
                                 scope.$emit('alert', '请选择收货地址');
                                 return;
                             }
-                            fulfilmentProvider.checkout(order, attrs.orderid, function() {
+                            fulfilmentProvider.checkout(order, function() {
                                 $ionicActionSheet.hide();
                             })
                         } else if (attrs.ordertype == 'existed') {
