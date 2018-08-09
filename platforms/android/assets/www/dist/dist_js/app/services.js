@@ -1294,7 +1294,7 @@ angular.module('fourdotzero.services', [])
     }])
     .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading', '$state', 'utils', '$http', 'ENV', 'AlipayService', function(ngCart, $rootScope, $ionicLoading, $state, utils, $http, ENV, AlipayService) {
 
-        this.checkout = function(data, id, cb) {
+        this.checkout = function(data, cb) {
             $http({
                 method: 'post',
                 url: ENV.SERVER_URL + '/mall/maorder/save',
@@ -1307,7 +1307,7 @@ angular.module('fourdotzero.services', [])
                 }
             }).then(function(res) {
                 if (res.data.ret) {
-                    $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + id).success(function(r, status) {
+                    $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + res.data.data).success(function(r, status) {
                         $ionicLoading.show({
                             template: '订单生成成功',
                             duration: 3000,
@@ -1492,7 +1492,7 @@ angular.module('fourdotzero.services', [])
     };
 }])
 
-.service('AlipayService', ['$q', '$ionicPlatform', '$state', '$filter', '$timeout', function($q, $ionicPlatform, $state, $filter, $timeout) {
+.service('AlipayService', ['$q', '$ionicPlatform', '$state', '$filter', '$timeout', '$ionicLoading', function($q, $ionicPlatform, $state, $filter, $timeout, $ionicLoading) {
 
     this.alipayCheckout = function(data) {
         var payInfo = data;
@@ -1509,6 +1509,41 @@ angular.module('fourdotzero.services', [])
                 });
             }
         }, function error(e) {
+            switch (e.resultStatus) {
+                case '6001':
+                    $ionicLoading.show({
+                        template: '您取消了支付',
+                        duration: 2500,
+                    });
+                    $state.go('tab.orders', {
+                        status_id: 0
+                    }, {
+                        reload: true
+                    });
+                    break;
+                case '4000':
+                    $ionicLoading.show({
+                        template: '订单支付失败，请稍后重试或联系我们',
+                        duration: 2500,
+                    });
+                    $state.go('tab.orders', {
+                        status_id: 0
+                    }, {
+                        reload: true
+                    });
+                    break;
+                case '6002':
+                    $ionicLoading.show({
+                        template: '网络连接出错，请稍后重试',
+                        duration: 2500,
+                    });
+                    $state.go('tab.orders', {
+                        status_id: 0
+                    }, {
+                        reload: true
+                    });
+                    break;
+            }
             console.log(e.resultStatus)
             console.log(e.memo)
         });

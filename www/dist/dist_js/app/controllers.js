@@ -2079,9 +2079,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
     $scope.ngCart = ngCart;
     $scope.orderType = $stateParams.status_id || '0';
     $scope.finished = function(id) {
-        $state.go('tab.orders', {
-            status_id: 0
-        });
+        location.reload();
     }
     $scope.setType = function(type) {
         if (type !== $scope.orderType) {

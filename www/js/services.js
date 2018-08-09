@@ -1492,7 +1492,7 @@ angular.module('fourdotzero.services', [])
     };
 })
 
-.service('AlipayService', function($q, $ionicPlatform, $state, $filter, $timeout) {
+.service('AlipayService', function($q, $ionicPlatform, $state, $filter, $timeout, $ionicLoading) {
 
     this.alipayCheckout = function(data) {
         var payInfo = data;
@@ -1509,6 +1509,41 @@ angular.module('fourdotzero.services', [])
                 });
             }
         }, function error(e) {
+            switch (e.resultStatus) {
+                case '6001':
+                    $ionicLoading.show({
+                        template: '您取消了支付',
+                        duration: 2500,
+                    });
+                    $state.go('tab.orders', {
+                        status_id: 0
+                    }, {
+                        reload: true
+                    });
+                    break;
+                case '4000':
+                    $ionicLoading.show({
+                        template: '订单支付失败，请稍后重试或联系我们',
+                        duration: 2500,
+                    });
+                    $state.go('tab.orders', {
+                        status_id: 0
+                    }, {
+                        reload: true
+                    });
+                    break;
+                case '6002':
+                    $ionicLoading.show({
+                        template: '网络连接出错，请稍后重试',
+                        duration: 2500,
+                    });
+                    $state.go('tab.orders', {
+                        status_id: 0
+                    }, {
+                        reload: true
+                    });
+                    break;
+            }
             console.log(e.resultStatus)
             console.log(e.memo)
         });

@@ -203,7 +203,6 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     };
 
     $rootScope.$on('$stateChangeStart', function(event, next) {
-
         if (AuthService.isLoggedIn() === false) {
             var token = Storage.get('access_token');
             if (token) {
@@ -218,6 +217,13 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
                 $rootScope.authDialog.show();
             }
         }
+        // iphoneX优化
+        var isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
+        if (isX) {
+            // var ele = document.getElementsByClassName('fourdotzero-tabs')[0].getElementsByClassName('tabs')[0]
+            // ele.style.marginBottom = '10px';
+        }
+
     });
 
     $rootScope.$on('alertStart', function(event, msg, options) {
