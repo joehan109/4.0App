@@ -14830,6 +14830,9 @@ input.ion-google-place[readonly] {
     font-size: 20px !important;
     color: #b2b2b2 !important; }
 
+.view-container {
+  background-color: #f8f8f8 !important; }
+
 .orderCheckBtn {
   display: inline-block; }
   .orderCheckBtn Button {

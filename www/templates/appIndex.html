@@ -25,9 +25,9 @@
             </ion-slide-box>
         </div>
         <div class="chooseTypes">
-            <div class="chooseType" ng-click="goto(item.url)" ng-repeat="item in types track by $index">
-                <div class='icon1 {{item.pic}}' style='height: 60px;width: 50px;background-size: 50px;'></div>
-                <span>{{item.name}}</span>
+            <div class="chooseType" style="width:15%" ng-click="goto(item.url)" ng-repeat="item in types track by $index">
+                <div scroll-height rate="0.15/1" class='icon1 {{item.pic}}' style='width:100%;background-size: 100% 100%'></div>
+                <span style="z-index:2;margin-top: 10px">{{item.name}}</span>
             </div>
         </div>
     </ion-content>
