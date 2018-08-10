@@ -23,15 +23,6 @@ $royal:                           #886aea !default;
   used under CC BY http://creativecommons.org/licenses/by/4.0/
   Modified icons to fit ionicon’s grid from original.
 */
-body {
-    /* Status bar height on iOS 11.0 */
-    padding-top: constant(safe-area-inset-top);
-    padding-bottom: constant(safe-area-inset-bottom);
-    /* Status bar height on iOS 11+ */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    backgroud-color: #000;
-}
 @font-face {
   font-family: "Ionicons";
   src: url("../fonts/ionicons.eot?v=2.0.1");
@@ -14650,6 +14641,9 @@ input.ion-google-place[readonly] {
   min-height: 45px;
   border-top: 1px solid #aaa; }
 
+.isX {
+  margin-top: 20px; }
+
 .modal .title {
   text-align: center !important; }
 
@@ -14830,9 +14824,14 @@ input.ion-google-place[readonly] {
 .favorIcon i::before {
   font-weight: 600; }
 
-.bar-header .icon.ion-ios-arrow-back::before {
-  font-size: 20px !important;
-  color: #b2b2b2 !important; }
+.bar-header {
+  /* Status bar height on iOS 11.0 */ }
+  .bar-header .icon.ion-ios-arrow-back::before {
+    font-size: 20px !important;
+    color: #b2b2b2 !important; }
+
+.view-container {
+  background-color: #f8f8f8 !important; }
 
 .orderCheckBtn {
   display: inline-block; }
