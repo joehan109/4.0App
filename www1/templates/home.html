@@ -1,0 +1,59 @@
+<ion-view ng-style="style" class="pm-index">
+    <form>
+        <div class="bar bar-header item-input-inset" style="padding-left:8px">
+            <a href="#/appIndex" class="button button-icon icon ion-ios-arrow-back" style="padding:0 13px 0 0;color:#b2b2b2;"></a>
+            <label class="item-input-wrapper">
+                <i class="icon ion-ios-search placeholder-icon" style="font-size:18px;"></i>
+                <input type="search" placeholder="搜索商品" ng-model="searchQuery.name">
+                <input type="submit" ng-click="searchItem(searchQuery.name)" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+            </label>
+        </div>
+    </form>
+
+    <ion-content class="has-header homepage" overflow-scroll="true">
+        <div scroll-height rate="2/5">
+            <ion-slide-box class="cateHomeSlide" auto-play="true" does-continue="true" slide-interval=2000 show-pager="true" pager-click="pageClick(index)" active-slide="model.activeIndex" delegate-handle="delegateHandler2">
+                <ion-slide ng-repeat="item in tuijian track by $index">
+                    <div class="box" ng-click="goItem(item.maProId)">
+                        <img ng-src="{{item.detailUrl}}">
+                    </div>
+                </ion-slide>
+            </ion-slide-box>
+        </div>
+
+        <div class="col col-50 " style="display: inline-block" ng-repeat="item in items track by $index" ng-click="goItem(item.id)">
+            <div class="item item-image">
+                <img ng-src="{{item.mainUrl}}">
+                <div class="hover-img">
+                    <i class="icon ion-ios-clock-outline" style="font-size:14px;"></i>
+                    <span>正在进行</span>
+                    <span>20170809 结束</span>
+                </div>
+            </div>
+            <div class=" item item-text-wrap " href="# ">
+                <h3 class="product-title " style="overflow: hidden; ">{{item.name}}</h3>
+                <p class="product-prices ">
+                    当前价：<span class="curr-price " style="color:#ff3300 ">{{::item.price | currency:'￥'}}</span>
+                </p>
+                <p class="product-prices ">
+                    围观人数：<span class="curr-price ">{{::item.price}}</span>人
+                </p>
+            </div>
+        </div>
+
+        <div style="color:#777;margin:30px 0;text-align:center " ng-if="items.length && !moreDataCanBeLoaded() ">
+            <span>没有更多了...</span>
+        </div>
+
+        <div class="center-ico " ng-if="isEmpty() ">
+            <i class="icon ion-ios-grid-view-outline "></i>
+
+            <h1>暂无此类商品</h1>
+        </div>
+
+        <ion-infinite-scroll ng-if="moreDataCanBeLoaded() " on-infinite="loadMore() " distance="1 " spinner='spiral'>
+        </ion-infinite-scroll>
+
+
+    </ion-content>
+</ion-view>

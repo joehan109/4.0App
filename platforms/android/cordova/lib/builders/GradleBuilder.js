@@ -197,7 +197,7 @@ GradleBuilder.prototype.prepEnv = function(opts) {
         var distributionUrlRegex = /distributionUrl.*zip/;
         /* jshint -W069 */
         // var distributionUrl = process.env['CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL'] || 'https\\://services.gradle.org/distributions/gradle-4.1-all.zip';
-        var distributionUrl = process.env['CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL'] || '../gradle-4.4-all.zip';
+        var distributionUrl = '../gradle-4.4-all.zip';
         /* jshint +W069 */
         var gradleWrapperPropertiesPath = path.join(self.root, 'gradle', 'wrapper', 'gradle-wrapper.properties');
         shell.chmod('u+w', gradleWrapperPropertiesPath);

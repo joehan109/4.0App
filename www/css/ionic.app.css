@@ -14859,6 +14859,54 @@ input.ion-google-place[readonly] {
       width: 80px;
       background-size: 80px; }
 
+.pm-index .item-image {
+  position: relative; }
+
+.hover-slideImg {
+  color: #FFF;
+  position: absolute;
+  background-color: rgba(128, 128, 128, 0.5);
+  left: 5px;
+  bottom: 10px;
+  right: 5px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 12px;
+  text-align: left;
+  padding: 0 5px; }
+
+.pitem .slider-pager {
+  bottom: 30px; }
+
+.pitem .item {
+  border-color: #EAEAEA;
+  margin: 10px -1px; }
+
+.pitem .detail2, .pitem .detail3 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 15px; }
+
+.pitem .detail4 {
+  padding: 0;
+  border-bottom: 1px solid #EAEAEA;
+  flex-direction: column; }
+  .pitem .detail4 .list {
+    padding: 10px 16px;
+    margin: 0;
+    border-bottom: 1px solid #EAEAEA;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; }
+    .pitem .detail4 .list:first-child {
+      color: red; }
+    .pitem .detail4 .list:last-child {
+      border-bottom: 0 none; }
+
+.pitem .only-btn {
+  width: 20%; }
+
 .assertive {
   color: #6fd6b9; }
 

@@ -293,28 +293,42 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     })
 
     .state('appIndex', {
-            url: '/appIndex',
-            controller: 'appIndexCtrl',
-            templateUrl: 'appIndex.html',
-            loginRequired: true
-        })
-        .state('tab.home', {
-            url: '/home',
-            nativeTransitions: null,
-            views: {
-                'tab-cateHome': {
-                    controller: 'homeCtrl',
-                    templateUrl: 'home.html',
-                }
-            },
-            loginRequired: true,
-        })
-        .state('scan', {
-            url: '/scan',
-            controller: 'scanCtrl',
-            templateUrl: 'scan.html',
-            loginRequired: true
-        })
+        url: '/appIndex',
+        controller: 'appIndexCtrl',
+        templateUrl: 'appIndex.html',
+        loginRequired: true
+    })
+
+    .state('tab.home', {
+        url: '/home',
+        nativeTransitions: null,
+        views: {
+            'tab-cateHome': {
+                controller: 'homeCtrl',
+                templateUrl: 'home.html',
+            }
+        },
+        loginRequired: true,
+    })
+
+    .state('tab.xspm', {
+        url: '/xspm',
+        nativeTransitions: null,
+        views: {
+            'tab-xspm': {
+                controller: 'xspmCtrl',
+                templateUrl: 'xspm.html',
+            }
+        },
+        loginRequired: true,
+    })
+
+    .state('scan', {
+        url: '/scan',
+        controller: 'scanCtrl',
+        templateUrl: 'scan.html',
+        loginRequired: true
+    })
 
     .state('shopTab.cateHome', {
         url: '/cateHome',
@@ -753,7 +767,8 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
 'use strict';
 
 appIndexCtrl.$inject = ['$scope', '$rootScope', '$state', '$cordovaToast', 'Photogram', 'PhotoService', '$timeout', 'geoService', 'FetchData', '$ionicSlideBoxDelegate', '$interval', 'Storage'];
-homeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', 'ngCart', '$ionicSlideBoxDelegate', 'Board', 'Items', 'FetchData', 'Categories'];
+homeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
+xspmCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
 cateHomeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
 introCtrl.$inject = ['$rootScope', '$scope', '$state', 'FetchData', '$ionicSlideBoxDelegate', 'Storage'];
 exploreCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicPopover', 'Photogram', 'FetchData'];
@@ -1477,9 +1492,9 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     $scope.$on('$ionicView.beforeEnter', function() {
         FetchData.get('/mall/mashopping/getAll').then(function(data) {
             ngCart.$loadCart(data.data);
-        }, function(err) {});
+        });
         $rootScope.hideTabs = '';
-        $scope.searchQuery = '';
+        $scope.searchQuery = { url: '/mall/mapro/query', name: '' };
         if (Storage.get('cateHomeOrigin') == 'index') {
             $scope.currentIndex = 0;
             Storage.remove('cateHomeOrigin');
@@ -1512,22 +1527,9 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     $scope.ngCart = ngCart;
 
-    $scope.redirectTo = function(banner) {
-        if (banner.type == 'BOARD') {
-            $state.go('tab.board', { 'boardID': banner.target })
-        } else {
-            window.open(banner.target, '_blank', 'location=no,toolbarposition=top,closebuttoncaption=关闭,keyboardDisplayRequiresUserAction=no')
-        }
-    };
-
     $scope.goItem = function(id) {
         $state.go('tab.item', { id: id });
     };
-
-    $scope.slideHasChanged = function(index) {
-        var nextTab = GetCate(index);
-        $scope.changeTab(nextTab, index);
-    }
 
     $scope.isFirst = true;
     $scope.currentIndex = 0;
@@ -1563,22 +1565,6 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         });
 
     }
-
-    /**
-    $scope.swipe = function (direction) {
-        var index = GetCateIndex($scope.currentTab);
-        if (direction == 'left') {
-            var nextTab = GetCate(index+1);
-            if (nextTab == null) return;
-            $scope.changeTab(nextTab, index+1);
-        } else {
-            var lastTab = GetCate(index-1);
-            if (lastTab == null) return;
-            $scope.changeTab(lastTab, index-1);
-
-        }
-    };
-    **/
 
     function setPosition(index) {
         var iconsDiv = angular.element(document.querySelectorAll("#category-scroll"));
@@ -1660,72 +1646,292 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 }
 
 function homeCtrl($scope, $rootScope, $log, $timeout, $state,
-    ngCart, $ionicSlideBoxDelegate, Board,
-    Items, FetchData, Categories) {
+    $ionicScrollDelegate, ngCart,
+    Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
-        $scope.$emit('alert', '该功能正在开发，请以后版本尝试')
-        $state.go('appIndex')
         $rootScope.hideTabs = '';
-    });
+        $scope.searchQuery = { url: '/mall/aupro/app/query', name: '' };
+        $scope.searchQuery = { url: '/mall/mapro/query', name: '' };
+        if (Storage.get('cateHomeOrigin') == 'index') {
+            $scope.currentIndex = 0;
+            Storage.remove('cateHomeOrigin');
+            $scope.banners && $scope.changeTab($scope.banners[0], 0);
+        }
+        FetchData.get('/mall/mapro/getAll').then(function(res) {
+            $scope.tuijian = res.data;
+            $ionicSlideBoxDelegate.update();
+            $ionicSlideBoxDelegate.loop(true);
+        });
 
-    // FetchData.get('/api/banners').then(function(data) {
-    //     $scope.banners = data.banners;
-    //     $ionicSlideBoxDelegate.$getByHandle('image-viewer').update();
-    //     $ionicSlideBoxDelegate.$getByHandle('image-viewer').loop(true);
-    // });
+    });
+    $scope.isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
+    $scope.style = {
+        "margin-top": ($scope.isX ? 15 : 0) + 'px'
+    }
+    $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
+        if (r.ret) {
+            $scope.banners = r.data;
+            $scope.changeTab($scope.banners[0], 0);
+        }
+        if ($scope.isX) {
+            var ele = document.getElementsByClassName('fourdotzero-tabs')[0];
+            var tabs = ele.getElementsByClassName('tabs')[0];
+            var list = ele.getElementsByClassName('has-tabs')[0];
+            tabs.style.marginBottom = '10px';
+            list.style.bottom = '69px';
+        }
+    });
 
     $scope.ngCart = ngCart;
 
-    $scope.redirectTo = function(banner) {
-        if (banner.type == 'BOARD') {
-            $state.go('tab.board', { 'boardID': banner.target })
-        } else {
-            window.open(banner.target, '_blank', 'location=no,toolbarposition=top,closebuttoncaption=关闭,keyboardDisplayRequiresUserAction=no')
-        }
+    $scope.goItem = function(id) {
+        $state.go('tab.item', { id: id });
     };
 
-    $scope.goBoard = function(board_id) {
-        $state.go('tab.board', { 'boardID': board_id })
-    }
+    $scope.isFirst = true;
+    $scope.currentIndex = 0;
+    $scope.items = [];
+    $scope.tuijian = [];
+    $scope.currentTab = '';
+    $scope.model = {
+        activeIndex: 0
+    };
+    $scope.changeTab = function(tab, index) {
+        $scope.items = [];
+        $scope.currentTab = tab.codeKey;
+        $scope.currentIndex = index;
+        var query = $scope.searchQuery ? { query: $scope.searchQuery } : '';
+        Items.setCurrentTab(tab.codeKey);
+        Items.fetchTopItems(query).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items = data;
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+        });
+        // if (!index) {
+        //     index = GetCateIndex($scope.currentTab);
+        // }
+        // setPosition(index);
+    };
 
     $scope.searchItem = function(query) {
-        $state.go('tab.search', { 'query': query });
+        // $state.go('tab.search', { 'query': query });
+        Items.fetchTopItems({ 'query': query }).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items = data;
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+        });
+
     }
 
-    $scope.boards = [];
-    var page = 0;
-
-    // Board.getBoards(page).then(function(data) {
-    //     $scope.boards = data.boards;
-    //     page++;
-    // });
 
     $scope.doRefresh = function() {
-        page = 0;
-        Board.getBoards(page).then(function(data) {
-            $scope.boards = data.boards;
-            page++;
+
+        Items.fetchTopItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
+            $scope.items = data;
         });
         $scope.$broadcast('scroll.refreshComplete');
     };
 
-    // $scope.loadMore = function() {
-    //     Board.getBoards(page).then(function(data) {
-    //         $scope.boards = $scope.boards.concat(data.boards);
-    //         $scope.$broadcast('scroll.infiniteScrollComplete');
-    //         page++;
-    //     });
-    // };
+    $scope.loadMore = function() {
+        if (!$scope.isFirst && Items.hasNextPage()) {
+            Items.increaseNewItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
+                $scope.items = $scope.items.concat(data);
+                $scope.$broadcast('scroll.infiniteScrollComplete');
+            });
+        } else {
+            $scope.$broadcast('scroll.infiniteScrollComplete');
+            console.log($scope.isFirst, Items.hasNextPage())
+        }
+    };
 
     $scope.moreDataCanBeLoaded = function() {
-        return Board.hasNextPage();
+        return Items.hasNextPage();
     };
+
     $scope.isEmpty = function() {
-        return Board.isEmpty();
-    }
+        return Items.isEmpty();
+    };
 
 }
+
+function xspmCtrl($scope, $rootScope, $log, $timeout, $state,
+    $ionicScrollDelegate, ngCart,
+    Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
+    //登录
+    $scope.$on('$ionicView.beforeEnter', function() {
+        $rootScope.hideTabs = '';
+        $scope.searchQuery = { url: '/mall/aupro/app/query', name: '' };
+        $scope.searchQuery = { url: '/mall/mapro/query', name: '' };
+        if (Storage.get('cateHomeOrigin') == 'index') {
+            $scope.currentIndex = 0;
+            Storage.remove('cateHomeOrigin');
+            $scope.banners && $scope.changeTab($scope.banners[0], 0);
+        }
+        FetchData.get('/mall/mapro/getAll').then(function(res) {
+            $scope.tuijian = res.data;
+            $ionicSlideBoxDelegate.update();
+            $ionicSlideBoxDelegate.loop(true);
+        });
+
+    });
+    // $scope.isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
+    // $scope.style = {
+    //     "margin-top": ($scope.isX ? 15 : 0) + 'px'
+    // }
+    $http.get(ENV.SERVER_URL + '/mall/syscode/app/get?codeType=ma_pro_one_type').success(function(r, status) {
+        if (r.ret) {
+            $scope.banners = r.data;
+            $scope.changeTab($scope.banners[0], 0);
+        }
+        if ($scope.isX) {
+            var ele = document.getElementsByClassName('fourdotzero-tabs')[0];
+            var tabs = ele.getElementsByClassName('tabs')[0];
+            var list = ele.getElementsByClassName('has-tabs')[0];
+            tabs.style.marginBottom = '10px';
+            list.style.bottom = '69px';
+        }
+    });
+
+    $scope.ngCart = ngCart;
+
+    $scope.goItem = function(id) {
+        $state.go('tab.item', { id: id });
+    };
+
+    $scope.isFirst = true;
+    $scope.currentIndex = 0;
+    $scope.items = [];
+    $scope.tuijian = [];
+    $scope.currentTab = '';
+    $scope.model = {
+        activeIndex: 0
+    };
+    $scope.changeTab = function(tab, index) {
+        $scope.items = [];
+        $scope.currentTab = tab.codeKey;
+        $scope.currentIndex = index;
+        var query = $scope.searchQuery ? { query: $scope.searchQuery } : '';
+        Items.setCurrentTab(tab.codeKey);
+        Items.fetchTopItems(query).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items = data;
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+        });
+        // if (!index) {
+        //     index = GetCateIndex($scope.currentTab);
+        // }
+        // setPosition(index);
+    };
+
+    $scope.searchItem = function(query) {
+        // $state.go('tab.search', { 'query': query });
+        Items.fetchTopItems({ 'query': query }).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items = data;
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+        });
+
+    }
+
+
+    $scope.doRefresh = function() {
+
+        Items.fetchTopItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
+            $scope.items = data;
+        });
+        $scope.$broadcast('scroll.refreshComplete');
+    };
+
+    $scope.loadMore = function() {
+        if (!$scope.isFirst && Items.hasNextPage()) {
+            Items.increaseNewItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
+                $scope.items = $scope.items.concat(data);
+                $scope.$broadcast('scroll.infiniteScrollComplete');
+            });
+        } else {
+            $scope.$broadcast('scroll.infiniteScrollComplete');
+            console.log($scope.isFirst, Items.hasNextPage())
+        }
+    };
+
+    $scope.moreDataCanBeLoaded = function() {
+        return Items.hasNextPage();
+    };
+
+    $scope.isEmpty = function() {
+        return Items.isEmpty();
+    };
+
+}
+
+// function homeCtrl($scope, $rootScope, $log, $timeout, $state,
+//     ngCart, $ionicSlideBoxDelegate, Board,
+//     Items, FetchData, Categories) {
+//     //登录
+//     $scope.$on('$ionicView.beforeEnter', function() {
+//         // $scope.$emit('alert', '该功能正在开发，请以后版本尝试')
+//         // $state.go('appIndex')
+//         $rootScope.hideTabs = '';
+//     });
+
+//     // FetchData.get('/api/banners').then(function(data) {
+//     //     $scope.banners = data.banners;
+//     //     $ionicSlideBoxDelegate.$getByHandle('image-viewer').update();
+//     //     $ionicSlideBoxDelegate.$getByHandle('image-viewer').loop(true);
+//     // });
+
+//     $scope.ngCart = ngCart;
+
+//     $scope.redirectTo = function(banner) {
+//         if (banner.type == 'BOARD') {
+//             $state.go('tab.board', { 'boardID': banner.target })
+//         } else {
+//             window.open(banner.target, '_blank', 'location=no,toolbarposition=top,closebuttoncaption=关闭,keyboardDisplayRequiresUserAction=no')
+//         }
+//     };
+
+//     $scope.goBoard = function(board_id) {
+//         $state.go('tab.board', { 'boardID': board_id })
+//     }
+
+//     $scope.searchItem = function(query) {
+//         $state.go('tab.search', { 'query': query });
+//     }
+
+//     $scope.boards = [];
+//     var page = 0;
+
+//     // Board.getBoards(page).then(function(data) {
+//     //     $scope.boards = data.boards;
+//     //     page++;
+//     // });
+
+//     $scope.doRefresh = function() {
+//         page = 0;
+//         Board.getBoards(page).then(function(data) {
+//             $scope.boards = data.boards;
+//             page++;
+//         });
+//         $scope.$broadcast('scroll.refreshComplete');
+//     };
+
+//     // $scope.loadMore = function() {
+//     //     Board.getBoards(page).then(function(data) {
+//     //         $scope.boards = $scope.boards.concat(data.boards);
+//     //         $scope.$broadcast('scroll.infiniteScrollComplete');
+//     //         page++;
+//     //     });
+//     // };
+
+//     $scope.moreDataCanBeLoaded = function() {
+//         return Board.hasNextPage();
+//     };
+//     $scope.isEmpty = function() {
+//         return Board.isEmpty();
+//     }
+
+// }
 
 
 function exploreCtrl($scope, $rootScope, $state, $ionicPopover, Photogram, FetchData) {
@@ -3762,6 +3968,7 @@ function introCtrl($rootScope, $scope, $state, FetchData, $ionicSlideBoxDelegate
 
 controllersModule.controller('appIndexCtrl', appIndexCtrl);
 controllersModule.controller('homeCtrl', homeCtrl);
+controllersModule.controller('xspmCtrl', xspmCtrl);
 controllersModule.controller('cateHomeCtrl', cateHomeCtrl);
 controllersModule.controller('introCtrl', introCtrl);
 controllersModule.controller('exploreCtrl', exploreCtrl);
@@ -3990,410 +4197,412 @@ angular.module('fourdotzero.services', [])
 }])
 
 .factory('Storage', function() {
-        return {
-            set: function(key, data) {
-                return window.localStorage.setItem(key, window.JSON.stringify(data));
-            },
-            get: function(key) {
+    return {
+        set: function(key, data) {
+            return window.localStorage.setItem(key, window.JSON.stringify(data));
+        },
+        get: function(key) {
 
-                return window.JSON.parse(window.localStorage.getItem(key));
-            },
-            remove: function(key) {
-                return window.localStorage.removeItem(key);
+            return window.JSON.parse(window.localStorage.getItem(key));
+        },
+        remove: function(key) {
+            return window.localStorage.removeItem(key);
+        }
+    };
+})
+
+.factory('AuthService', ['$rootScope', 'ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function($rootScope, ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
+    var isAuthenticated = false;
+    var user = Storage.get('user') || {};
+    return {
+        isLoggedIn: function() {
+            if (isAuthenticated) {
+                return true;
+            } else {
+                return false;
             }
-        };
-    })
-    .factory('AuthService', ['$rootScope', 'ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function($rootScope, ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
-        var isAuthenticated = false;
-        var user = Storage.get('user') || {};
-        return {
-            isLoggedIn: function() {
-                if (isAuthenticated) {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
+        },
 
-            login: function(data) {
-                var deferred = $q.defer();
-                var url = {
-                    'common': ENV.SERVER_URL + '/mall/vip/login',
-                    'phone': ENV.SERVER_URL + '/mall/vip/login/phone'
-                }[data.type];
-                $http.post(url, data.data).success(function(data, status) {
-                    if (status === 200 && data.ret) {
-                        isAuthenticated = true;
-                        $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
-                            user = data.data;
-                            if (user) {
-                                Storage.set('user', data.data);
-                                Storage.set('access_token', data.data.name);
-                            }
-                            if (data.savePW && data.type === 'common') {
-                                var pws = Storage.get('userPassword') || [];
-                                angular.forEach(pws, function(item) {
-                                    if (item.name == data.data.name) {
-                                        item.pwd = data.data.pwd
-                                    }
-                                });
-                                Storage.set('userPassword', pws);
-                            }
-                            deferred.resolve();
-                            $state.go('appIndex')
-                        });
-                        // 刷新购物车
-                        FetchData.get('/mall/mashopping/getAll').then(function(data) {
-                            ngCart.$loadCart(data.data);
-                        });
-                    } else {
-                        isAuthenticated = false;
-                        deferred.reject();
-                    }
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-
-                return deferred.promise;
-            },
-
-            setUsername: function(username) { //TODO 目前后台返回的data只有message，需要让后台返回新的user对象，然后前端Storage.set('user', data.user);
-                var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/mall/vip/updateName?name=' + username).success(function(data, status) {
-                    if (status === 200 && data.ret) {
-                        user = Storage.get('user');
-                        user.name = username;
-                        Storage.set('user', user);
-                        deferred.resolve(data);
-                    } else {
-                        deferred.reject(data);
-                    }
-                }).error(function(data) {
-                    deferred.reject(data);
-                });
-
-                return deferred.promise;
-            },
-
-            updateAvatar: function(filename) { //TODO 目前后台返回的data只有message，需要让后台返回新的user对象，然后前端Storage.set('user', data.user);
-                var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/api/users/update_avatar', {
-                    avatar_url: filename,
-                }).success(function(data, status) {
-                    if (status === 200 && data.message == "OK") {
-                        user = data.user;
-                        Storage.set('user', data.user);
-                        deferred.resolve(data);
-                    } else {
-                        deferred.reject(data);
-                    }
-                }).error(function(data) {
-                    deferred.reject(data);
-                });
-
-                return deferred.promise;
-            },
-
-            bindEmail: function(email, user_id) {
-                var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/api/auth/bind_email', {
-                    email: email,
-                    user_id: user_id,
-                }).success(function(data, status) {
-                    if (status === 200 && data.message == "OK") {
-                        isAuthenticated = true;
-                        user = data.user;
-                        Storage.set('user', data.user);
-                        Storage.set('access_token', data.remember_token);
-                        if (window.cordova && window.cordova.plugins) {
-                            plugins.jPushPlugin.setAlias(data.user.id);
-                        }
-                        deferred.resolve();
-                    } else {
-                        isAuthenticated = false;
-                        deferred.reject(data);
-                    }
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-
-                return deferred.promise;
-            },
-
-            forgotPassword: function(email) {
-                var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/api/auth/forgot_password', {
-                    email: email,
-                }).success(function(data, status) {
-                    if (status === 200 && data.message == "OK") {
-                        deferred.resolve();
-                    } else {
-                        isAuthenticated = false;
-                        deferred.reject(data);
-                    }
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-
-                return deferred.promise;
-            },
-
-            logout: function() {
-                var deferred = $q.defer();
-                $http.get(ENV.SERVER_URL + '/mall/vip/logout').success(function(data) {
-                    isAuthenticated = false;
-                    user = {};
-                    Storage.remove('user');
-                    Storage.remove('access_token');
-                    // 清空购物车
-                    Storage.set('cart', {
-                        shipping: null,
-                        taxRate: null,
-                        tax: null,
-                        items: [],
-                        selectedItems: []
-                    });
-                    window.location.href = "#/appIndex";
-                    $rootScope.authDialog.show();
-                    deferred.resolve();
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-
-                return deferred.promise;
-            },
-
-            authenticate: function(token) {
-                var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/api/auth/login_with_token', {
-                    token: token,
-                }).success(function(data, status) {
-                    if (status === 200 && data.message == "OK") {
-                        isAuthenticated = true;
-                        user = data.user;
-                        Storage.set('user', data.user);
-                        Storage.set('access_token', data.remember_token);
-                        if (window.cordova && window.cordova.plugins) {
-                            plugins.jPushPlugin.setAlias(data.user.id);
-                        }
-                        deferred.resolve();
-                    } else {
-                        isAuthenticated = false;
-                        deferred.reject();
-                    }
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-
-                return deferred.promise;
-            },
-
-            oauth: function(sitename, params) {
-                var deferred = $q.defer();
-
-                $http.get(ENV.SERVER_URL + '/api/auth/oauth/' + sitename, {
-                    params: params
-                }).success(function(data, status) {
-                    if (data.message == "OK" && data.login === true) {
-                        isAuthenticated = true;
-                        user = data.user;
-                        Storage.set('user', data.user);
-                        Storage.set('access_token', data.remember_token);
-                        if (window.cordova && window.cordova.plugins) {
-                            plugins.jPushPlugin.setAlias(data.user.id);
-                        }
-                        deferred.resolve(data);
-                    } else if (data.message == "OK" && data.login === false) {
-                        isAuthenticated = false;
-                        deferred.resolve(data);
-                    }
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-                return deferred.promise;
-            },
-
-            register: function(form) {
-                var deferred = $q.defer();
-
-                $http.post(ENV.SERVER_URL + '/mall/vip/app/save', {
-                    email: form.email,
-                    pwd: form.password,
-                    name: form.name,
-                    phone: form.phone
-                }).success(function(data, status) {
-                    if (status === 200 && data.ret) {
-                        isAuthenticated = true;
-                        if (data.data) {
-                            user = data.data;
+        login: function(data) {
+            var deferred = $q.defer();
+            var url = {
+                'common': ENV.SERVER_URL + '/mall/vip/login',
+                'phone': ENV.SERVER_URL + '/mall/vip/login/phone'
+            }[data.type];
+            $http.post(url, data.data).success(function(data, status) {
+                if (status === 200 && data.ret) {
+                    isAuthenticated = true;
+                    $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
+                        user = data.data;
+                        if (user) {
                             Storage.set('user', data.data);
                             Storage.set('access_token', data.data.name);
                         }
+                        if (data.savePW && data.type === 'common') {
+                            var pws = Storage.get('userPassword') || [];
+                            angular.forEach(pws, function(item) {
+                                if (item.name == data.data.name) {
+                                    item.pwd = data.data.pwd
+                                }
+                            });
+                            Storage.set('userPassword', pws);
+                        }
                         deferred.resolve();
-                        $state.go('appIndex');
-                    } else {
-                        isAuthenticated = false;
-                        deferred.reject(data.errmsg);
-                    }
-                }).error(function(data) {
+                        $state.go('appIndex')
+                    });
+                    // 刷新购物车
+                    FetchData.get('/mall/mashopping/getAll').then(function(data) {
+                        ngCart.$loadCart(data.data);
+                    });
+                } else {
+                    isAuthenticated = false;
                     deferred.reject();
-                });
+                }
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
 
-                return deferred.promise;
-            },
-            getUser: function() {
-                return user;
-            },
-            refreshUser: function() {
-                var deferred = $q.defer();
-                $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
-                    user = data.data;
-                    if (user) {
+            return deferred.promise;
+        },
+
+        setUsername: function(username) { //TODO 目前后台返回的data只有message，需要让后台返回新的user对象，然后前端Storage.set('user', data.user);
+            var deferred = $q.defer();
+            $http.post(ENV.SERVER_URL + '/mall/vip/updateName?name=' + username).success(function(data, status) {
+                if (status === 200 && data.ret) {
+                    user = Storage.get('user');
+                    user.name = username;
+                    Storage.set('user', user);
+                    deferred.resolve(data);
+                } else {
+                    deferred.reject(data);
+                }
+            }).error(function(data) {
+                deferred.reject(data);
+            });
+
+            return deferred.promise;
+        },
+
+        updateAvatar: function(filename) { //TODO 目前后台返回的data只有message，需要让后台返回新的user对象，然后前端Storage.set('user', data.user);
+            var deferred = $q.defer();
+            $http.post(ENV.SERVER_URL + '/api/users/update_avatar', {
+                avatar_url: filename,
+            }).success(function(data, status) {
+                if (status === 200 && data.message == "OK") {
+                    user = data.user;
+                    Storage.set('user', data.user);
+                    deferred.resolve(data);
+                } else {
+                    deferred.reject(data);
+                }
+            }).error(function(data) {
+                deferred.reject(data);
+            });
+
+            return deferred.promise;
+        },
+
+        bindEmail: function(email, user_id) {
+            var deferred = $q.defer();
+            $http.post(ENV.SERVER_URL + '/api/auth/bind_email', {
+                email: email,
+                user_id: user_id,
+            }).success(function(data, status) {
+                if (status === 200 && data.message == "OK") {
+                    isAuthenticated = true;
+                    user = data.user;
+                    Storage.set('user', data.user);
+                    Storage.set('access_token', data.remember_token);
+                    if (window.cordova && window.cordova.plugins) {
+                        plugins.jPushPlugin.setAlias(data.user.id);
+                    }
+                    deferred.resolve();
+                } else {
+                    isAuthenticated = false;
+                    deferred.reject(data);
+                }
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        },
+
+        forgotPassword: function(email) {
+            var deferred = $q.defer();
+            $http.post(ENV.SERVER_URL + '/api/auth/forgot_password', {
+                email: email,
+            }).success(function(data, status) {
+                if (status === 200 && data.message == "OK") {
+                    deferred.resolve();
+                } else {
+                    isAuthenticated = false;
+                    deferred.reject(data);
+                }
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        },
+
+        logout: function() {
+            var deferred = $q.defer();
+            $http.get(ENV.SERVER_URL + '/mall/vip/logout').success(function(data) {
+                isAuthenticated = false;
+                user = {};
+                Storage.remove('user');
+                Storage.remove('access_token');
+                // 清空购物车
+                Storage.set('cart', {
+                    shipping: null,
+                    taxRate: null,
+                    tax: null,
+                    items: [],
+                    selectedItems: []
+                });
+                window.location.href = "#/appIndex";
+                $rootScope.authDialog.show();
+                deferred.resolve();
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        },
+
+        authenticate: function(token) {
+            var deferred = $q.defer();
+            $http.post(ENV.SERVER_URL + '/api/auth/login_with_token', {
+                token: token,
+            }).success(function(data, status) {
+                if (status === 200 && data.message == "OK") {
+                    isAuthenticated = true;
+                    user = data.user;
+                    Storage.set('user', data.user);
+                    Storage.set('access_token', data.remember_token);
+                    if (window.cordova && window.cordova.plugins) {
+                        plugins.jPushPlugin.setAlias(data.user.id);
+                    }
+                    deferred.resolve();
+                } else {
+                    isAuthenticated = false;
+                    deferred.reject();
+                }
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        },
+
+        oauth: function(sitename, params) {
+            var deferred = $q.defer();
+
+            $http.get(ENV.SERVER_URL + '/api/auth/oauth/' + sitename, {
+                params: params
+            }).success(function(data, status) {
+                if (data.message == "OK" && data.login === true) {
+                    isAuthenticated = true;
+                    user = data.user;
+                    Storage.set('user', data.user);
+                    Storage.set('access_token', data.remember_token);
+                    if (window.cordova && window.cordova.plugins) {
+                        plugins.jPushPlugin.setAlias(data.user.id);
+                    }
+                    deferred.resolve(data);
+                } else if (data.message == "OK" && data.login === false) {
+                    isAuthenticated = false;
+                    deferred.resolve(data);
+                }
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
+            return deferred.promise;
+        },
+
+        register: function(form) {
+            var deferred = $q.defer();
+
+            $http.post(ENV.SERVER_URL + '/mall/vip/app/save', {
+                email: form.email,
+                pwd: form.password,
+                name: form.name,
+                phone: form.phone
+            }).success(function(data, status) {
+                if (status === 200 && data.ret) {
+                    isAuthenticated = true;
+                    if (data.data) {
+                        user = data.data;
                         Storage.set('user', data.data);
                         Storage.set('access_token', data.data.name);
                     }
                     deferred.resolve();
-                });
-                return deferred.promise;
+                    $state.go('appIndex');
+                } else {
+                    isAuthenticated = false;
+                    deferred.reject(data.errmsg);
+                }
+            }).error(function(data) {
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        },
+        getUser: function() {
+            return user;
+        },
+        refreshUser: function() {
+            var deferred = $q.defer();
+            $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
+                user = data.data;
+                if (user) {
+                    Storage.set('user', data.data);
+                    Storage.set('access_token', data.data.name);
+                }
+                deferred.resolve();
+            });
+            return deferred.promise;
+        }
+    };
+}])
+
+.factory('User', ['ENV', '$http', '$state', '$q', function(ENV, $http, $state, $q) {
+
+    var users = [];
+    var hasNextPage = true;
+    var isEmpty = false;
+    var nextPage = 0;
+    var perPage = 20;
+
+    return {
+        getFollowers: getFollowers,
+        getFollowings: getFollowings,
+        getPostLikeUsers: getPostLikeUsers,
+
+        follow: follow,
+        unfollow: unfollow,
+        hasNextPage: function() {
+            return hasNextPage;
+        },
+        isEmpty: function() {
+            return isEmpty;
+        },
+    }
+
+    function unfollow(user_id) {
+        var deferred = $q.defer();
+        $http.get(ENV.SERVER_URL + '/api/users/unfollow/' + user_id).success(function(data) {
+            deferred.resolve();
+        }).error(function(data) {
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
+
+    function follow(user_id) {
+        var deferred = $q.defer();
+        $http.get(ENV.SERVER_URL + '/api/users/follow/' + user_id).success(function(data) {
+            deferred.resolve();
+        }).error(function(data) {
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
+
+    function getFollowers(userId, page) {
+        var deferred = $q.defer();
+        hasNextPage = true;
+        isEmpty = false;
+
+        $http.get(ENV.SERVER_URL + '/api/users/followers', {
+            params: {
+                currentPage: page,
+                pageSize: perPage,
+                user_id: userId,
             }
-        };
-    }])
-    .factory('User', ['ENV', '$http', '$state', '$q', function(ENV, $http, $state, $q) {
-
-        var users = [];
-        var hasNextPage = true;
-        var isEmpty = false;
-        var nextPage = 0;
-        var perPage = 20;
-
-        return {
-            getFollowers: getFollowers,
-            getFollowings: getFollowings,
-            getPostLikeUsers: getPostLikeUsers,
-
-            follow: follow,
-            unfollow: unfollow,
-            hasNextPage: function() {
-                return hasNextPage;
-            },
-            isEmpty: function() {
-                return isEmpty;
-            },
-        }
-
-        function unfollow(user_id) {
-            var deferred = $q.defer();
-            $http.get(ENV.SERVER_URL + '/api/users/unfollow/' + user_id).success(function(data) {
-                deferred.resolve();
-            }).error(function(data) {
+        }).success(function(r, status) {
+            if (status === 200 && r.message == "OK") {
+                if (r.users.length < perPage) {
+                    hasNextPage = false;
+                }
+                if (page == 0 && r.users.length === 0) {
+                    isEmpty = true;
+                }
+                deferred.resolve(r);
+            } else {
                 deferred.reject();
-            });
-            return deferred.promise;
-        }
+            }
+        }).error(function(data) {
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
 
-        function follow(user_id) {
-            var deferred = $q.defer();
-            $http.get(ENV.SERVER_URL + '/api/users/follow/' + user_id).success(function(data) {
-                deferred.resolve();
-            }).error(function(data) {
+    function getFollowings(userId, page) {
+        var deferred = $q.defer();
+        hasNextPage = true;
+        isEmpty = false;
+
+        $http.get(ENV.SERVER_URL + '/api/users/followings', {
+            params: {
+                currentPage: page,
+                pageSize: perPage,
+                user_id: userId,
+            }
+        }).success(function(r, status) {
+            if (status === 200 && r.message == "OK") {
+                if (r.users.length < perPage) {
+                    hasNextPage = false;
+                }
+                if (page == 0 && r.users.length === 0) {
+                    isEmpty = true;
+                }
+                deferred.resolve(r);
+            } else {
                 deferred.reject();
-            });
-            return deferred.promise;
-        }
+            }
+        }).error(function(data) {
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
 
-        function getFollowers(userId, page) {
-            var deferred = $q.defer();
-            hasNextPage = true;
-            isEmpty = false;
+    function getPostLikeUsers(postId, page) {
+        var deferred = $q.defer();
+        hasNextPage = true;
+        isEmpty = false;
 
-            $http.get(ENV.SERVER_URL + '/api/users/followers', {
-                params: {
-                    currentPage: page,
-                    pageSize: perPage,
-                    user_id: userId,
+        $http.get(ENV.SERVER_URL + '/api/post/' + postId + '/likes', {
+            params: {
+                page: page,
+                pageSize: perPage,
+            }
+        }).success(function(r, status) {
+            if (status === 200 && r.message == "OK") {
+                if (r.users.length < perPage) {
+                    hasNextPage = false;
                 }
-            }).success(function(r, status) {
-                if (status === 200 && r.message == "OK") {
-                    if (r.users.length < perPage) {
-                        hasNextPage = false;
-                    }
-                    if (page == 0 && r.users.length === 0) {
-                        isEmpty = true;
-                    }
-                    deferred.resolve(r);
-                } else {
-                    deferred.reject();
+                if (page == 0 && r.users.length === 0) {
+                    isEmpty = true;
                 }
-            }).error(function(data) {
+                deferred.resolve(r);
+            } else {
                 deferred.reject();
-            });
-            return deferred.promise;
-        }
+            }
+        }).error(function(data) {
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
 
-        function getFollowings(userId, page) {
-            var deferred = $q.defer();
-            hasNextPage = true;
-            isEmpty = false;
-
-            $http.get(ENV.SERVER_URL + '/api/users/followings', {
-                params: {
-                    currentPage: page,
-                    pageSize: perPage,
-                    user_id: userId,
-                }
-            }).success(function(r, status) {
-                if (status === 200 && r.message == "OK") {
-                    if (r.users.length < perPage) {
-                        hasNextPage = false;
-                    }
-                    if (page == 0 && r.users.length === 0) {
-                        isEmpty = true;
-                    }
-                    deferred.resolve(r);
-                } else {
-                    deferred.reject();
-                }
-            }).error(function(data) {
-                deferred.reject();
-            });
-            return deferred.promise;
-        }
-
-        function getPostLikeUsers(postId, page) {
-            var deferred = $q.defer();
-            hasNextPage = true;
-            isEmpty = false;
-
-            $http.get(ENV.SERVER_URL + '/api/post/' + postId + '/likes', {
-                params: {
-                    page: page,
-                    pageSize: perPage,
-                }
-            }).success(function(r, status) {
-                if (status === 200 && r.message == "OK") {
-                    if (r.users.length < perPage) {
-                        hasNextPage = false;
-                    }
-                    if (page == 0 && r.users.length === 0) {
-                        isEmpty = true;
-                    }
-                    deferred.resolve(r);
-                } else {
-                    deferred.reject();
-                }
-            }).error(function(data) {
-                deferred.reject();
-            });
-            return deferred.promise;
-        }
-
-    }])
+}])
 
 .factory('Items', ['ENV', '$http', '$log', '$q', '$rootScope', 'Storage', function(ENV, $http, $log, $q, $rootScope, Storage) {
         // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
@@ -4414,10 +4623,10 @@ angular.module('fourdotzero.services', [])
                     currentPage: 1,
                     pageSize: perPage,
                 };
-                if (query && query.query) {
-                    params.name = query.query
+                if (query && query.query.name) {
+                    params.name = query.query.name
                 }
-                currentTab && $http.get(ENV.SERVER_URL + '/mall/mapro/query', {
+                currentTab && $http.get(ENV.SERVER_URL + query.query.url, {
                     params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
@@ -4444,12 +4653,12 @@ angular.module('fourdotzero.services', [])
                 var deferred = $q.defer();
                 hasNextPage = true;
                 isEmpty = false;
-                $http.get(ENV.SERVER_URL + '/mall/mapro/query', {
+                $http.get(ENV.SERVER_URL + query.query.url, {
                     params: {
                         sub_category: sub_category,
                         currentPage: page,
                         pageSize: perPage,
-                        name: query
+                        name: query.name
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
@@ -4492,10 +4701,10 @@ angular.module('fourdotzero.services', [])
                     currentPage: nextPage,
                     pageSize: perPage,
                 };
-                if (query && query.query) {
-                    params.name = query.query
+                if (query && query.query.name) {
+                    params.name = query.query.name
                 }
-                $http.get(ENV.SERVER_URL + '/mall/mapro/query', {
+                $http.get(ENV.SERVER_URL + query.query.url, {
                     params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
@@ -5651,64 +5860,65 @@ angular.module('fourdotzero.services', [])
 angular.module('fourdotzero.directives', [])
 
 .directive('scrollHeight', ['$window', function($window) {
-        return {
-            restrict: 'AE',
-            scope: {
-                rate: '@'
-            },
-            link: function(scope, element, attr) {
-                var rate = scope.rate;
-                if (rate.split('/')) {
-                    rate = scope.rate.split('/')[0] / scope.rate.split('/')[1]
-                }
-                // 根据屏幕宽度按比例设置高度
-                element[0].style.height = ($window.innerWidth * +rate) + 'px';
+    return {
+        restrict: 'AE',
+        scope: {
+            rate: '@'
+        },
+        link: function(scope, element, attr) {
+            var rate = scope.rate;
+            if (rate.split('/')) {
+                rate = scope.rate.split('/')[0] / scope.rate.split('/')[1]
             }
+            // 根据屏幕宽度按比例设置高度
+            element[0].style.height = ($window.innerWidth * +rate) + 'px';
         }
-    }])
-    .directive('ngcartAddtocart', ['ngCart', function(ngCart) {
-        return {
-            restrict: 'E',
-            scope: {
-                id: '@',
-                name: '@',
-                quantity: '@',
-                quantityMax: '@',
-                price: '@',
-                data: '='
-            },
-            transclude: true,
-            templateUrl: function(element, attrs) {
-                if (typeof attrs.templateUrl == 'undefined') {
-                    return 'ngCart/addtocart.html';
-                } else {
-                    return attrs.templateUrl;
-                }
-            },
-            link: function(scope, element, attrs) {
-                scope.ngCart = ngCart;
-                scope.attrs = attrs;
-                scope.inCart = function() {
-                    return ngCart.getItemById(attrs.id);
-                };
+    }
+}])
 
-                if (scope.inCart()) {
-                    scope.q = ngCart.getItemById(attrs.id).getQuantity();
-                } else {
-                    scope.q = parseInt(scope.quantity);
-                }
-
-                scope.qtyOpt = [];
-                for (var i = 1; i <= scope.quantityMax; i++) {
-                    scope.qtyOpt.push(i);
-                }
-
-                scope.alertWarning = function() {
-                    scope.$emit('alert', '请选择有效商品');
-                };
+.directive('ngcartAddtocart', ['ngCart', function(ngCart) {
+    return {
+        restrict: 'E',
+        scope: {
+            id: '@',
+            name: '@',
+            quantity: '@',
+            quantityMax: '@',
+            price: '@',
+            data: '='
+        },
+        transclude: true,
+        templateUrl: function(element, attrs) {
+            if (typeof attrs.templateUrl == 'undefined') {
+                return 'ngCart/addtocart.html';
+            } else {
+                return attrs.templateUrl;
             }
-        };
-    }])
+        },
+        link: function(scope, element, attrs) {
+            scope.ngCart = ngCart;
+            scope.attrs = attrs;
+            scope.inCart = function() {
+                return ngCart.getItemById(attrs.id);
+            };
+
+            if (scope.inCart()) {
+                scope.q = ngCart.getItemById(attrs.id).getQuantity();
+            } else {
+                scope.q = parseInt(scope.quantity);
+            }
+
+            scope.qtyOpt = [];
+            for (var i = 1; i <= scope.quantityMax; i++) {
+                scope.qtyOpt.push(i);
+            }
+
+            scope.alertWarning = function() {
+                scope.$emit('alert', '请选择有效商品');
+            };
+        }
+    };
+}])
 
 .directive('ngcartBuyrightnow', ['ngCart', '$state', '$rootScope', function(ngCart, $state, $rootScope) {
     return {
@@ -5760,176 +5970,178 @@ angular.module('fourdotzero.directives', [])
 }])
 
 .directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', '$http', 'ENV', 'AlipayService', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state, $http, ENV, AlipayService) {
-        return {
-            restrict: 'E',
-            link: function(scope, element, attrs) {
-                scope.ngCart = ngCart;
+    return {
+        restrict: 'E',
+        link: function(scope, element, attrs) {
+            scope.ngCart = ngCart;
 
-                scope.payInfo = attrs.ordertype == 'new' ? '提交订单' : '现在支付';
+            scope.payInfo = attrs.ordertype == 'new' ? '提交订单' : '现在支付';
 
-                scope.showPaymentMethods = function() {
+            scope.showPaymentMethods = function() {
 
-                    var sheet = {};
-                    sheet.buttonClicked = buttonClicked;
-                    sheet.buttons = [{
-                        text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付'
-                    }];
-                    sheet.cancelOnStateChange = true;
+                var sheet = {};
+                sheet.buttonClicked = buttonClicked;
+                sheet.buttons = [{
+                    text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付'
+                }];
+                sheet.cancelOnStateChange = true;
 
-                    $ionicActionSheet.show(sheet);
+                $ionicActionSheet.show(sheet);
 
-                    function buttonClicked(index) {
-                        var service = { 0: 'alipay', 1: 'wechat' }
-                        var data = scope.ngCart.getAddress().data;
-                        var detailList = scope.ngCart.getSelectedItems().map(function(item) {
-                            return {
-                                maProId: item._data.maProId || item._id,
-                                maProImg: item._data.mainUrl,
-                                maProName: item._name,
-                                num: item._quantity,
-                                dealPrice: item._price
+                function buttonClicked(index) {
+                    var service = { 0: 'alipay', 1: 'wechat' }
+                    var data = scope.ngCart.getAddress().data;
+                    var detailList = scope.ngCart.getSelectedItems().map(function(item) {
+                        return {
+                            maProId: item._data.maProId || item._id,
+                            maProImg: item._data.mainUrl,
+                            maProName: item._name,
+                            num: item._quantity,
+                            dealPrice: item._price
+                        }
+                    });
+                    var order = {
+                        detailList: detailList,
+                        trackingType: scope.ngCart.getExpress().codeKey,
+                        trackingAmount: +scope.ngCart.getExpress().codeDesc,
+                        status: '0',
+                        receiptId: data.id,
+                        receiptName: data.name,
+                        receiptPhone: data.phone,
+                        receiptPostcode: data.postcode,
+                        receiptDetail: data.detail
+                    }
+                    if (attrs.ordertype == 'new') {
+                        if (!order.receiptId) {
+                            scope.$emit('alert', '请选择收货地址');
+                            return;
+                        }
+                        fulfilmentProvider.checkout(order, function() {
+                            $ionicActionSheet.hide();
+                        })
+                    } else if (attrs.ordertype == 'existed') {
+                        // 直接掉支付接口
+                        $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + attrs.orderid).success(function(r, status) {
+                            if (r.ret) {
+                                AlipayService.alipayCheckout(r.data)
                             }
                         });
-                        var order = {
-                            detailList: detailList,
-                            trackingType: scope.ngCart.getExpress().codeKey,
-                            trackingAmount: +scope.ngCart.getExpress().codeDesc,
-                            status: '0',
-                            receiptId: data.id,
-                            receiptName: data.name,
-                            receiptPhone: data.phone,
-                            receiptPostcode: data.postcode,
-                            receiptDetail: data.detail
-                        }
-                        if (attrs.ordertype == 'new') {
-                            if (!order.receiptId) {
-                                scope.$emit('alert', '请选择收货地址');
-                                return;
-                            }
-                            fulfilmentProvider.checkout(order, function() {
-                                $ionicActionSheet.hide();
-                            })
-                        } else if (attrs.ordertype == 'existed') {
-                            // 直接掉支付接口
-                            $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + attrs.orderid).success(function(r, status) {
-                                if (r.ret) {
-                                    AlipayService.alipayCheckout(r.data)
-                                }
-                            });
-                        }
                     }
-                };
-            },
-            scope: {
-                settings: '=',
-                show: '=',
-            },
-            replace: true,
-            templateUrl: function(element, attrs) {
-                if (typeof attrs.templateUrl == 'undefined') {
-                    return 'ngCart/checkout.html';
-                } else {
-                    return attrs.templateUrl;
                 }
+            };
+        },
+        scope: {
+            settings: '=',
+            show: '=',
+        },
+        replace: true,
+        templateUrl: function(element, attrs) {
+            if (typeof attrs.templateUrl == 'undefined') {
+                return 'ngCart/checkout.html';
+            } else {
+                return attrs.templateUrl;
             }
-        };
-    }])
-    .directive("zoomView", ['$compile', '$ionicModal', '$ionicPlatform', '$cordovaSocialSharing', function($compile, $ionicModal, $ionicPlatform, $cordovaSocialSharing) {
-        return {
+        }
+    };
+}])
 
-            restrict: "A",
+.directive("zoomView", ['$compile', '$ionicModal', '$ionicPlatform', '$cordovaSocialSharing', function($compile, $ionicModal, $ionicPlatform, $cordovaSocialSharing) {
+    return {
 
-            link: function(scope, elem, attr) {
+        restrict: "A",
 
-                $ionicPlatform.ready(function() {
+        link: function(scope, elem, attr) {
 
-                    elem.attr("ng-click", "showZoomView()");
-                    elem.removeAttr("zoom-view");
-                    $compile(elem)(scope);
+            $ionicPlatform.ready(function() {
 
-                    var zoomViewTemplate = '<ion-modal-view class="zoom-view"><ion-header-bar>' +
-                        '<button ng-click="closeZoomView()" class="button button-clear button-light button-icon ion-ios-close-empty"></button></ion-header-bar>' +
-                        '<ion-content ng-click="closeZoomView()"><ion-scroll zooming="true" direction="xy" style="width: 100%; height: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0; ">' +
-                        '<img ng-src="{{ngSrc}}" style="width: 100%!important; display:block; width: 100%; height: auto; max-width: 400px; max-height: 700px; margin: auto; padding: 10px; " />' +
-                        '</ion-scroll> </ion-content>' +
-                        '<ion-footer-bar><h1 class="title"></h1><button class="button button-light button-icon ion-ios-download-outline" ng-click="downloadFile()"></button></ion-footer-bar>'
-                    '</ion-modal-view>';
+                elem.attr("ng-click", "showZoomView()");
+                elem.removeAttr("zoom-view");
+                $compile(elem)(scope);
 
-                    scope.zoomViewModal = $ionicModal.fromTemplate(zoomViewTemplate, {
-                        scope: scope,
-                        animation: "slide-in-right"
-                    });
+                var zoomViewTemplate = '<ion-modal-view class="zoom-view"><ion-header-bar>' +
+                    '<button ng-click="closeZoomView()" class="button button-clear button-light button-icon ion-ios-close-empty"></button></ion-header-bar>' +
+                    '<ion-content ng-click="closeZoomView()"><ion-scroll zooming="true" direction="xy" style="width: 100%; height: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0; ">' +
+                    '<img ng-src="{{ngSrc}}" style="width: 100%!important; display:block; width: 100%; height: auto; max-width: 400px; max-height: 700px; margin: auto; padding: 10px; " />' +
+                    '</ion-scroll> </ion-content>' +
+                    '<ion-footer-bar><h1 class="title"></h1><button class="button button-light button-icon ion-ios-download-outline" ng-click="downloadFile()"></button></ion-footer-bar>'
+                '</ion-modal-view>';
 
-                    scope.showZoomView = function() {
-                        scope.zoomViewModal.show();
-                        scope.ngSrc = attr.zoomSrc;
-                    };
-
-                    scope.closeZoomView = function() {
-                        scope.zoomViewModal.hide();
-                    };
-
-                    scope.downloadFile = function() {
-                        var message = "分享图片",
-                            subject = '分享',
-                            file = scope.ngSrc,
-                            link = "http://www.may.bi";
-
-                        $cordovaSocialSharing
-                            .share(message, subject, file, link) // Share via native share sheet
-                            .then(function(result) {
-                                console.log('result:' + result);
-                                // Success!
-                            }, function(err) {
-                                console.log('err:' + err);
-                                scope.broadcast('alert', err);
-                                // An error occured. Show a message to the user
-                            });
-                    }
+                scope.zoomViewModal = $ionicModal.fromTemplate(zoomViewTemplate, {
+                    scope: scope,
+                    animation: "slide-in-right"
                 });
-            }
-        };
-    }])
-    .directive('showMore', ['$timeout', function($timeout) {
-        return {
-            templateUrl: 'showMore.html',
-            restrict: 'A',
-            replace: true,
-            scope: {
-                'title': '=',
-            },
-            link: function(scope, element, attrs) {
 
-                var showMoreHeight = parseInt(attrs.showMore);
-
-                scope.expanded = false;
-                scope.expandable = false;
-
-                $timeout(function() {
-                    renderStyles();
-                }, 300);
-                scope.toggle = function() {
-                    scope.expanded = !scope.expanded;
-
+                scope.showZoomView = function() {
+                    scope.zoomViewModal.show();
+                    scope.ngSrc = attr.zoomSrc;
                 };
 
-                function renderStyles() {
-                    var elementHeight = element.find('p')[0].offsetHeight;
-                    if (elementHeight > showMoreHeight && scope.expanded === false) {
-                        scope.expandable = true;
-                    }
+                scope.closeZoomView = function() {
+                    scope.zoomViewModal.hide();
+                };
+
+                scope.downloadFile = function() {
+                    var message = "分享图片",
+                        subject = '分享',
+                        file = scope.ngSrc,
+                        link = "http://www.may.bi";
+
+                    $cordovaSocialSharing
+                        .share(message, subject, file, link) // Share via native share sheet
+                        .then(function(result) {
+                            console.log('result:' + result);
+                            // Success!
+                        }, function(err) {
+                            console.log('err:' + err);
+                            scope.broadcast('alert', err);
+                            // An error occured. Show a message to the user
+                        });
                 }
+            });
+        }
+    };
+}])
 
-                scope.showLessStyle = {
-                    'max-height': showMoreHeight + 'px',
-                    'overflow': 'hidden',
-                    'margin-bottom': '6px',
-                };
+.directive('showMore', ['$timeout', function($timeout) {
+    return {
+        templateUrl: 'showMore.html',
+        restrict: 'A',
+        replace: true,
+        scope: {
+            'title': '=',
+        },
+        link: function(scope, element, attrs) {
 
+            var showMoreHeight = parseInt(attrs.showMore);
 
+            scope.expanded = false;
+            scope.expandable = false;
+
+            $timeout(function() {
+                renderStyles();
+            }, 300);
+            scope.toggle = function() {
+                scope.expanded = !scope.expanded;
+
+            };
+
+            function renderStyles() {
+                var elementHeight = element.find('p')[0].offsetHeight;
+                if (elementHeight > showMoreHeight && scope.expanded === false) {
+                    scope.expandable = true;
+                }
             }
-        };
-    }])
+
+            scope.showLessStyle = {
+                'max-height': showMoreHeight + 'px',
+                'overflow': 'hidden',
+                'margin-bottom': '6px',
+            };
+
+
+        }
+    };
+}])
 
 .directive('addressForm', ['$rootScope', '$ionicModal', 'FetchData', 'ngCart', '$state', 'utils', function($rootScope, $ionicModal, FetchData, ngCart, $state, utils) {
     return {
@@ -6191,13 +6403,13 @@ $templateCache.put("account.html","<ion-view>\n    <div class=\"avatar-section\"
 $templateCache.put("add_address.html","<!-- 添加地址 -->\n<ion-modal-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"closeModal()\"></button>\n        <div class=\"title\">{{addr.id ? \'编辑\' : \'新增\'}}收货地址</div>\n    </div>\n\n    <ion-content class=\"has-header\" style=\"overflow-y:hidden;\">\n\n        <section>\n            <form name=\"addressForm\" class=\"addressForm\">\n\n                <div class=\"list\">\n                    <label class=\"item item-input\">\n            <div class=\"input-label\" ng-class=\"{\'warning\': addressForm.name.$error.required && !addressForm.name.$pristine}\">\n                收货人\n            </div>\n            <input type=\"text\" ng-model=\"addr.name\" name=\"name\" required />\n        </label>\n                    <label class=\"item item-input\">\n            <div class=\"input-label\" ng-class=\"{\'warning\': addressForm.phone.$error.required && !addressForm.phone.$pristine}\">\n                联系方式\n            </div>\n            <input type=\"text\" ng-model=\"addr.phone\" name=\"phone\" required />\n        </label>\n                    <label class=\"item item-input\">\n            <div class=\"input-label\" ng-class=\"{\'warning\': addressForm.detail.$error.required && !addressForm.detail.$pristine}\">\n                详细地址\n            </div>\n            <input type=\"text\" ng-model=\"addr.detail\" name=\"detail\" required />\n        </label>\n                    <!-- <label class=\"item item-input item-select\">\n            <div class=\"input-label\" ng-class=\"addressForm.country.$error.required && !addressForm.country.$pristine\">\n                国家\n            </div>\n            <select ng-model=\"addr.country\" name=\"country\" required>\n                <option ng-selected=\"addr.country== k\" value=\"{{k}}\" ng-repeat=\"k in COUNTRIES\">{{k}}</option>\n            </select>\n        </label>\n        <label class=\"item item-input\">\n            <div class=\"input-label\" ng-class=\"{\'warning\': addressForm.detail.$error.required && !addressForm.detail.$pristine}\">\n                地址 1\n            </div>\n            <input type=\"text\" ng-model=\"addr.detail\" name=\"detail\" required />\n        </label>\n        <label class=\"item item-input\">\n            <div class=\"input-label\">\n                地址 2\n            </div>\n            <input type=\"text\" ng-model=\"addr.street2\" name=\"street2\" required />\n        </label>\n        <label class=\"item item-input\">\n            <div class=\"input-label\" ng-class=\"{\'warning\': addressForm.city.$error.required && !addressForm.city.$pristine}\">\n                城市\n            </div>\n            <input type=\"text\" ng-model=\"addr.city\" name=\"city\" required />\n        </label> -->\n                    <!-- <label class=\"item item-input item-select\">\n            <div class=\"input-label\" ng-class=\"addressForm.state.$error.required && !addressForm.state.$pristine\">\n                州/省\n            </div>\n            <select ng-model=\"addr.state\" name=\"state\" required>\n                <option ng-selected=\"addr.state == k\" value=\"{{k}}\" ng-repeat=\"(k, v) in REGIONS\">{{v}}</option>\n            </select> -->\n                    <!-- </label> -->\n                    <label class=\"item item-input\">\n            <div class=\"input-label\" ng-class=\"{\'warning\': addressForm.postcode.$error.required && !addressForm.postcode.$pristine}\">\n                邮编\n            </div>\n            <input type=\"text\" ng-model=\"addr.postcode\" name=\"postcode\" required />\n        </label>\n                </div>\n            </form>\n        </section>\n        <div style=\"text-align: center; margin-top: 50px\">\n            <button class=\"button button-energized\" style=\"width:80%;\" ng-click=\"saveAddress()\">\n                保存收货地址\n            </button>\n        </div>\n    </ion-content>\n\n</ion-modal-view>");
 $templateCache.put("address.html","<!-- 地址栏 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">选择地址</div>\n    </div>\n\n    <ion-content class=\"has-header\">\n        <section>\n            <div class=\"address-select-info\" ng-show=\"addresses.length != 0\">\n                <div class=\"address-row\" ng-repeat=\"addr in addresses track by $index\" ng-click=\"selectAddress(addr)\" ng-class=\"addr.flag? \'address-selected\' : \'\'\">\n                    <div class=\"address-info-1\">\n                        <div class=\"row\">\n                            <div class=\"col\">{{addr.name}}</div>\n                            <div class=\"col\" style=\"text-align: right\">{{addr.phone}}</div>\n                        </div>\n                        <div class=\"row\">\n                            <div class=\"col\">{{addr.detail}}</div>\n                        </div>\n                    </div>\n                    <div class=\"address-operate row\">\n                        <div class=\"col col-60\">\n                            <i class=\"icon ion-ios-circle-outline\" ng-if=\"!addr.flag\"></i>\n                            <i class=\"icon ion-ios-checkmark-outline\" ng-if=\"addr.flag\"></i>\n                            <span ng-if=\"addr.flag\">已选择</span>\n                            <span ng-if=\"!addr.flag\">选择该地址</span>\n                        </div>\n                        <div class=\"col\" style=\"text-align: right;margin-right: 10px\">\n                            <i class=\"icon ion-ios-compose-outline\" style=\"width:16px;float:inherit\"></i>\n                            <a href address-form addr-id=\"addr.id\" addresses=\"addresses\">修改地址</a>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </section>\n\n        <section>\n            <div class=\"address-select-info\" address-form addresses=\"addresses\">\n                <div class=\"address-row\">\n                    <div style=\"padding:10px\">\n                        <div class=\"\">新增收件地址</div>\n                    </div>\n                    <div class=\"go-add\">+</div>\n                </div>\n\n            </div>\n        </section>\n\n    </ion-content>\n\n    <ion-footer-bar class=\"bar-energized footer-button\" ng-click=\"confirmAddress()\">\n        <div class=\"title\" style=\"text-align:center\">确定</div>\n    </ion-footer-bar>\n</ion-view>");
 $templateCache.put("address_list.html","<!-- 地址栏 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">地址管理</div>\n    </div>\n\n    <ion-content class=\"has-header\">\n\n        <section>\n            <div class=\"address-select-info\" ng-show=\"addresses.length != 0\">\n                <div class=\"address-row\" ng-repeat=\"addr in addresses track by $index\" ng-class=\"addr.flag? \'address-selected\' : \'\'\">\n                    <div class=\"address-info-1\">\n                        <div class=\"row\">\n                            <div class=\"col\">{{addr.name}}</div>\n                            <div class=\"col\" style=\"text-align: right\">{{addr.phone}}</div>\n                        </div>\n                        <div class=\"row\">\n                            <div class=\"col\">{{addr.detail}}</div>\n                        </div>\n                    </div>\n                    <div class=\"address-operate row\">\n                        <div class=\"col col-60\" ng-click=\"setDefault(addr.id)\">\n                            <i class=\"icon ion-ios-circle-outline\" ng-if=\"!addr.flag\"></i>\n                            <span ng-if=\"!addr.flag\">设为默认</span>\n                            <i class=\"icon ion-ios-checkmark-outline\" ng-if=\"addr.flag\"></i>\n                            <span ng-if=\"addr.flag\">默认地址</span>\n                        </div>\n                        <div class=\"col\" address-form addr-id=\"addr.id\" addresses=\"addresses\">\n                            <i class=\"icon ion-ios-compose-outline\" style=\"width:16px\"></i>\n                            <a href>编辑</a>\n                        </div>\n                        <div class=\"col\" ng-click=\"removeAddr(addr.id)\">\n                            <i class=\"icon ion-ios-trash-outline\" style=\"width:16px\"></i>\n                            <span>删除</span>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </section>\n\n\n    </ion-content>\n    <ion-footer-bar class=\"bar-energized bar bar-footer\">\n        <div class=\"address-add-btn\" address-form addresses=\"addresses\">\n            <div>新增收件地址</div>\n        </div>\n    </ion-footer-bar>\n</ion-view>\n");
-$templateCache.put("appIndex.html","<ion-view class=\"appIndex\">\n    <div class=\"bar bar-header\">\n        <!-- <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button> -->\n        <div class=\"title\">4.0</div>\n    </div>\n    <ion-content class=\"has-header content\" style=\"background-color: #F8F8F8\">\n        <div scroll-height rate=\"2/5\">\n            <ion-slide-box class=\"indexSlide\" on-slide-changed=\"slideHasChanged($index)\" auto-play=\"true\" does-continue=\"true\" slide-interval=2000 show-pager=\"true\" pager-click=\"pageClick(index)\" active-slide=\"model.activeIndex\" delegate-handle=\"delegateHandler\"\n                ng-click=\"coverFlowClick()\">\n                <ion-slide>\n                    <div class=\"box\">\n                        <img src=\"../www/img/icons/slider/1.jpg\" />\n                    </div>\n                </ion-slide>\n                <ion-slide>\n                    <div class=\"box\">\n                        <img src=\"../www/img/icons/slider/2.jpg\" />\n                    </div>\n                </ion-slide>\n                <ion-slide>\n                    <div class=\"box\">\n                        <img src=\"../www/img/icons/slider/3.jpg\" />\n                    </div>\n                </ion-slide>\n            </ion-slide-box>\n        </div>\n        <div class=\"chooseTypes\">\n            <div class=\"chooseType\" ng-click=\"goto(item.url)\" ng-repeat=\"item in types track by $index\">\n                <div class=\'icon1 {{item.pic}}\' style=\'height: 60px;width: 50px;background-size: 50px;\'></div>\n                <span>{{item.name}}</span>\n            </div>\n        </div>\n    </ion-content>\n    <div class=\"bar bar-subfooter bar-stable\" id=\"index-footer\">\n        <div class=\"chooseType\" ng-click=\"goto(\'scan\')\">\n            <div class=\'icon1 category\'></div>\n            <span>扫一扫</span>\n        </div>\n    </div>\n</ion-view>");
+$templateCache.put("appIndex.html","<ion-view class=\"appIndex\">\n    <div class=\"bar bar-header\">\n        <!-- <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button> -->\n        <div class=\"title\">4.0</div>\n    </div>\n    <ion-content class=\"has-header content\" style=\"background-color: #F8F8F8\">\n        <div scroll-height rate=\"2/5\">\n            <ion-slide-box class=\"indexSlide\" on-slide-changed=\"slideHasChanged($index)\" auto-play=\"true\" does-continue=\"true\" slide-interval=2000 show-pager=\"true\" pager-click=\"pageClick(index)\" active-slide=\"model.activeIndex\" delegate-handle=\"delegateHandler\"\n                ng-click=\"coverFlowClick()\">\n                <ion-slide>\n                    <div class=\"box\">\n                        <img src=\"../www/img/icons/slider/1.jpg\" />\n                    </div>\n                </ion-slide>\n                <ion-slide>\n                    <div class=\"box\">\n                        <img src=\"../www/img/icons/slider/2.jpg\" />\n                    </div>\n                </ion-slide>\n                <ion-slide>\n                    <div class=\"box\">\n                        <img src=\"../www/img/icons/slider/3.jpg\" />\n                    </div>\n                </ion-slide>\n            </ion-slide-box>\n        </div>\n        <div class=\"chooseTypes\">\n            <div class=\"chooseType\" style=\"width:15%\" ng-click=\"goto(item.url)\" ng-repeat=\"item in types track by $index\">\n                <div scroll-height rate=\"0.15/1\" class=\'icon1 {{item.pic}}\' style=\'width:100%;background-size: 100% 100%\'></div>\n                <span style=\"z-index:2;margin-top: 10px\">{{item.name}}</span>\n            </div>\n        </div>\n    </ion-content>\n    <div class=\"bar bar-subfooter bar-stable\" id=\"index-footer\">\n        <div class=\"chooseType\" ng-click=\"goto(\'scan\')\">\n            <div class=\'icon1 category\'></div>\n            <span>扫一扫</span>\n        </div>\n    </div>\n</ion-view>");
 $templateCache.put("auth.html","<ion-modal-view>\n    <ion-header-bar>\n        <!-- <button class=\"button button-clear icon ion-ios-close-empty\" ng-click=\"closeAuthBox()\"></button> -->\n        <div class=\"title\">登录</div>\n    </ion-header-bar>\n    <ion-content class=\"login-page overlay-content\" ng-controller=\"authCtrl\">\n        <div class=\"loginTab\">\n            <div ng-class=\"{\'isSelected\': !commonLogin}\" class=\"loginTabName\" ng-click=\"checkLogin(0)\">\n                统一密码登录\n            </div>\n            <div ng-class=\"{\'isSelected\': commonLogin}\" class=\"loginTabName\" ng-click=\"checkLogin(1)\">\n                动态密码登录\n            </div>\n        </div>\n        <div class=\"list list-inset\" ng-show=\"!commonLogin\" style=\"margin:30px auto;\">\n            <label class=\"item item-input\" style=\"border:0 none;border-bottom:1px solid #eee\">\n              <i class=\"icon ion-ios-person-outline placeholder-icon\" style=\"font-size:24px\"></i>\n              <input type=\"text\" placeholder=\"请输入用户名\" ng-model=\"email\">\n            </label>\n\n            <label class=\"item item-input\" style=\"border:0 none;border-bottom:1px solid #eee;margin-top:2px\">\n                <i class=\"icon ion-ios-locked-outline placeholder-icon\" style=\"font-size:22px\"></i>\n                <input type=\"password\" placeholder=\"请输入密码\" ng-model=\"password\">\n            </label>\n            <div style=\"text-align:left;margin-top:10px;\">\n                <label style=\"margin-right:30px;\" ng-click=\"savePW = !savePW\">\n          <i class=\"icon  placeholder-icon\"\n            ng-class=\"{true: \'ion-ios-checkmark assertive\', false: \'ion-ios-checkmark-outline\'}[savePW]\"\n            style=\"font-size:18px;vertical-align:middle\"></i>保存密码\n        </label>\n                <!-- <label ng-click=\"autoLogin = !autoLogin\">\n          <i class=\"icon  placeholder-icon\"\n            ng-class=\"{true: \'ion-ios-checkmark assertive\', false: \'ion-ios-checkmark-outline\'}[autoLogin]\"\n            style=\"font-size:18px;vertical-align:middle\"></i>自动登录\n        </label> -->\n            </div>\n        </div>\n        <div class=\"list list-inset\" ng-show=\"commonLogin\" style=\"margin:30px auto;\">\n            <label class=\"item item-input\" style=\"border:0 none;border-bottom:1px solid #eee\">\n        <i class=\"icon ion-ios-person-outline placeholder-icon\" style=\"font-size:24px\"></i>\n        <input type=\"text\" placeholder=\"请输入手机号\" ng-model=\"phone\">\n      </label>\n\n            <div class=\"item item-input-inset\" style=\"border:0 none;border-bottom:1px solid #eee;margin-top:2px;padding:5px 8px;justify-content: space-between\">\n                <label class=\"item-input-wrapper\" style=\"font-size:16px;background-color:white;flex: inherit; width:200px\">\n          <i class=\"icon ion-ios-locked-outline placeholder-icon\" style=\"font-size:22px\"></i>\n          <input type=\"text\" placeholder=\"请输入验证码\" ng-model=\"validateCode\">\n        </label>\n                <a class=\"button codeBtn\" ng-class=\"{\'assertive\':!sendStatus}\" ng-click=\"getValidateCode()\" ng-disabled=\"sendStatus\">\n        {{validateTime}}\n        </a>\n            </div>\n        </div>\n\n        <button class=\"button button-block login-btn\" ng-click=\"login()\" style=\"margin-top:20px;\">\n        登录\n    </button>\n\n        <div class=\"list login-btn-group\">\n            <button class=\"button button-clear button-energized pull-right\" ng-click=\"showForgotPWBox()\">\n            忘记密码\n        </button>\n            <button class=\"button button-clear button-dark pull-left\" ng-click=\"showSignupBox()\">\n            立即注册\n        </button>\n        </div>\n\n    </ion-content>\n</ion-modal-view>");
 $templateCache.put("bindEmail.html","<ion-modal-view>\n  <ion-header-bar>\n    <div class=\"buttons\">\n      <button class=\"button button-clear icon ion-ios-arrow-back button-dark\" ng-click=\"closeBindEmailBox()\"></button>\n    </div>\n    <div class=\"title\">绑定邮箱</div>\n  </ion-header-bar>\n  <ion-content class=\"login-page overlay-content\" scroll=\"false\" ng-controller=\"bindEmailCtrl\">\n    <div class=\"list list-inset\">\n      <label class=\"item item-input\">\n        <input type=\"email\" placeholder=\"邮箱地址\" ng-model=\"bindEmailForm.email\">\n      </label>\n    </div>\n\n    <button class=\"button button-block login-btn\" ng-click=\"bind()\">绑定</button>\n\n  </ion-content>\n</ion-modal-view>\n");
 $templateCache.put("board.html","<ion-view>\n    <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">{{::board.title}}</div>\n    </div>\n\n    <ion-content class=\"has-header homepage\">\n        <div class=\"item item-banner-image\">\n            <img ng-src=\"{{::board.image}}\">\n        </div>\n\n        <ion-item class=\"item board-desc\" style=\"border-left: 3px solid #ea004f;\">\n            {{::board.desc}}\n        </ion-item>\n\n        <div class=\"col col-50 \"\n             style=\"display: inline-block\"\n             ng-repeat=\"item in board.items track by $index\" ng-click=\"goItem(item.item_id)\">\n            <div class=\"item item-image\">\n                <img ng-src=\"{{::item.thumbnail}}\" cache-src>\n            </div>\n            <div class=\"item item-text-wrap\" href=\"#\">\n                <h2 class=\"product-title\" style=\"overflow: hidden;\">{{::item.title}}</h2>\n                <p class=\"product-prices\">\n                    <span class=\"curr-price\">{{::item.price | currency}}</span>\n                    <del class=\"orig-price\">{{::item.orig_price | currency}}</del>\n                </p>\n            </div>\n        </div>\n\n\n\n\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("calFee.html","<!-- 运费估算 -->\n<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">运费估算</div>\n  </div>\n\n  <ion-content class=\"has-header\">\n\n<section>\n<form name=\"queryForm\" ng-submit=\"queryFee()\">\n    <div class=\"list\">\n        <label class=\"item item-input item-select\">\n           <div class=\"input-label\" ng-class=\"{\'warning\': queryForm.country.$error.required && !queryForm.country.$pristine}\">\n                国家\n            </div>\n            <select placeholder=\"请选择寄往国家\" ng-model=\"query.country\" name=\"country\"\n                ng-options=\"country for country in COUNTRIES\" required>\n            </select>\n        </label>\n        <label class=\"item item-input\">\n            <div class=\"input-label\" ng-class=\"{\'warning\': queryForm.weight.$error.required && !queryForm.weight.$pristine}\">\n               重量\n            </div>\n            <input style=\"margin-right: 12px\" class=\"text-right\" placeholder=\"请输入商品重量\" type=\"number\" ng-model=\"query.weight\" name=\"weight\" required /><span class=\"cal-unit\">克</span>\n       </label>\n    </div>\n    <div class=\"padding\">\n        <button class=\"button button-block button-assertive button-cart\">费用估算</button>\n    </div>\n</form>\n</section>\n\n<section>\n<div class=\"address-select-info\">\n    <div class=\"address-row\" ng-repeat=\"provider in provider_prices track by $index\">\n        <div class=\"address-info provider\">\n            <div class=\"info-header\">{{provider.name}}\n                ({{provider.service_intro.duration}})</div>\n            <div class=\"desc\">首重{{provider.init_weight}}g/${{provider.init_price}}，\n                续重{{provider.continued_weight}}g/${{provider.continued_price}}</div>\n            <div class=\"desc\">{{provider.rule_desc}}</div>\n        </div>\n        <div>\n            <span class=\"provider-price\">\n                {{provider.cn_shipping | currency }}\n            </span>\n        </div>\n    </div>\n</div>\n</section>\n\n  </ion-content>\n</ion-view>\n");
 $templateCache.put("cart.html","<!-- 购物车 -->\n\n<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear button-dark icon ion-ios-arrow-back\" style=\"color:#b2b2b2\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">购物车</div>\n        <button class=\"button button-clear button-dark icon ion-ios-trash-outline\" ng-click=\"delete()\"></button>\n\n    </div>\n    <ion-content class=\"has-header has-footer has-subfooter\">\n\n        <div class=\"center-ico\" ng-show=\"ngCart.getTotalItems() === 0\">\n            <i class=\"icon ion-ios-cart-outline\"></i>\n            <h1>购物车为空\n            </h1>\n        </div>\n\n        <div ng-show=\"ngCart.getTotalItems() > 0\">\n\n            <table class=\"table ngCart cart-table\">\n                <thead>\n                    <tr>\n                        <td class=\"check-cell\" ng-click=\"selectAllEntries()\">\n                            <i class=\"icon select-icon\" ng-class=\" isSelectedAll? \'ion-ios-checkmark selected\':\'ion-ios-circle-outline\'\" ng-hide=\"editShown\">\n                    </i>\n                        </td>\n\n                        <td></td>\n                        <td></td>\n                        <td></td>\n                    </tr>\n                </thead>\n\n                <tbody>\n                    <tr ng-repeat=\"item in ngCart.getCart().items track by $index\">\n                        <td class=\"check-cell\">\n                            <span class=\"close-icon\" ng-show=\"editShown\" ng-click=\"ngCart.removeItemById(item._data.id)\">\n                    </span>\n                            <i class=\"icon select-icon\" ng-class=\" ngCart.getSelectedItemById(item._data.id)? \'ion-ios-checkmark selected\':\'ion-ios-circle-outline\'\" ng-hide=\"editShown\" ng-click=\"selectEntry(item._data.id)\">\n                    </i>\n\n                        </td>\n\n                        <td class=\"img-cell\">\n                            <div>\n                                <a ng-href=\"#/item/{{item.getId()}}\">\n                                    <img ng-src=\"{{item.getData().mainUrl}}\">\n                                </a>\n                            </div>\n                        </td>\n                        <td class=\"info-cell\">\n                            <div>{{ item.getName() }}</div>\n                            <div>\n                            </div>\n                            <div class=\"btn-group\">\n                                <button class=\"btn del-num\" ng-class=\"{\'disabled\':item.getQuantity()==1}\" ng-click=\"setQuantity(item, -1, true)\">-</button>\n                                <button class=\"btn num\">{{ item.getQuantity() | number }}</button>\n                                <button class=\"btn add-num\" ng-click=\"setQuantity(item, 1, true)\">+</button>\n                            </div>\n                        </td>\n                        <td class=\"price-cell\">{{ item.getPrice() | currency:\'￥\' }}</td>\n                    </tr>\n                </tbody>\n\n            </table>\n        </div>\n\n    </ion-content>\n    <div class=\"bar bar-subfooter bar-stable\" style=\"bottom:0;border-bottom: 0 none\">\n        <a class=\"button button-clear\">\n            总价:  <span class=\"footer-price\"> {{ ngCart.totalCost() |currency:\'￥\'}}</span>\n        </a>\n        <button ng-disabled=\"!ngCart.getTotalSelectedItems()\" class=\"button button-energized button-cart pull-right\" ng-click=\"$state.go(\'checkout\')\">\n            结算({{ngCart.getTotalSelectedItems()}})\n\n        </button>\n    </div>\n\n</ion-view>");
-$templateCache.put("cateHome.html","<ion-view ng-style=\"style\">\n    <form>\n        <div class=\"bar bar-header item-input-inset\" style=\"padding-left:8px\">\n            <a href=\"#/appIndex\" class=\"button button-icon icon ion-ios-arrow-back\" style=\"padding:0 13px 0 0;color:#b2b2b2;\"></a>\n            <label class=\"item-input-wrapper\">\n        <i class=\"icon ion-ios-search placeholder-icon\" style=\"font-size:18px;\"></i>\n        <input type=\"search\" placeholder=\"搜索商品\" ng-model=\"searchQuery\">\n        <input type=\"submit\" ng-click=\"searchItem(searchQuery)\" style=\"position: absolute; left: -9999px; width: 1px; height: 1px;\"/>\n      </label>\n            <span class=\"cart-num\">{{ ngCart.getTotalItems() }}</span>\n            <a href=\"#/cart\" class=\"button button-icon icon\" ng-class=\"{true:\'ion-ios-cart\',false: \'ion-ios-cart-outline\'}[ngCart.getTotalItems() > 0]\"></a>\n        </div>\n    </form>\n    <div class=\"bar bar-subheader\">\n        <ion-scroll direction=\"x\" scrollbar-x=\"false\" id=\"category-scroll\" delegate-handle=\"cateScroll\">\n            <div class=\"cate-scroll-row\">\n\n                <a href class=\"main-cate-tab\" ng-repeat=\"v in banners track by $index\" ng-class=\"{\'active\': currentTab==v.codeKey}\" ng-click=\"changeTab(v, $index)\">{{v.codeVal}}</a>\n            </div>\n        </ion-scroll>\n    </div>\n\n    <ion-content class=\"has-header has-subheader homepage\" overflow-scroll=\"true\">\n        <div scroll-height rate=\"2/5\">\n            <ion-slide-box class=\"cateHomeSlide\" on-slide-changed=\"slideHasChanged2($index)\" auto-play=\"true\" does-continue=\"true\" slide-interval=2000 show-pager=\"true\" pager-click=\"pageClick(index)\" active-slide=\"model.activeIndex\" delegate-handle=\"delegateHandler2\">\n                <ion-slide ng-repeat=\"item in tuijian track by $index\">\n                    <div class=\"box\" ng-click=\"goItem(item.maProId)\">\n                        <img ng-src=\"{{item.detailUrl}}\">\n                    </div>\n                </ion-slide>\n            </ion-slide-box>\n        </div>\n\n        <!-- <ion-slide-box show-pager=\"false\" on-slide-changed=\"slideHasChanged($index)\" active-slide=\"currentIndex\" delegate-handle=\"delegateHandler\">\n        </ion-slide-box> -->\n        <div ng-repeat=\"v in banners\">\n            <div ng-if=\"currentIndex==v.codeKey\" style=\"width:100%\">\n                <!-- <ion-refresher\n                    pulling-text=\"下拉刷新...\"\n                    on-refresh=\"doRefresh()\"\n                    spinner=\"spiral\">\n                </ion-refresher> -->\n\n                <div class=\"col col-50 \" style=\"display: inline-block\" ng-repeat=\"item in items track by $index\" ng-click=\"goItem(item.id)\">\n                    <div class=\"item item-image\">\n                        <img ng-src=\"{{item.mainUrl}}\">\n                    </div>\n                    <div class=\"item item-text-wrap\" href=\"#\">\n                        <h3 class=\"product-title\" style=\"overflow: hidden;\">{{item.name}}</h3>\n                        <p class=\"product-prices\">\n                            <span class=\"curr-price\" style=\"color:#ff3300\">{{::item.price | currency:\'￥\'}}</span>\n                        </p>\n                    </div>\n                </div>\n\n                <div class=\"center-ico\" ng-if=\"isEmpty()\">\n                    <i class=\"icon ion-ios-grid-view-outline\"></i>\n\n                    <h1>暂无此类商品</h1>\n                </div>\n\n                <ion-infinite-scroll ng-if=\"moreDataCanBeLoaded()\" on-infinite=\"loadMore()\" distance=\"1\" spinner=\'spiral\'>\n                </ion-infinite-scroll>\n\n            </div>\n            <!-- <div ng-if=\"currentTab!=v.codeKey\">\n                <div style=\"background:#f9f9f9;padding-top:100%;height:0\"></div>\n            </div> -->\n\n\n\n        </div>\n\n\n    </ion-content>\n</ion-view>");
+$templateCache.put("cateHome.html","<ion-view ng-style=\"style\">\n    <form>\n        <div class=\"bar bar-header item-input-inset\" style=\"padding-left:8px\">\n            <a href=\"#/appIndex\" class=\"button button-icon icon ion-ios-arrow-back\" style=\"padding:0 13px 0 0;color:#b2b2b2;\"></a>\n            <label class=\"item-input-wrapper\">\n        <i class=\"icon ion-ios-search placeholder-icon\" style=\"font-size:18px;\"></i>\n        <input type=\"search\" placeholder=\"搜索商品\" ng-model=\"searchQuery.name\">\n        <input type=\"submit\" ng-click=\"searchItem(searchQuery.name)\" style=\"position: absolute; left: -9999px; width: 1px; height: 1px;\"/>\n      </label>\n            <span class=\"cart-num\">{{ ngCart.getTotalItems() }}</span>\n            <a href=\"#/cart\" class=\"button button-icon icon\" ng-class=\"{true:\'ion-ios-cart\',false: \'ion-ios-cart-outline\'}[ngCart.getTotalItems() > 0]\"></a>\n        </div>\n    </form>\n    <div class=\"bar bar-subheader\">\n        <ion-scroll direction=\"x\" scrollbar-x=\"false\" id=\"category-scroll\" delegate-handle=\"cateScroll\">\n            <div class=\"cate-scroll-row\">\n\n                <a href class=\"main-cate-tab\" ng-repeat=\"v in banners track by $index\" ng-class=\"{\'active\': currentTab==v.codeKey}\" ng-click=\"changeTab(v, $index)\">{{v.codeVal}}</a>\n            </div>\n        </ion-scroll>\n    </div>\n\n    <ion-content class=\"has-header has-subheader homepage\" overflow-scroll=\"true\">\n        <div scroll-height rate=\"2/5\">\n            <ion-slide-box class=\"cateHomeSlide\" auto-play=\"true\" does-continue=\"true\" slide-interval=2000 show-pager=\"true\" pager-click=\"pageClick(index)\" active-slide=\"model.activeIndex\" delegate-handle=\"delegateHandler2\">\n                <ion-slide ng-repeat=\"item in tuijian track by $index\">\n                    <div class=\"box\" ng-click=\"goItem(item.maProId)\">\n                        <img ng-src=\"{{item.detailUrl}}\">\n                    </div>\n                </ion-slide>\n            </ion-slide-box>\n        </div>\n\n        <!-- <ion-slide-box show-pager=\"false\" on-slide-changed=\"slideHasChanged($index)\" active-slide=\"currentIndex\" delegate-handle=\"delegateHandler\">\n        </ion-slide-box> -->\n        <div ng-repeat=\"v in banners\">\n            <div ng-if=\"currentIndex==v.codeKey\" style=\"width:100%\">\n                <!-- <ion-refresher\n                    pulling-text=\"下拉刷新...\"\n                    on-refresh=\"doRefresh()\"\n                    spinner=\"spiral\">\n                </ion-refresher> -->\n\n                <div class=\"col col-50 \" style=\"display: inline-block\" ng-repeat=\"item in items track by $index\" ng-click=\"goItem(item.id)\">\n                    <div class=\"item item-image\">\n                        <img ng-src=\"{{item.mainUrl}}\">\n                    </div>\n                    <div class=\"item item-text-wrap\" href=\"#\">\n                        <h3 class=\"product-title\" style=\"overflow: hidden;\">{{item.name}}</h3>\n                        <p class=\"product-prices\">\n                            <span class=\"curr-price\" style=\"color:#ff3300\">{{::item.price | currency:\'￥\'}}</span>\n                        </p>\n                    </div>\n                </div>\n\n                <div style=\"color:#777;margin:30px 0;text-align:center\" ng-if=\"items.length && !moreDataCanBeLoaded()\">\n                    <span>没有更多了...</span>\n                </div>\n\n                <div class=\"center-ico\" ng-if=\"isEmpty()\">\n                    <i class=\"icon ion-ios-grid-view-outline\"></i>\n\n                    <h1>暂无此类商品</h1>\n                </div>\n\n                <ion-infinite-scroll ng-if=\"moreDataCanBeLoaded()\" on-infinite=\"loadMore()\" distance=\"1\" spinner=\'spiral\'>\n                </ion-infinite-scroll>\n\n            </div>\n            <!-- <div ng-if=\"currentTab!=v.codeKey\">\n                <div style=\"background:#f9f9f9;padding-top:100%;height:0\"></div>\n            </div> -->\n\n\n\n        </div>\n\n\n    </ion-content>\n</ion-view>");
 $templateCache.put("category.html","<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">商品类目</div>\n  </div>\n  <ion-content class=\"has-header categories\">\n        <div class=\"cate-row\" ng-repeat=\"cate in categories\">\n            <ion-item class=\"main\">{{cate.cn}}</ion-item>\n            <div class=\"sub-list\">\n                <div class=\"sub\" ng-repeat=\"sub in cate.sub_list\">\n                    <a ng-href=\"#/category/{{sub.en}}/{{sub.cn}}\">{{sub.cn}}</a>\n                </div>\n            </div>\n        </div>\n  </ion-content>\n</ion-view>\n");
 $templateCache.put("checkout.html","<!-- 购物车 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back button-dark\" ng-click=\"clearSelectedCart()\"></button>\n\n        <div class=\"title\">结算</div>\n    </div>\n    <ion-content class=\"has-header has-footer\">\n\n        <section>\n            <div class=\"checkout-info\" ng-click=\"gotoAddress()\">\n                <div ng-show=\"addr.id\">\n                    <div class=\"address-info-1\">\n                        <div class=\"row\">\n                            <div class=\"col\">收货人：{{addr.data.name}}</div>\n                            <div class=\"col\" style=\"text-align:right\">{{addr.data.phone}}</div>\n                        </div>\n                        <div class=\"row\">\n                            <div class=\"col\">收货地址：{{addr.data.detail}}</div>\n                        </div>\n                    </div>\n                    <div class=\"select-arrow address\"></div>\n                </div>\n                <div ng-hide=\"addr.id\">\n                    <div class=\"address-info-1\">\n                        <div class=\"\">新增收件地址</div>\n                    </div>\n                    <div class=\"go-add\">+</div>\n                </div>\n            </div>\n        </section>\n\n        <section class=\"clearfix\" ng-cloak>\n            <div class=\"\" ng-show=\"ngCart.getTotalSelectedItems() > 0\">\n\n                <table class=\"table ngCart cart-table\">\n                    <tbody>\n                        <tr ng-repeat=\"item in ngCart.getCart().selectedItems track by $index\">\n                            <td class=\"img-cell\">\n                                <div>\n                                    <a ng-href=\"#/item/{{item.getData().id}}\">\n                                        <img ng-src=\"{{item.getData().mainUrl}}\">\n                                    </a>\n                                </div>\n                            </td>\n                            <td class=\"info-cell\">\n                                <div>{{ item.getName() }}</div>\n                                <span style=\"color:#ff3300\">{{ item.getPrice() | currency:\'￥\' }}</span>\n                            </td>\n                            <td class=\"price-cell\">\n                                <div class=\"cart-btn\">\n                                    <span style=\"color:#333\">x {{ item.getQuantity() | number }}</span>\n                                </div>\n                            </td>\n                        </tr>\n                    </tbody>\n                </table>\n            </div>\n        </section>\n        <!-- <section>\n            <div class=\"btn-group\">\n                <button class=\"btn del-num\" ng-class=\"{\'disabled\':item.getQuantity()==1}\" ng-click=\"setQuantity(item, -1, true)\">-</button>\n                <button class=\"btn num\">{{ item.getQuantity() | number }}</button>\n                <button class=\"btn add-num\" ng-click=\"setQuantity(item, 1, true)\">+</button>\n            </div>\n        </section> -->\n\n        <section>\n            <div class=\"checkout-info\">\n                <div class=\"partner-info-1\" ng-click=\"showProviderChoices()\">\n                    <div class=\"selected-partner\">快递方式 ：</div>\n                </div>\n            </div>\n            <div class=\"checkout-choices\">\n                <div class=\"select-row row\" ng-repeat=\"provider in provider_prices\" ng-click=\"selectPartner(provider)\">\n                    <div class=\"checkout-choice col-80\">\n                        {{provider.codeVal}} -（{{provider.codeDesc}}元）\n                    </div>\n                    <i class=\"icon col ion-ios-circle-outline\" ng-if=\"selectedProvider.codeKey !== provider.codeKey\"></i>\n                    <i class=\"icon col ion-ios-checkmark-outline selected\" ng-if=\"selectedProvider.codeKey == provider.codeKey\"></i>\n                </div>\n            </div>\n        </section>\n\n        <!-- <section>\n<div class=\"checkout-info\">\n    <div class=\"item-info-table\">\n        <dl class=\"item-info-field\">\n            <dt class=\"\">实付: </dt>\n            <dd class=\"detail-price\">{{item.getTotal() | currency:\'￥\' }}</dd>\n        </dl>\n        <dl class=\"item-info-field\">\n            <dt class=\"\">运费: </dt>\n            <dd class=\"detail-price\">{{order.cn_shipping | currency }}</dd>\n        </dl>\n        <dl class=\"item-info-field\">\n            <dt class=\"\">税费: </dt>\n            <dd class=\"detail-price\">0</dd>\n        </dl>\n    </div>\n\n</div>\n</section> -->\n    </ion-content>\n\n    <ion-footer-bar align-title=\"left\" class=\"bar-stable\">\n        <a class=\"button button-clear\">\n        总计: <span class=\"footer-price\"> {{ ngCart.totalCost() |currency:\'￥\'}}</span>\n    </a>\n        <h1 class=\"title\"></h1>\n        <ngcart-checkout settings=\"{ coupon: coupon_codes.code,\n                        logistic_provider: selectedProvider.name,\n                        order_type: \'new\'}\" ordertype=\"new\" orderid=\'\'>\n            去付款</ngcart-checkout>\n    </ion-footer-bar>\n</ion-view>");
 $templateCache.put("coupons.html","<ion-view>\n    <ion-header-bar>\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">折扣券</div>\n    </ion-header-bar>\n\n    <ion-content class=\"has-header has-footer\">\n\n        <ion-list>\n            <ion-item class=\"item\" ng-repeat=\"c in user.getUser().consumable_coupons\">\n                {{c.description}}  {{c.number}}张\n                <span class=\"item-note\">\n                    有效期 {{c.expire_date}}\n                </span>\n\n            </ion-item>\n        </ion-list>\n        <div class=\"center-ico\" ng-if=\"notices.==0\">\n            <i class=\"icon ion-ios-camera\"></i>\n\n            <h1 >暂无动态</h1>\n        </div>\n\n    </ion-content>\n</ion-view>\n");
@@ -6207,7 +6419,7 @@ $templateCache.put("expressItem_add.html","<!-- 添加代寄物品 -->\n<ion-vie
 $templateCache.put("favors.html","<!-- 商品列表 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">收藏商品</div>\n    </div>\n    <ion-content class=\"has-header homepage\">\n        <table class=\"table ngCart cart-table\">\n            <tr ng-repeat=\"item in items track by $index\">\n\n                <td class=\"img-cell\" ng-click=\"goItem(item.id)\">\n                    <div>\n                        <a href=\"#\">\n                            <img ng-src=\"{{item.mainUrl}}\" cache-src>\n                        </a>\n                    </div>\n                </td>\n                <td class=\"info-cell\" ng-click=\"goItem(item.id)\" style=\"padding-left:30px\">\n                    <div style=\"margin-bottom: 5px;\">{{ item.name }}</div>\n                    <span style=\"color:#ff3300\">{{ item.price | currency:\'￥\' }}</span>\n\n                </td>\n                <td class=\"price-cell favorIcon\" style=\"vertical-align: bottom;padding-bottom:10px;padding-right: 15px;\">\n                    <span style=\"float:right;font-size:20px;\">\n                        <i class=\"icon ion-ios-star like-icon energized\"\n                            ng-click=\"unfavor(item)\"></i>\n                        <i class=\"icon ion-ios-cart-outline dark\"\n                            ng-click=\"addToCart(item)\"\n                            style=\"margin-left:10px;\"\n                            ></i>\n                    </span>\n                </td>\n            </tr>\n        </table>\n\n        <!-- <div class=\"col col-50 animated fadeIn\" collection-repeat=\"item in items track by $index\">\n            <div class=\"item item-image\" ng-click=\"goItem(item.id)\">\n                <img ng-src=\"{{item.mainUrl}}\" cache-src>\n            </div>\n            <div class=\"item item-text-wrap\" href=\"#\">\n                <h2 class=\"product-title\" style=\"overflow: hidden;\" ng-click=\"goItem(item.id)\">{{item.name}}</h2>\n                <p class=\"product-prices\">\n                    <span class=\"curr-price\">{{item.price | currency:\'￥\'}}</span>\n                    <span style=\"float:right;font-size:16px;\">\n                      <i class=\"icon ion-ios-star like-icon energized\"\n                          ng-click=\"unfavor(item)\"></i>\n                      <i class=\"icon ion-ios-cart\"\n                        ng-click=\"addToCart(item)\"\n                        style=\"margin-left:5px;\"\n                        ></i>\n                    </span>\n                </p>\n            </div>\n        </div> -->\n    </ion-content>\n</ion-view>");
 $templateCache.put("feedback.html","<!-- 意见反馈 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">意见反馈</div>\n    </div>\n\n    <ion-content class=\"has-header\">\n        <div class=\"faq-row\">\n            <div class=\"faq-title\">\n                意见反馈:\n            </div>\n            <div class=\"faq-desc\">\n                <textarea ng-model=\"text\" class=\"ng-pristine ng-untouched ng-valid\"></textarea>\n                <button ng-click=\"feedback()\" class=\"button button-assertive pull-right button\">提交</button>\n            </div>\n        </div>\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("forgotPassword.html","<ion-modal-view>\n    <ion-header-bar>\n        <div class=\"buttons\">\n            <button class=\"button button-clear icon ion-ios-arrow-back button-dark\" ng-click=\"closeForgotPWBox()\"></button>\n        </div>\n        <div class=\"title\">忘记密码</div>\n    </ion-header-bar>\n    <ion-content class=\"login-page overlay-content\" scroll=\"false\" ng-controller=\"forgotPWCtrl\">\n        <div class=\"list list-inset\" style=\"margin: 10px\">\n            <label class=\"item item-input\" style=\"border:0 none;border-bottom:1px solid #eee\">\n            <i class=\"icon  ion-ios-telephone-outline placeholder-icon\" style=\"font-size:24px\"></i>\n            <input type=\"text\" placeholder=\"输入绑定手机号码\" ng-model=\"params.phone\">\n          </label>\n        </div>\n        <div class=\"item item-input-inset\" style=\"width:88%;border:0 none;border-bottom:1px solid #eee;margin-top:2px;margin-left:10px;padding:5px 8px;justify-content: space-between\">\n            <label class=\"item-input-wrapper\" style=\"font-size:16px;background-color:white;flex: inherit; width:200px\">\n        <i class=\"icon ion-ios-locked-outline placeholder-icon\" style=\"font-size:24px\"></i>\n        <input type=\"text\" placeholder=\"请输入验证码\" ng-model=\"validateCode\">\n      </label>\n            <a class=\"button codeBtn\" ng-class=\"{\'assertive\':!sendStatus}\" ng-click=\"getValidateCode()\" ng-disabled=\"sendStatus\">\n            {{validateTime}}\n            </a>\n        </div>\n\n        <div class=\"list list-inset\" style=\"margin: 10px\">\n            <label class=\"item item-input\" style=\"border:0 none;border-bottom:1px solid #eee;margin-top:2px\">\n            <i class=\"icon ion-ios-locked-outline placeholder-icon\" style=\"font-size:24px\"></i>\n            <input type=\"password\" placeholder=\"输入新密码\" ng-model=\"params.password\">\n          </label>\n        </div>\n        <div class=\"list list-inset\" style=\"margin: 10px\">\n            <label class=\"item item-input\" style=\"border:0 none;border-bottom:1px solid #eee;margin-top:2px\">\n            <i class=\"icon ion-ios-locked-outline placeholder-icon\" style=\"font-size:24px\"></i>\n            <input type=\"password\" placeholder=\"确认新密码\" ng-model=\"params.password1\">\n          </label>\n        </div>\n\n        <button class=\"button button-block login-btn\" ng-disabled=\"!canSave()\" ng-click=\"submit()\">保存新密码</button>\n\n    </ion-content>\n</ion-modal-view>");
-$templateCache.put("home.html","<ion-view>\n    <form>\n    <div class=\"bar bar-header item-input-inset\">\n      <a href=\"#/cateHome\" class=\"button button-icon icon ion-grid\"></a>\n      <label class=\"item-input-wrapper\">\n        <i class=\"icon ion-ios-search placeholder-icon\"></i>\n        <input type=\"search\" placeholder=\"搜索商品，种类\" ng-model=\"searchQuery\">\n        <input type=\"submit\" ng-click=\"searchItem(searchQuery)\" style=\"position: absolute; left: -9999px; width: 1px; height: 1px;\"/>\n      </label>\n      <span class=\"cart-num\">{{ ngCart.getTotalItems() }}</span>\n      <a href=\"#/cart\" class=\"button button-icon icon ion-ios-cart\"></a>\n    </div>\n    </form>\n    <ion-content class=\"has-header homepage\"  overflow-scroll=\"true\">\n        <ion-slide-box delegate-handle=\"image-viewer\">\n            <!--ng-style=\"{\'height\':(banners?\'auto\':\'0px\'),\'padding-top\':(banners?\'0\':\'42.1875%\')}\">-->\n            <ion-slide ng-repeat=\"banner in banners track by $index\" >\n                <img ng-src=\"{{ ::banner.img }}\" ng-click=\"redirectTo(banner)\">\n            </ion-slide>\n        </ion-slide-box>\n\n        <div class=\"row intro-box\">\n            <div class=\"col col-25\">\n                <a href=\"#/categories\">\n                    <i class=\"icon category\"></i>\n                    <p>商品分类</p>\n                </a>\n\n            </div>\n            <div class=\"col col-25\">\n                <a href=\"#/calculate\">\n                    <i class=\"icon calculate\"></i>\n                    <p>运费估算</p>\n                </a>\n            </div>\n            <div class=\"col col-25\">\n                <a href=\"#/express\">\n                    <i class=\"icon send\"></i>\n                    <p>待寄出国</p>\n                </a>\n\n            </div>\n            <div class=\"col col-25\">\n                <a href=\"#/limit\">\n                    <i class=\"icon limit\"></i>\n                    <p>邮寄限制</p>\n                </a>\n            </div>\n        </div>\n\n        <ion-item class=\"item\" style=\"border-left: 3px solid #ea004f;\">\n            美周专题\n        </ion-item>\n\n\n        <ion-refresher\n            pulling-text=\"下拉刷新...\"\n            on-refresh=\"doRefresh()\"\n            spinner=\"spiral\">\n        </ion-refresher>\n\n        <div class=\"animated fadeIn\" ng-repeat=\"board in boards track by $index\" >\n            <div class=\"item item-banner-image\">\n                <div class=\"tri\"></div>\n                <img ng-src=\"{{ ::board.image }}\" ng-click=\"goBoard(board.id)\">\n            </div>\n            <item-carousel board=\"board\"></item-carousel>\n            <div class=\"item item-divider\"></div>\n        </div>\n        <ion-infinite-scroll\n            on-infinite=\"loadMore()\"\n            distance=\"1\"\n            spinner=\'spiral\'\n            ng-if=\"moreDataCanBeLoaded()\">\n        </ion-infinite-scroll>\n\n\n    </ion-content>\n</ion-view>\n");
+$templateCache.put("home.html","<ion-view ng-style=\"style\" class=\"pm-index\">\n    <form>\n        <div class=\"bar bar-header item-input-inset\" style=\"padding-left:8px\">\n            <a href=\"#/appIndex\" class=\"button button-icon icon ion-ios-arrow-back\" style=\"padding:0 13px 0 0;color:#b2b2b2;\"></a>\n            <label class=\"item-input-wrapper\">\n                <i class=\"icon ion-ios-search placeholder-icon\" style=\"font-size:18px;\"></i>\n                <input type=\"search\" placeholder=\"搜索商品\" ng-model=\"searchQuery.name\">\n                <input type=\"submit\" ng-click=\"searchItem(searchQuery.name)\" style=\"position: absolute; left: -9999px; width: 1px; height: 1px;\"/>\n            </label>\n        </div>\n    </form>\n\n    <ion-content class=\"has-header homepage\" overflow-scroll=\"true\">\n        <div scroll-height rate=\"2/5\">\n            <ion-slide-box class=\"cateHomeSlide\" auto-play=\"true\" does-continue=\"true\" slide-interval=2000 show-pager=\"true\" pager-click=\"pageClick(index)\" active-slide=\"model.activeIndex\" delegate-handle=\"delegateHandler2\">\n                <ion-slide ng-repeat=\"item in tuijian track by $index\">\n                    <div class=\"box\" ng-click=\"goItem(item.maProId)\">\n                        <img ng-src=\"{{item.detailUrl}}\">\n                    </div>\n                </ion-slide>\n            </ion-slide-box>\n        </div>\n\n        <div class=\"col col-50 \" style=\"display: inline-block\" ng-repeat=\"item in items track by $index\" ng-click=\"goItem(item.id)\">\n            <div class=\"item item-image\">\n                <img ng-src=\"{{item.mainUrl}}\">\n                <div class=\"hover-img\">\n                    <i class=\"icon ion-ios-clock-outline\" style=\"font-size:14px;\"></i>\n                    <span>正在进行</span>\n                    <span>20170809 结束</span>\n                </div>\n            </div>\n            <div class=\" item item-text-wrap \" href=\"# \">\n                <h3 class=\"product-title \" style=\"overflow: hidden; \">{{item.name}}</h3>\n                <p class=\"product-prices \">\n                    当前价：<span class=\"curr-price \" style=\"color:#ff3300 \">{{::item.price | currency:\'￥\'}}</span>\n                </p>\n                <p class=\"product-prices \">\n                    围观人数：<span class=\"curr-price \">{{::item.price}}</span>人\n                </p>\n            </div>\n        </div>\n\n        <div style=\"color:#777;margin:30px 0;text-align:center \" ng-if=\"items.length && !moreDataCanBeLoaded() \">\n            <span>没有更多了...</span>\n        </div>\n\n        <div class=\"center-ico \" ng-if=\"isEmpty() \">\n            <i class=\"icon ion-ios-grid-view-outline \"></i>\n\n            <h1>暂无此类商品</h1>\n        </div>\n\n        <ion-infinite-scroll ng-if=\"moreDataCanBeLoaded() \" on-infinite=\"loadMore() \" distance=\"1 \" spinner=\'spiral\'>\n        </ion-infinite-scroll>\n\n\n    </ion-content>\n</ion-view>");
 $templateCache.put("intro.html","<ion-view class=\"view-intro\">\n\n    <ion-content scroll=\"false\">\n        <div class=\"intro-slider\">\n            <ion-slide-box active-slide=\"slideIndex\" show-pager=\"true\" on-slide-changed=\"slideChanged($index)\">\n\n                <ion-slide ng-repeat=\"item in slides\">\n\n                    <div class=\"content\" ng-if=\"$index == slideIndex\">\n                        <span class=\"top\"><h2>{{ item.top }}</h2></span>\n\n                        <div class=\"phone {{ device }}\">\n                            <img ng-src=\"{{ item.img }}\">\n                        </div>\n                    </div>\n\n                </ion-slide>\n\n                <ion-slide>\n                    <div class=\"content\" ng-if=\"slides.length == slideIndex\">\n\n                        <div class=\"last\">\n                            <div class=\"logo2 step1\">\n                                <img src=\"img/icon.jpg\">\n                                <span class=\"icon2-logo\"></span>\n                            </div>\n\n                            <p>比邻中国的海外生活</p>\n\n                            <button class=\"button button-block button-clear step2\" ui-sref=\"tab.explore\" ng-click=\"goHome()\">开始</button>\n                        </div>\n\n                    </div>\n                </ion-slide>\n            </ion-slide-box>\n\n        </div>\n\n        <!--\n        <button class=\"button button-positive button-fab left\" ng-if=\"slideIndex\" ng-click=\"previous()\"><i class=\"icon ion-ios-arrow-left\"></i></button>\n\n        <button class=\"button button-positive button-fab right\" ng-hide=\"slideIndex === slides.length\" ng-click=\"next()\"><i class=\"icon ion-ios-arrow-right\"></i></button>\n        -->\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("item.html","<!-- 商品详情 -->\n<ion-view>\n    <div class=\"buttons\">\n        <button class=\"button button-clear icon ion-ios-arrow-back item-header-button\" ng-click=\"$ionicGoBack()\"></button>\n    </div>\n\n    <ion-content class=\"item-page has-footer\">\n        <div scroll-height rate=\"1/2\">\n            <ion-slide-box delegate-handle=\"image-viewer\" ng-style=\"{\'padding-top\':(item.mainList.length?\'0\':\'100%\')}\" style=\"height:100%\">\n                <ion-slide ng-repeat=\"img in item.mainList track by $index\">\n                    <img ng-src=\"{{ img.imgUrl }}\" ng-click=\"zoom(img.url)\" />\n                </ion-slide>\n            </ion-slide-box>\n        </div>\n\n        <ion-item class=\"item item-details\">\n            <div class=\"item-title\" style=\"color:red\">\n                {{item.price | currency:\'￥\'}}\n            </div>\n            <div class=\"product-prices\">\n                <span>{{ item.name }}</span>\n            </div>\n        </ion-item>\n        <!-- <ion-item class=\"item item-details\">\n        <div class=\"item-info\">\n            <div class=\"item-info-table\">\n                <dl class=\"item-info-field\">\n                    <dt class=\"item-info-key\">运费：</dt>\n                    <dd class=\"item-info-val\">满 $79 免运费</dd>\n                </dl>\n                <dl class=\"item-info-field\">\n                    <dt class=\"item-info-key\">商品编号：</dt>\n                    <dd class=\"item-info-val\">{{item.item_id}}</dd>\n                </dl>\n                <dl class=\"item-info-field\">\n                    <dt class=\"item-info-key\">商品重量：</dt>\n                    <dd class=\"item-info-val\">{{item.weight}}g</dd>\n                </dl>\n                <dl class=\"item-info-field\">\n                    <dt class=\"item-info-key\">库存所在地：</dt>\n                    <dd class=\"item-info-val\">中国</dd>\n                </dl>\n            </div>\n        </div>\n    </ion-item> -->\n        <ion-item class=\"item item-desc\">\n            <p class=\"info-header\">商品详情:</p>\n            <img ng-src=\'{{ img.imgUrl }}\' ng-repeat=\"img in item.detailList track by $index\" />\n            <div class=\"description\" ng-bind-html=\"item.detail\"></div>\n        </ion-item>\n    </ion-content>\n    <div class=\"bar bar-footer bar-light item-bottom-bar\">\n        <a ng-click=\"favor(item.id)\" class=\"only-btn\" style=\"margin-right:3px\">\n            <i class=\"icon\" ng-class=\"{\'like-icon energized ion-ios-star\':item.collectFlag, \'dark ion-ios-star-outline\':!item.collectFlag}\"></i>\n            <span>收藏</span>\n        </a>\n        <a href=\"#/cart\" class=\"only-btn\" style=\"margin-left:3px\">\n            <i class=\"icon ion-ios-cart-outline\"></i>\n            <span>购物车</span>\n        </a>\n        <a class=\"add-to-cart item-bar-icon\" ng-click=\"showSpecsBox()\">\n          加入购物车\n        </a>\n        <a class=\"buy-rightnow item-bar-icon\" ng-click=\"showSpecsBuy()\">\n          立即购买\n      </a>\n    </div>\n</ion-view>");
 $templateCache.put("itemCarousel.html","<ion-scroll direction=\"x\" scrollbar-x=\"false\" class=\"wide-as-needed item-carousel\">\n    <div class=\"col col-33 \"\n         style=\"display: inline-block\"\n        ng-repeat=\"item in items\" ng-click=\"goItem(item.item_id)\">\n        <div class=\"item item-image\">\n            <img ng-src=\"{{::item.thumbnail}}\">\n        </div>\n        <div class=\"item item-text-wrap\" href=\"#\">\n            <p class=\"\">{{::item.title}}</p>\n            <p class=\"product-prices\">\n                <span class=\"curr-price\">{{::item.price | currency}}</span>\n            </p>\n        </div>\n    </div>\n    <div class=\"col col-33 \"\n         style=\"display: inline-block\"\n        ng-click=\"goBoard()\">\n        <div class=\"item item-image\">\n            <div class=\"item-image-text\">\n                <p>查看全部<p>\n                <p>See All<p>\n            </div>\n        </div>\n        <div class=\"item item-text-wrap\" style=\"background: transparent\">\n            <p class=\"\" style=\"color:transparent\">See </p>\n            <p class=\"\" style=\"color:transparent\">All </p>\n        </div>\n    </div>\n</ion-scroll>\n");
@@ -6227,10 +6439,11 @@ $templateCache.put("showMore.html","<div>\n    <div ng-style=\'expandable&&!expa
 $templateCache.put("signup.html","<ion-modal-view>\n    <ion-header-bar>\n        <div class=\"buttons\">\n            <button class=\"button button-clear icon ion-ios-arrow-back button-dark\" ng-click=\"closeSignupBox()\"></button>\n        </div>\n        <div class=\"title\">注册</div>\n    </ion-header-bar>\n    <ion-content class=\"signup-page overlay-content\" ng-controller=\"signupCtrl\">\n        <div class=\"list list-inset\" style=\"margin: 10px\">\n            <label class=\"item item-input\" style=\"border:0 none;border-bottom:1px solid #eee\">\n          <i class=\"icon  ion-ios-telephone-outline placeholder-icon\" style=\"font-size:24px\"></i>\n          <input type=\"text\" placeholder=\"输入手机号\" ng-model=\"signupForm.phone\" ng-blur=\"validate(\'phone\')\">\n        </label>\n        </div>\n        <!-- <div class=\"item item-input-inset\" style=\"width:88%;border:0 none;border-bottom:1px solid #eee;margin-top:2px;margin-left:10px;padding:5px 8px;justify-content: space-between;\">\n          <label class=\"item-input-wrapper\" style=\"font-size:16px;background-color:white;flex:inhreit; width:200px\">\n            <i class=\"icon ion-ios-locked-outline placeholder-icon\" style=\"font-size:24px\"></i>\n            <input type=\"text\" placeholder=\"请输入验证码\" ng-model=\"validateCode\">\n          </label>\n                <a class=\"button codeBtn\" ng-class=\"{\'assertive\':!sendStatus}\" ng-click=\"getValidateCode()\" ng-disabled=\"sendStatus\">\n            {{validateTime}}\n          </a>\n        </div> -->\n\n        <div class=\"list list-inset\" style=\"margin: 10px\">\n            <label class=\"item item-input\" style=\"border:0 none;border-bottom:1px solid #eee\">\n          <i class=\"icon  ion-ios-person-outline placeholder-icon\" style=\"font-size:24px\"></i>\n          <input type=\"text\" placeholder=\"输入用户名，至少4位\" ng-model=\"signupForm.name\" ng-blur=\"validate(\'name\')\">\n        </label>\n        </div>\n\n        <div class=\"list list-inset\" style=\"margin: 10px\">\n            <label class=\"item item-input\" style=\"border:0 none;border-bottom:1px solid #eee;margin-top:2px\">\n          <i class=\"icon ion-ios-locked-outline placeholder-icon\" style=\"font-size:24px\"></i>\n          <input type=\"password\" placeholder=\"输入密码，至少6位\" ng-model=\"signupForm.password\" ng-blur=\"validate(\'password\')\">\n        </label>\n        </div>\n        <div class=\"list list-inset\" style=\"margin: 10px\">\n            <label class=\"item item-input\" style=\"border:0 none;border-bottom:1px solid #eee;margin-top:2px\">\n          <i class=\"icon ion-ios-locked-outline placeholder-icon\" style=\"font-size:24px\"></i>\n          <input type=\"password\" placeholder=\"确认密码\" ng-model=\"signupForm.password1\">\n        </label>\n        </div>\n\n        <button class=\"button button-block login-btn\" ng-disabled=\"canRe()\" ng-click=\"signup()\">\n        注册\n    </button>\n\n\n        <!-- <div class=\"third-party-box\">\n        <p>使用第三方账号登陆</p>\n        <div ng-show=\"IsWechatInstalled\" ng-click=\"oauthLogin(\'wechat\')\" class=\"login-icon wechat\"></div>\n        <div ng-click=\"oauthLogin(\'weibo\')\" class=\"login-icon weibo\"></div>\n        <div ng-click=\"oauthLogin(\'qq\')\" class=\"login-icon qq\"></div>\n\n    </div> -->\n    </ion-content>\n</ion-modal-view>");
 $templateCache.put("specs-dialog.html","<ion-view>\n    <ion-content class=\"topic-create\">\n        <ion-item class=\"item item-thumbnail-left\" style=\"border:0 none;text-align: left\">\n            <img ng-src=\"{{item.mainUrl}}\">\n            <!-- <h2>{{item.name}}</h2> -->\n            <p style=\"color: #ff3000;font-size: 16px\">{{item.price | currency:\'￥\'}}</p>\n            <i class=\" icon placeholder-icon ion-ios-close \" style=\"position:absolute;right:20px;font-size:28px;top:36px \" ng-click=\"closeSpecsBox() \">\n        </i>\n        </ion-item>\n        <ion-item class=\"spec-options \" style=\"border:0 none;\">\n            <div class=\"spec-options-table \">\n                <div class=\"spec-info-field \">\n                    <dd class=\"spec-info-key \">购买数量</dd>\n                    <dd class=\"spec-info-val \">\n                        <div class=\"btn-group \">\n                            <button class=\"btn del-num \" ng-click=\"setQuantity(-1, true) \">-</button>\n                            <button class=\"btn num \">{{quantity}}</button>\n                            <button class=\"btn add-num \" ng-click=\"setQuantity(1, true) \">+</button>\n                        </div>\n                    </dd>\n                </div>\n            </div>\n        </ion-item>\n    </ion-content>\n\n    <ion-footer-bar class=\"bar-energized footer-button \">\n        <ngcart-addtocart id=\"{{item.id}} \" name=\"{{item.name}} \" price=\"{{item.price}} \" quantity=\"{{quantity}} \" quantity-max=\"5 \" data=\"item \">加入购物车</ngcart-addtocart>\n    </ion-footer-bar>\n\n</ion-view>");
 $templateCache.put("specsBuy-dialog.html","<ion-view>\n    <ion-content class=\"topic-create\">\n        <ion-item class=\"item item-thumbnail-left\" style=\"border:0 none;text-align: left\">\n            <img ng-src=\"{{item.mainUrl}}\">\n            <!-- <h2>{{item.name}}</h2> -->\n            <p style=\"color: #ff3000;font-size: 16px\">{{item.price | currency:\'￥\'}}</p>\n            <i class=\"icon placeholder-icon ion-ios-close\" style=\"position:absolute;right:20px;font-size:28px;top:36px\" ng-click=\"closeSpecsBuy()\">\n        </i>\n        </ion-item>\n        <ion-item class=\"spec-options\" style=\"border:0 none;\">\n            <div class=\"spec-options-table\">\n                <div class=\"spec-info-field\">\n                    <dd class=\"spec-info-key\">购买数量</dd>\n                    <dd class=\"spec-info-val\">\n                        <div class=\"btn-group\">\n                            <button class=\"btn del-num\" ng-click=\"setQuantity(-1, true)\">-</button>\n                            <button class=\"btn num\">{{quantity}}</button>\n                            <button class=\"btn add-num\" ng-click=\"setQuantity(1, true)\">+</button>\n                        </div>\n                    </dd>\n                </div>\n            </div>\n        </ion-item>\n    </ion-content>\n\n    <ion-footer-bar class=\"bar-energized\">\n        <ngcart-buyrightnow id=\"{{item.id}}\" name=\"{{item.name}}\" price=\"{{item.price}}\" quantity=\"{{quantity}}\" quantity-max=\"5\" data=\"item\">立即购买</ngcart-buyrightnow>\n    </ion-footer-bar>\n\n</ion-view>");
-$templateCache.put("tabs.html","<!--\nCreate tabs with an icon and label, using the tabs-positive style.\nEach tab\'s child <ion-nav-view> directive will have its own\nnavigation history that also transitions its views in and out.\n-->\n<ion-tabs class=\"fourdotzero-tabs tabs-icon-top tabs-color-active-positive {{hideTabs}}\">\n\n    <!-- Explore Tab -->\n    <!-- <ion-tab title=\"美比\" icon-off=\"ion-aperture\" icon-on=\"ion-aperture\" href=\"#/explore\">\n    <ion-nav-view name=\"tab-explore\"></ion-nav-view>\n  </ion-tab> -->\n\n    <!-- Home Tab -->\n    <ion-tab title=\"首页\" icon-off=\"ion-ios-cart-outline\" icon-on=\"ion-ios-cart\" href=\"#/shopTab/cateHome\">\n        <ion-nav-view name=\"tab-cateHome\"></ion-nav-view>\n    </ion-tab>\n\n    <!-- Photo Tab -->\n    <ion-tab class=\" ion-qr-scanner\" title=\"\" icon-off=\" ion-qr-scanner\" icon-on=\" ion-qr-scanner\" ng-click=\"scanStart()\">\n        <ion-nav-view name=\"tab-capture\"></ion-nav-view>\n    </ion-tab>\n\n    <!-- <ion-tab class=\"icon-center\" title=\"\" icon-off=\"icon-center\" icon-on=\"icon-center\" href=\"#/appIndex\">\n    <ion-nav-view name=\"tab-index\"></ion-nav-view>\n  </ion-tab> -->\n\n    <!-- Noti Tab -->\n    <ion-tab title=\"通知\" icon-off=\"ion-ios-bell-outline\" icon-on=\"ion-ios-bell\" href=\"#/notification\">\n        <ion-nav-view name=\"tab-noti\"></ion-nav-view>\n    </ion-tab>\n\n    <!-- Account Tab -->\n    <ion-tab title=\"我的\" icon-off=\"ion-ios-person-outline\" icon-on=\"ion-ios-person\" href=\"#/account\">\n        <ion-nav-view name=\"tab-account\"></ion-nav-view>\n    </ion-tab>\n\n\n</ion-tabs>");
+$templateCache.put("tabs.html","<!--\nCreate tabs with an icon and label, using the tabs-positive style.\nEach tab\'s child <ion-nav-view> directive will have its own\nnavigation history that also transitions its views in and out.\n-->\n<ion-tabs class=\"fourdotzero-tabs tabs-icon-top tabs-color-active-positive {{hideTabs}}\">\n\n    <!-- Explore Tab -->\n    <!-- <ion-tab title=\"美比\" icon-off=\"ion-aperture\" icon-on=\"ion-aperture\" href=\"#/explore\">\n    <ion-nav-view name=\"tab-explore\"></ion-nav-view>\n  </ion-tab> -->\n\n    <!-- Home Tab -->\n    <ion-tab title=\"首页\" icon-off=\"ion-ios-cart-outline\" icon-on=\"ion-ios-cart\" href=\"#/home\">\n        <ion-nav-view name=\"tab-cateHome\"></ion-nav-view>\n    </ion-tab>\n\n    <!-- Noti Tab -->\n    <ion-tab title=\"限时拍卖\" icon-off=\"ion-ios-bell-outline\" icon-on=\"ion-ios-bell\" href=\"#/xspm\">\n        <ion-nav-view name=\"tab-xspm\"></ion-nav-view>\n    </ion-tab>\n\n    <!-- Account Tab -->\n    <ion-tab title=\"我的\" icon-off=\"ion-ios-person-outline\" icon-on=\"ion-ios-person\" href=\"#/account\">\n        <ion-nav-view name=\"tab-account\"></ion-nav-view>\n    </ion-tab>\n\n\n</ion-tabs>");
 $templateCache.put("transfer_logistics.html","<ion-view>\n  <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$state.go(\'tab.orders\')\"></button>\n      <div class=\"title\">物流详情</div>\n  </div>\n\n  <ion-content class=\"has-header\">\n\n\n<section ng-if=\"order.payment_status == \'PAID\'\">\n    <div class=\"checkout-info\">\n        <span class=\"addr-icon\"></span>\n        <div class=\"address-info\">\n            <p class=\"addr-header\">收货人信息: </p>\n            <div class=\"\">{{order.address.receiver}}</div>\n            <div class=\"\">{{order.address.street1}}</div>\n            <div class=\"\">{{order.address.street2}}</div>\n            <div class=\"\">{{order.address.city}}, {{order.address.state}}</div>\n            <div class=\"\">{{order.address.country}}, {{order.address.postcode}}</div>\n        </div>\n    </div>\n\n    <div class=\"checkout-info\">\n        <div class=\"icon partner-icon address\"></div>\n        <div class=\"partner-info\">\n            <div class=\"selected-partner\">{{order.provider.display_name}} ({{order.provider.desc}}):\n                <span class=\"detail-price pull-right\">{{order.cn_shipping | currency }}</span>\n            </div>\n        </div>\n    </div>\n\n    <div class=\"checkout-info\">\n        <div class=\"icon coupon-icon address\"></div>\n        <div class=\"coupon-info\">\n            <div ng-show=\"order.discount.length==1\" class=\"\">{{order.discount[0].desc}}\n                <span class=\"detail-price pull-right\">- {{order.discount[0].value | currency }}</span>\n            </div>\n            <div ng-show=\"order.discount.length==0\" class=\"\">\n                不使用\n            </div>\n        </div>\n    </div>\n</section>\n\n<section class=\"clearfix\" ng-if=\"order.status == \'WAREHOUSE_IN\'\">\n    <div class=\"checkout-info\" ng-click=\"gotoAddress()\">\n        <div ng-show=\"addr.id\">\n            <span class=\"addr-icon\"></span>\n            <div class=\"address-info\">\n                <p class=\"addr-header\">寄往收货人信息: </p>\n                <div class=\"\">{{addr.data.receiver}}</div>\n                <div class=\"\">{{addr.data.street1}}</div>\n                <div class=\"\">{{addr.data.street2}}</div>\n                <div class=\"\">{{addr.data.city}}, {{addr.data.state}}</div>\n                <div class=\"\">{{addr.data.country}}, {{addr.data.postcode}}</div>\n            </div>\n            <div class=\"select-arrow address\"></div>\n        </div>\n        <div ng-hide=\"addr.id\">\n            <span class=\"addr-icon\"></span>\n            <div class=\"address-info\">\n                <div class=\"\">填写收件人信息</div>\n            </div>\n            <div class=\"go-add\">+</div>\n        </div>\n    </div>\n\n    <div class=\"checkout-info\">\n        <div class=\"icon partner-icon address\"></div>\n        <div class=\"partner-info\" ng-click=\"showProviderChoices()\">\n            <div ng-show=\"selectedProvider\" class=\"selected-partner\">\n                {{selectedProvider.display_name}} ({{selectedProvider.service_intro.duration}}):\n                <span class=\"detail-price selectable\">{{selectedProvider.cn_shipping | currency }}</span>\n            </div>\n            <div ng-hide=\"selectedProvider\" class=\"selected-partner\">请选择运输方式</div>\n        </div>\n        <div class=\"select-arrow\" ng-class=\"{\'down-arrow\': providersShown}\"></div>\n    </div>\n    <div ng-show=\"providersShown\" class=\"checkout-choices\">\n        <div class=\"select-row\" ng-repeat=\"provider in provider_prices\"\n            ng-click=\"selectPartner(provider)\">\n            <span class=\"select-icon\"\n                ng-class=\"{\'selected\': selectedProvider.name == provider.name}\">\n            </span>\n            <div class=\"checkout-choice\">\n                {{provider.display_name}} ({{provider.service_intro.duration}})\n                <span class=\"detail-price selectable\">{{provider.cn_shipping | currency }}</span>\n            </div>\n        </div>\n    </div>\n\n    <div class=\"checkout-info\">\n        <div class=\"icon coupon-icon address\"></div>\n        <div class=\"coupon-info\" ng-click=\"showCouponsChoices()\">\n            <div ng-show=\"coupon_codes\" class=\"\">{{coupon_codes.description}}\n                <span class=\"detail-price selectable\">-{{coupon_codes.saving | currency }}</span>\n            </div>\n            <div ng-hide=\"coupon_codes\" class=\"\">使用折扣码/优惠券 </div>\n        </div>\n        <div class=\"select-arrow\" ng-class=\"{\'down-arrow\': couponsShown}\"></div>\n    </div>\n    <div ng-show=\"couponsShown\" class=\"checkout-choices\">\n        <div class=\"select-row\" ng-click=\"noCoupon()\">\n            <span class=\"select-icon\"\n                ng-class=\"{\'selected\': noCouponSelected == true}\">\n            </span>\n            <div class=\"checkout-choice\">\n                不使用\n            </div>\n        </div>\n        <div class=\"select-row\" ng-repeat=\"coupon in availableCoupons\"\n            ng-click=\"selectCoupon(coupon)\">\n            <span class=\"select-icon\"\n                ng-class=\"{\'selected\': coupon_codes.code == coupon.code}\">\n            </span>\n            <div class=\"checkout-choice\">\n                {{coupon.description}}\n                <span class=\"detail-price selectable\">-{{coupon.saving | currency }}</span>\n            </div>\n        </div>\n        <div class=\"select-row\">\n            <span class=\"select-icon\"\n                ng-click=\"selectInputCoupon()\"\n                ng-class=\"{\'selected\': couponInputSelected}\">\n            </span>\n            <div class=\"checkout-choice\">\n                折扣码 <input ng-model=\"couponInput\" type=\"text\" class=\"\" placeholder=\"输入折扣码\">\n                <span class=\"detail-price selectable\">-{{coupon_codes.saving}}</span>\n                <span ng-click=\"confirmCoupon()\" class=\"use-btn\">使用</span>\n            </div>\n        </div>\n    </div>\n</section>\n\n<section>\n    <div class=\"logistic-row\">\n        <span class=\"\">\n            包裹编号：{{logistic.partner_tracking_no}}\n        </span>\n        <span class=\"pull-right\">\n            <ul class=\"logistic-nav\">\n                <li class=\"\"\n                    ng-repeat=\"lo in order.logistics\"\n                    ng-if=\"order.logistics.length > 1\"\n                    ng-class=\"{\'current\': currTab==$index}\"\n                    ng-click=\"goTab($index, lo)\">\n                    包裹{{$index+1}}</li>\n            </ul>\n        </span>\n    </div>\n\n    <table class=\"table ngCart cart-table\">\n        <tbody>\n        <tr ng-repeat=\"entry in logistic.entries track by $index\">\n            <td class=\"img-cell\">\n                <div>\n                    <img ng-src=\"{{entry.item.primary_img}}\">\n                </div>\n            </td>\n            <td class=\"info-cell\">\n                <div>\n                    {{ entry.title }}\n                </div>\n                <div>\n                    <span>数量: {{ entry.quantity | number }}</span>\n                </div>\n                <div class=\"\">\n                    备注:{{ entry.remark }}\n                </div>\n                <div class=\"tracking-note\">\n                    <input type=\"text\" placeholder=\"请填写快递单号\"\n                        ng-model=\"entry.shipping_info.number\">\n                    <button class=\"button button-energized button-small\"\n                        ng-click=\"fillTracking(entry)\">\n                        保存\n                    </button>\n                </div>\n            </td>\n            <td class=\"price-cell\">￥{{ entry.amount }}</td>\n        </tr>\n    </table>\n\n    <div class=\"logistic-row\">\n        <ul class=\"progress-indicator\">\n            <li ng-class=\"{\'completed\': allStatus.indexOf(logistic.current_status) >= $index}\"\n                 ng-repeat=\"status in logistic.all_status\">\n                <span class=\"bubble\"></span>\n                <div class=\"logistic-status\">{{status.desc}}</div>\n            </li>\n        </ul>\n    </div>\n    <div class=\"logistic-row\">\n        <ul class=\"tracking\">\n            <li ng-repeat=\"h in logistic.history| reverse\">\n                <div class=\"\">{{h.desc}}</div>\n                <div class=\"time\">{{h.time}}</div>\n            </li>\n        </ul>\n    </div>\n</section>\n\n  </ion-content>\n\n  <ion-footer-bar align-title=\"left\" class=\"bar-stable\">\n    <a class=\"button button-clear\">\n        总计: <span class=\"footer-price\"> {{ order.final |currency}}</span>\n    </a>\n    <h1 class=\"title\"></h1>\n    <div class=\"buttons\">\n        <ngcart-checkout ng-if=\"order.status==\'WAREHOUSE_IN\'\" settings=\"{ order_id: order.id , order_type: \'existed\'}\">\n            去付款\n        </ngcart-checkout>\n        <button class=\"button button-default\"\n            ng-click=\"cancelOrder()\"\n            ng-if=\"order.payment_status==\'UNPAID\'\">\n            取消订单\n        </button>\n    </div>\n  </ion-footer-bar>\n\n</ion-view>\n");
 $templateCache.put("userDetail.html","<!-- 用户详情 -->\n<ion-view>\n    <div class=\"buttons\">\n        <button class=\"button button-clear icon ion-ios-arrow-back account-setting-btn pull-left\" ng-click=\"$ionicGoBack()\"></button>\n    </div>\n    <div class=\"avatar-section\">\n        <a class=\"logo\"\n            style=\"background: url({{::user.avatar_url}}) center no-repeat; background-size: cover\">\n        </a>\n        <div class=\"avatar-wrap\">\n            <p><img class=\"avatar\" ng-src=\"{{::user.avatar_url}}\" alt=\"\"></p>\n            <p class=\"user\">{{::user.name}} <follow-btn user=\"user\"></p>\n        </div>\n        <div class=\"social-btns\">\n            <a ng-href=\"#/userList/{{::user.id}}/followers\">\n                <strong>{{user.num_followers}} </strong>粉丝\n            </a>\n            <a ng-href=\"#/userList/{{::user.id}}/followings\">\n                <strong>{{user.num_followings}} </strong>关注\n            </a>\n        </div>\n    </div>\n\n    <ion-content class=\"account-view\" overflow-scroll=\'false\' delegate-handle=\"userDetailContent\" on-scroll=\"onUserDetailContentScroll()\" header-shrink scroll-event-interval=\"5\">\n      <div class=\"button-bar bar-light switch-bar\">\n          <button class=\"button button-icon\" ng-click=\"switchListStyle(\'grid\')\"\n              ng-class=\"gridStyle==\'grid\'? \'active\': \'\'\">\n              <i class=\"icon ion-grid\"></i>\n          </button>\n          <button class=\"button button-icon\" ng-click=\"switchListStyle(\'list\')\"\n              ng-class=\"gridStyle==\'list\'? \'active\': \'\'\">\n              <i class=\"icon ion-navicon\"></i>\n          </button>\n      </div>\n\n      <div class=\"view-post\">\n        <ion-refresher\n            pulling-text=\"下拉刷新...\"\n            on-refresh=\"doRefresh()\"\n            spinner=\"spiral\">\n        </ion-refresher>\n        <div class=\"list card \" ng-if=\"gridStyle == \'list\'\"\n            ng-repeat=\"post in posts track by $index\">\n            <photo-list post=\"post\" with-affix=\"false\"></photo-list>\n        </div>\n        <div class=\"\" ng-if=\"gridStyle==\'grid\'\">\n            <div class=\"col col-33 grid-image\" ng-repeat=\"post in posts track by $index\">\n                <img ng-src=\"{{::post.small_url}}\" ng-click=\"zoom(post.primary_image)\">\n            </div>\n        </div>\n\n        <div class=\"center-ico\" ng-if=\"isEmpty()\">\n            <i class=\"icon ion-ios-camera\"></i>\n\n            <h1 >这人还没发布过</h1>\n        </div>\n\n        <ion-infinite-scroll\n            on-infinite=\"loadMore()\"\n            distance=\"1\"\n            spinner=\'spiral\'\n            ng-if=\"moreDataCanBeLoaded()\">\n        </ion-infinite-scroll>\n\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("userList.html","<ion-view class=\"view-post\">\n    <ion-header-bar>\n        <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n        <div class=\"title\">{{::title}}</div>\n    </ion-header-bar>\n\n    <ion-content class=\"has-header\">\n\n    <ion-refresher\n        pulling-text=\"下拉刷新...\"\n        on-refresh=\"doRefresh()\"\n        spinner=\"spiral\">\n    </ion-refresher>\n\n    <div class=\"list card notice\" ng-repeat=\"user in users track by $index\">\n        <div class=\"item item-avatar\">\n            <img  ng-src=\"{{::user.avatar_thumb}}\"\n                ng-click=\"zoom(user.avatar_url)\">\n            <h2>{{::user.name}}\n                <span class=\"item-note\">\n                <follow-btn user=\"user\"></follow-btn>\n                </span>\n            </h2>\n        </div>\n    </div>\n    <div class=\"center-ico\" ng-if=\"users.length==0\">\n        <h1 >暂无用户</h1>\n    </div>\n    <ion-infinite-scroll\n        on-infinite=\"loadMore()\"\n        distance=\"1\"\n        spinner=\'spiral\'\n        ng-if=\"moreDataCanBeLoaded()\">\n    </ion-infinite-scroll>\n\n    </ion-content>\n</ion-view>\n");
+$templateCache.put("xspm.html","<ion-view class=\"pm-index\">\n    <ion-header-bar>\n        <div class=\"title\">限时拍卖</div>\n    </ion-header-bar>\n\n    <ion-content class=\"has-header homepage\" overflow-scroll=\"true\">\n\n        <div class=\"col col-50 \" style=\"display: inline-block\" ng-repeat=\"item in items track by $index\" ng-click=\"goItem(item.id)\">\n            <div class=\"item item-image\">\n                <img ng-src=\"{{item.mainUrl}}\">\n                <div class=\"hover-img\">\n                    <i class=\"icon ion-ios-clock-outline\" style=\"font-size:14px;\"></i>\n                    <span>正在进行</span>\n                    <span>20170809 结束</span>\n                </div>\n            </div>\n            <div class=\" item item-text-wrap \" href=\"# \">\n                <h3 class=\"product-title \" style=\"overflow: hidden; \">{{item.name}}</h3>\n                <p class=\"product-prices \">\n                    当前价：<span class=\"curr-price \" style=\"color:#ff3300 \">{{::item.price | currency:\'￥\'}}</span>\n                </p>\n                <p class=\"product-prices \">\n                    围观人数：<span class=\"curr-price \">{{::item.price}}</span>人\n                </p>\n            </div>\n        </div>\n\n        <div style=\"color:#777;margin:30px 0;text-align:center \" ng-if=\"items.length && !moreDataCanBeLoaded() \">\n            <span>没有更多了...</span>\n        </div>\n\n        <div class=\"center-ico \" ng-if=\"isEmpty() \">\n            <i class=\"icon ion-ios-grid-view-outline \"></i>\n\n            <h1>暂无此类商品</h1>\n        </div>\n\n        <ion-infinite-scroll ng-if=\"moreDataCanBeLoaded() \" on-infinite=\"loadMore() \" distance=\"1 \" spinner=\'spiral\'>\n        </ion-infinite-scroll>\n\n    </ion-content>\n</ion-view>");
 $templateCache.put("item/items.html","<!-- 商品列表 -->\n<ion-view>\n    <div class=\"bar bar-header\">\n      <button class=\"button button-clear icon ion-ios-arrow-back\" ng-click=\"$ionicGoBack()\"></button>\n      <div class=\"title\">#{{title}}</div>\n    </div>\n    <ion-content class=\"has-header homepage\">\n        <ion-refresher\n            pulling-text=\"下拉刷新...\"\n            on-refresh=\"doRefresh()\"\n            spinner=\"spiral\">\n        </ion-refresher>\n\n        <div class=\"col col-50 animated fadeIn\"\n            collection-repeat=\"item in items\" ng-click=\"goItem(item.id)\">\n            <div class=\"item item-image\">\n                <img ng-src=\"{{item.mainUrl}}\" cache-src>\n            </div>\n            <div class=\"item item-text-wrap\" href=\"#\">\n                <h2 class=\"product-title\" style=\"overflow: hidden;\">{{item.name}}</h2>\n                <p class=\"product-prices\">\n                    <span class=\"curr-price\">{{item.price | currency:\'￥\'}}</span>\n                </p>\n            </div>\n        </div>\n\n        <ion-infinite-scroll\n            on-infinite=\"loadMore()\"\n            distance=\"1\"\n            spinner=\'spiral\'\n            ng-if=\"moreDataCanBeLoaded()\">\n        </ion-infinite-scroll>\n\n        <div class=\"center-ico\" ng-if=\"isEmpty()\">\n            <i class=\"icon ion-ios-grid-view-outline\"></i>\n\n            <h1 >暂无此类商品</h1>\n        </div>\n\n    </ion-content>\n</ion-view>\n");
 $templateCache.put("ngCart/addtocart.html","<div class=\"title\"\n       ng-click=\"ngCart.addItem(id, name, price, quantity, data)\"\n       ng-transclude>加入购物车</button>\n</div>\n");
 $templateCache.put("ngCart/buyrightnow.html","<div class=\"title\"\n  ng-click=\"buyRightNow(id, name, price, quantity, data)\"\n  ng-transclude>确    定</button>\n</div>\n");

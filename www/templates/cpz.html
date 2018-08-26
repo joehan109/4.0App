@@ -1,0 +1,43 @@
+<ion-view class="pm-index">
+    <ion-header-bar>
+        <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button>
+        <div class="title">参拍中</div>
+    </ion-header-bar>
+
+    <ion-content class="has-header homepage" overflow-scroll="true">
+
+        <div class="col col-50 " style="display: inline-block" ng-repeat="item in items track by $index" ng-click="goItem(item.id)">
+            <div class="item item-image">
+                <img ng-src="{{item.mainUrl}}">
+                <div class="hover-slideImg">
+                    <i class="icon ion-ios-clock-outline" style="font-size:14px;"></i>
+                    <span>正在进行</span>
+                    <span>20170809 结束</span>
+                </div>
+            </div>
+            <div class=" item item-text-wrap " href="# ">
+                <h3 class="product-title " style="overflow: hidden; ">{{item.name}}</h3>
+                <p class="product-prices ">
+                    当前价：<span class="curr-price " style="color:#ff3300 ">{{::item.price | currency:'￥'}}</span>
+                </p>
+                <p class="product-prices ">
+                    围观人数：<span class="curr-price ">{{::item.price}}</span>人
+                </p>
+            </div>
+        </div>
+
+        <div style="color:#777;margin:30px 0;text-align:center " ng-if="items.length && !moreDataCanBeLoaded() ">
+            <span>没有更多了...</span>
+        </div>
+
+        <div class="center-ico " ng-if="isEmpty() ">
+            <i class="icon ion-ios-grid-view-outline "></i>
+
+            <h1>暂无此类商品</h1>
+        </div>
+
+        <ion-infinite-scroll ng-if="moreDataCanBeLoaded() " on-infinite="loadMore() " distance="1 " spinner='spiral'>
+        </ion-infinite-scroll>
+
+    </ion-content>
+</ion-view>

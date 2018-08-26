@@ -1,0 +1,34 @@
+<!-- 商品列表 -->
+<ion-view>
+    <div class="bar bar-header">
+        <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button>
+        <div class="title">拍卖记录</div>
+    </div>
+    <ion-content class="has-header homepage">
+        <table class="table ngCart cart-table">
+            <tr ng-repeat="item in items track by $index">
+
+                <td class="img-cell" ng-click="goItem(item.id)">
+                    <div>
+                        <a href="#" style="position: relative;">
+                            <img ng-src="{{item.auProUrl}}" cache-src>
+                        </a>
+                    </div>
+                </td>
+                <td class="info-cell" ng-click="goItem(item.id)" style="padding-left:30px">
+                    <div style="margin-bottom: 5px;">{{ item.auProName }}</div>
+                    <div style="margin-bottom: 5px;">成交价：<span>{{ item.price | currency:'￥' }}</span></div>
+                    <div style="margin-bottom: 5px;">成交时间：<span>{{ item.createTime | date : 'yyyy-MM-dd'}}</span></div>
+
+                </td>
+                <td class="price-cell favorIcon" style="vertical-align: bottom;padding-bottom:10px;padding-right: 15px;">
+                    <span style="float:right;font-size:14px;">
+                        {{item.status ? "竞拍成功": "竞拍失败"}}
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+        
+    </ion-content>
+</ion-view>

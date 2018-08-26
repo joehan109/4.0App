@@ -3,64 +3,65 @@
 angular.module('fourdotzero.directives', [])
 
 .directive('scrollHeight', ['$window', function($window) {
-        return {
-            restrict: 'AE',
-            scope: {
-                rate: '@'
-            },
-            link: function(scope, element, attr) {
-                var rate = scope.rate;
-                if (rate.split('/')) {
-                    rate = scope.rate.split('/')[0] / scope.rate.split('/')[1]
-                }
-                // 根据屏幕宽度按比例设置高度
-                element[0].style.height = ($window.innerWidth * +rate) + 'px';
+    return {
+        restrict: 'AE',
+        scope: {
+            rate: '@'
+        },
+        link: function(scope, element, attr) {
+            var rate = scope.rate;
+            if (rate.split('/')) {
+                rate = scope.rate.split('/')[0] / scope.rate.split('/')[1]
             }
+            // 根据屏幕宽度按比例设置高度
+            element[0].style.height = ($window.innerWidth * +rate) + 'px';
         }
-    }])
-    .directive('ngcartAddtocart', ['ngCart', function(ngCart) {
-        return {
-            restrict: 'E',
-            scope: {
-                id: '@',
-                name: '@',
-                quantity: '@',
-                quantityMax: '@',
-                price: '@',
-                data: '='
-            },
-            transclude: true,
-            templateUrl: function(element, attrs) {
-                if (typeof attrs.templateUrl == 'undefined') {
-                    return 'ngCart/addtocart.html';
-                } else {
-                    return attrs.templateUrl;
-                }
-            },
-            link: function(scope, element, attrs) {
-                scope.ngCart = ngCart;
-                scope.attrs = attrs;
-                scope.inCart = function() {
-                    return ngCart.getItemById(attrs.id);
-                };
+    }
+}])
 
-                if (scope.inCart()) {
-                    scope.q = ngCart.getItemById(attrs.id).getQuantity();
-                } else {
-                    scope.q = parseInt(scope.quantity);
-                }
-
-                scope.qtyOpt = [];
-                for (var i = 1; i <= scope.quantityMax; i++) {
-                    scope.qtyOpt.push(i);
-                }
-
-                scope.alertWarning = function() {
-                    scope.$emit('alert', '请选择有效商品');
-                };
+.directive('ngcartAddtocart', ['ngCart', function(ngCart) {
+    return {
+        restrict: 'E',
+        scope: {
+            id: '@',
+            name: '@',
+            quantity: '@',
+            quantityMax: '@',
+            price: '@',
+            data: '='
+        },
+        transclude: true,
+        templateUrl: function(element, attrs) {
+            if (typeof attrs.templateUrl == 'undefined') {
+                return 'ngCart/addtocart.html';
+            } else {
+                return attrs.templateUrl;
             }
-        };
-    }])
+        },
+        link: function(scope, element, attrs) {
+            scope.ngCart = ngCart;
+            scope.attrs = attrs;
+            scope.inCart = function() {
+                return ngCart.getItemById(attrs.id);
+            };
+
+            if (scope.inCart()) {
+                scope.q = ngCart.getItemById(attrs.id).getQuantity();
+            } else {
+                scope.q = parseInt(scope.quantity);
+            }
+
+            scope.qtyOpt = [];
+            for (var i = 1; i <= scope.quantityMax; i++) {
+                scope.qtyOpt.push(i);
+            }
+
+            scope.alertWarning = function() {
+                scope.$emit('alert', '请选择有效商品');
+            };
+        }
+    };
+}])
 
 .directive('ngcartBuyrightnow', ['ngCart', '$state', '$rootScope', function(ngCart, $state, $rootScope) {
     return {
@@ -112,176 +113,178 @@ angular.module('fourdotzero.directives', [])
 }])
 
 .directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', '$http', 'ENV', 'AlipayService', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state, $http, ENV, AlipayService) {
-        return {
-            restrict: 'E',
-            link: function(scope, element, attrs) {
-                scope.ngCart = ngCart;
+    return {
+        restrict: 'E',
+        link: function(scope, element, attrs) {
+            scope.ngCart = ngCart;
 
-                scope.payInfo = attrs.ordertype == 'new' ? '提交订单' : '现在支付';
+            scope.payInfo = attrs.ordertype == 'new' ? '提交订单' : '现在支付';
 
-                scope.showPaymentMethods = function() {
+            scope.showPaymentMethods = function() {
 
-                    var sheet = {};
-                    sheet.buttonClicked = buttonClicked;
-                    sheet.buttons = [{
-                        text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付'
-                    }];
-                    sheet.cancelOnStateChange = true;
+                var sheet = {};
+                sheet.buttonClicked = buttonClicked;
+                sheet.buttons = [{
+                    text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付'
+                }];
+                sheet.cancelOnStateChange = true;
 
-                    $ionicActionSheet.show(sheet);
+                $ionicActionSheet.show(sheet);
 
-                    function buttonClicked(index) {
-                        var service = { 0: 'alipay', 1: 'wechat' }
-                        var data = scope.ngCart.getAddress().data;
-                        var detailList = scope.ngCart.getSelectedItems().map(function(item) {
-                            return {
-                                maProId: item._data.maProId || item._id,
-                                maProImg: item._data.mainUrl,
-                                maProName: item._name,
-                                num: item._quantity,
-                                dealPrice: item._price
+                function buttonClicked(index) {
+                    var service = { 0: 'alipay', 1: 'wechat' }
+                    var data = scope.ngCart.getAddress().data;
+                    var detailList = scope.ngCart.getSelectedItems().map(function(item) {
+                        return {
+                            maProId: item._data.maProId || item._id,
+                            maProImg: item._data.mainUrl,
+                            maProName: item._name,
+                            num: item._quantity,
+                            dealPrice: item._price
+                        }
+                    });
+                    var order = {
+                        detailList: detailList,
+                        trackingType: scope.ngCart.getExpress().codeKey,
+                        trackingAmount: +scope.ngCart.getExpress().codeDesc,
+                        status: '0',
+                        receiptId: data.id,
+                        receiptName: data.name,
+                        receiptPhone: data.phone,
+                        receiptPostcode: data.postcode,
+                        receiptDetail: data.detail
+                    }
+                    if (attrs.ordertype == 'new') {
+                        if (!order.receiptId) {
+                            scope.$emit('alert', '请选择收货地址');
+                            return;
+                        }
+                        fulfilmentProvider.checkout(order, function() {
+                            $ionicActionSheet.hide();
+                        })
+                    } else if (attrs.ordertype == 'existed') {
+                        // 直接掉支付接口
+                        $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + attrs.orderid).success(function(r, status) {
+                            if (r.ret) {
+                                AlipayService.alipayCheckout(r.data)
                             }
                         });
-                        var order = {
-                            detailList: detailList,
-                            trackingType: scope.ngCart.getExpress().codeKey,
-                            trackingAmount: +scope.ngCart.getExpress().codeDesc,
-                            status: '0',
-                            receiptId: data.id,
-                            receiptName: data.name,
-                            receiptPhone: data.phone,
-                            receiptPostcode: data.postcode,
-                            receiptDetail: data.detail
-                        }
-                        if (attrs.ordertype == 'new') {
-                            if (!order.receiptId) {
-                                scope.$emit('alert', '请选择收货地址');
-                                return;
-                            }
-                            fulfilmentProvider.checkout(order, function() {
-                                $ionicActionSheet.hide();
-                            })
-                        } else if (attrs.ordertype == 'existed') {
-                            // 直接掉支付接口
-                            $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + attrs.orderid).success(function(r, status) {
-                                if (r.ret) {
-                                    AlipayService.alipayCheckout(r.data)
-                                }
-                            });
-                        }
                     }
-                };
-            },
-            scope: {
-                settings: '=',
-                show: '=',
-            },
-            replace: true,
-            templateUrl: function(element, attrs) {
-                if (typeof attrs.templateUrl == 'undefined') {
-                    return 'ngCart/checkout.html';
-                } else {
-                    return attrs.templateUrl;
                 }
+            };
+        },
+        scope: {
+            settings: '=',
+            show: '=',
+        },
+        replace: true,
+        templateUrl: function(element, attrs) {
+            if (typeof attrs.templateUrl == 'undefined') {
+                return 'ngCart/checkout.html';
+            } else {
+                return attrs.templateUrl;
             }
-        };
-    }])
-    .directive("zoomView", ['$compile', '$ionicModal', '$ionicPlatform', '$cordovaSocialSharing', function($compile, $ionicModal, $ionicPlatform, $cordovaSocialSharing) {
-        return {
+        }
+    };
+}])
 
-            restrict: "A",
+.directive("zoomView", ['$compile', '$ionicModal', '$ionicPlatform', '$cordovaSocialSharing', function($compile, $ionicModal, $ionicPlatform, $cordovaSocialSharing) {
+    return {
 
-            link: function(scope, elem, attr) {
+        restrict: "A",
 
-                $ionicPlatform.ready(function() {
+        link: function(scope, elem, attr) {
 
-                    elem.attr("ng-click", "showZoomView()");
-                    elem.removeAttr("zoom-view");
-                    $compile(elem)(scope);
+            $ionicPlatform.ready(function() {
 
-                    var zoomViewTemplate = '<ion-modal-view class="zoom-view"><ion-header-bar>' +
-                        '<button ng-click="closeZoomView()" class="button button-clear button-light button-icon ion-ios-close-empty"></button></ion-header-bar>' +
-                        '<ion-content ng-click="closeZoomView()"><ion-scroll zooming="true" direction="xy" style="width: 100%; height: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0; ">' +
-                        '<img ng-src="{{ngSrc}}" style="width: 100%!important; display:block; width: 100%; height: auto; max-width: 400px; max-height: 700px; margin: auto; padding: 10px; " />' +
-                        '</ion-scroll> </ion-content>' +
-                        '<ion-footer-bar><h1 class="title"></h1><button class="button button-light button-icon ion-ios-download-outline" ng-click="downloadFile()"></button></ion-footer-bar>'
-                    '</ion-modal-view>';
+                elem.attr("ng-click", "showZoomView()");
+                elem.removeAttr("zoom-view");
+                $compile(elem)(scope);
 
-                    scope.zoomViewModal = $ionicModal.fromTemplate(zoomViewTemplate, {
-                        scope: scope,
-                        animation: "slide-in-right"
-                    });
+                var zoomViewTemplate = '<ion-modal-view class="zoom-view"><ion-header-bar>' +
+                    '<button ng-click="closeZoomView()" class="button button-clear button-light button-icon ion-ios-close-empty"></button></ion-header-bar>' +
+                    '<ion-content ng-click="closeZoomView()"><ion-scroll zooming="true" direction="xy" style="width: 100%; height: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0; ">' +
+                    '<img ng-src="{{ngSrc}}" style="width: 100%!important; display:block; width: 100%; height: auto; max-width: 400px; max-height: 700px; margin: auto; padding: 10px; " />' +
+                    '</ion-scroll> </ion-content>' +
+                    '<ion-footer-bar><h1 class="title"></h1><button class="button button-light button-icon ion-ios-download-outline" ng-click="downloadFile()"></button></ion-footer-bar>'
+                '</ion-modal-view>';
 
-                    scope.showZoomView = function() {
-                        scope.zoomViewModal.show();
-                        scope.ngSrc = attr.zoomSrc;
-                    };
-
-                    scope.closeZoomView = function() {
-                        scope.zoomViewModal.hide();
-                    };
-
-                    scope.downloadFile = function() {
-                        var message = "分享图片",
-                            subject = '分享',
-                            file = scope.ngSrc,
-                            link = "http://www.may.bi";
-
-                        $cordovaSocialSharing
-                            .share(message, subject, file, link) // Share via native share sheet
-                            .then(function(result) {
-                                console.log('result:' + result);
-                                // Success!
-                            }, function(err) {
-                                console.log('err:' + err);
-                                scope.broadcast('alert', err);
-                                // An error occured. Show a message to the user
-                            });
-                    }
+                scope.zoomViewModal = $ionicModal.fromTemplate(zoomViewTemplate, {
+                    scope: scope,
+                    animation: "slide-in-right"
                 });
-            }
-        };
-    }])
-    .directive('showMore', ['$timeout', function($timeout) {
-        return {
-            templateUrl: 'showMore.html',
-            restrict: 'A',
-            replace: true,
-            scope: {
-                'title': '=',
-            },
-            link: function(scope, element, attrs) {
 
-                var showMoreHeight = parseInt(attrs.showMore);
-
-                scope.expanded = false;
-                scope.expandable = false;
-
-                $timeout(function() {
-                    renderStyles();
-                }, 300);
-                scope.toggle = function() {
-                    scope.expanded = !scope.expanded;
-
+                scope.showZoomView = function() {
+                    scope.zoomViewModal.show();
+                    scope.ngSrc = attr.zoomSrc;
                 };
 
-                function renderStyles() {
-                    var elementHeight = element.find('p')[0].offsetHeight;
-                    if (elementHeight > showMoreHeight && scope.expanded === false) {
-                        scope.expandable = true;
-                    }
+                scope.closeZoomView = function() {
+                    scope.zoomViewModal.hide();
+                };
+
+                scope.downloadFile = function() {
+                    var message = "分享图片",
+                        subject = '分享',
+                        file = scope.ngSrc,
+                        link = "http://www.may.bi";
+
+                    $cordovaSocialSharing
+                        .share(message, subject, file, link) // Share via native share sheet
+                        .then(function(result) {
+                            console.log('result:' + result);
+                            // Success!
+                        }, function(err) {
+                            console.log('err:' + err);
+                            scope.broadcast('alert', err);
+                            // An error occured. Show a message to the user
+                        });
                 }
+            });
+        }
+    };
+}])
 
-                scope.showLessStyle = {
-                    'max-height': showMoreHeight + 'px',
-                    'overflow': 'hidden',
-                    'margin-bottom': '6px',
-                };
+.directive('showMore', ['$timeout', function($timeout) {
+    return {
+        templateUrl: 'showMore.html',
+        restrict: 'A',
+        replace: true,
+        scope: {
+            'title': '=',
+        },
+        link: function(scope, element, attrs) {
 
+            var showMoreHeight = parseInt(attrs.showMore);
 
+            scope.expanded = false;
+            scope.expandable = false;
+
+            $timeout(function() {
+                renderStyles();
+            }, 300);
+            scope.toggle = function() {
+                scope.expanded = !scope.expanded;
+
+            };
+
+            function renderStyles() {
+                var elementHeight = element.find('p')[0].offsetHeight;
+                if (elementHeight > showMoreHeight && scope.expanded === false) {
+                    scope.expandable = true;
+                }
             }
-        };
-    }])
+
+            scope.showLessStyle = {
+                'max-height': showMoreHeight + 'px',
+                'overflow': 'hidden',
+                'margin-bottom': '6px',
+            };
+
+
+        }
+    };
+}])
 
 .directive('addressForm', ['$rootScope', '$ionicModal', 'FetchData', 'ngCart', '$state', 'utils', function($rootScope, $ionicModal, FetchData, ngCart, $state, utils) {
     return {
@@ -455,7 +458,7 @@ angular.module('fourdotzero.directives', [])
             scope.items = scope.board.items;
 
             scope.goItem = function(item_id) {
-                $state.go('tab.item', { itemID: item_id });
+                $state.go('item', { itemID: item_id });
             };
 
             scope.goBoard = function(item_id) {
