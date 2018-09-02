@@ -10,17 +10,19 @@
                 <img ng-src="{{item.mainUrl}}">
                 <div class="hover-slideImg">
                     <i class="icon ion-ios-clock-outline" style="font-size:14px;"></i>
-                    <span>正在进行</span>
-                    <span>20170809 结束</span>
+                    <span ng-if="!item.ended && !item.begined">正在进行</span>
+                    <span ng-if="!item.begined">{{item.begin | date:"MM月dd日 hh:mm"}} 开始</span>
+                    <span ng-if="!item.ended && item.begined">{{item.end | date:"MM月dd日 hh:mm"}}结束</span>
+                    <span ng-if="item.ended">已结束</span>
                 </div>
             </div>
             <div class=" item item-text-wrap " href="# ">
                 <h3 class="product-title " style="overflow: hidden; ">{{item.name}}</h3>
                 <p class="product-prices ">
-                    当前价：<span class="curr-price " style="color:#ff3300 ">{{::item.price | currency:'￥'}}</span>
+                    当前价：<span class="curr-price " style="color:#ff3300 ">{{::item.nowPrice | currency:'￥'}}</span>
                 </p>
                 <p class="product-prices ">
-                    围观人数：<span class="curr-price ">{{::item.price}}</span>人
+                    围观人数：<span class="curr-price ">{{::item.applyNum}}</span>人
                 </p>
             </div>
         </div>

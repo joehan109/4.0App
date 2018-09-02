@@ -855,8 +855,8 @@ angular.module('fourdotzero.services', [])
             done: done
         };
 
-        function cancel(id, tabId) {
-            FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
+        function cancel(url, id, tabId) {
+            FetchData.get(url + id).then(function(data) {
                 if (data.ret) {
                     $rootScope.$emit("alert", "订单已取消");
                     $state.go('orders', {
@@ -870,8 +870,8 @@ angular.module('fourdotzero.services', [])
             })
         }
 
-        function del(id, tabId) {
-            FetchData.get('/mall/maorder/delete?id=' + id)
+        function del(url, id, tabId) {
+            FetchData.get(url + id)
                 .then(function(data) {
                     if (data.ret) {
                         $rootScope.$emit("alert", "订单删除成功！");
@@ -886,8 +886,8 @@ angular.module('fourdotzero.services', [])
                 })
         }
 
-        function done(id, tabId) {
-            FetchData.get('/mall/maorder/confirm?id=' + id)
+        function done(url, id, tabId) {
+            FetchData.get(url + id)
                 .then(function(data) {
                     if (data.ret) {
                         $rootScope.$emit("alert", "交易成功！");

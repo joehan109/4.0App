@@ -7,10 +7,9 @@
 
     <ion-content class="item-page has-footer">
         <div scroll-height rate="1/2" style="position: relative;">
-            <ion-slide-box delegate-handle="image-viewer" ng-style="{'padding-top':(item.auImgModelList.length?'0':'100%')}" style="height:100%">
-                <ion-slide ng-repeat="img in item.auImgModelList track by $index">
-                    <img ng-src="{{ img.imgUrl }}" ng-click="zoom(img.url)" />
-                    
+            <ion-slide-box delegate-handle="image-viewer" ng-style="{'padding-top':(item.detailList.length?'0':'100%')}" style="height:100%">
+                <ion-slide ng-repeat="img in item.detailList track by $index">
+                    <img ng-src="{{ img.imgUrl }}" />
                 </ion-slide>
             </ion-slide-box>
             <div class="hover-slideImg" style="left:0;right:0;bottom:0">
