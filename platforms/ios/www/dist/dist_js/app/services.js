@@ -183,410 +183,412 @@ angular.module('fourdotzero.services', [])
 }])
 
 .factory('Storage', function() {
-        return {
-            set: function(key, data) {
-                return window.localStorage.setItem(key, window.JSON.stringify(data));
-            },
-            get: function(key) {
+    return {
+        set: function(key, data) {
+            return window.localStorage.setItem(key, window.JSON.stringify(data));
+        },
+        get: function(key) {
 
-                return window.JSON.parse(window.localStorage.getItem(key));
-            },
-            remove: function(key) {
-                return window.localStorage.removeItem(key);
+            return window.JSON.parse(window.localStorage.getItem(key));
+        },
+        remove: function(key) {
+            return window.localStorage.removeItem(key);
+        }
+    };
+})
+
+.factory('AuthService', ['$rootScope', 'ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function($rootScope, ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
+    var isAuthenticated = false;
+    var user = Storage.get('user') || {};
+    return {
+        isLoggedIn: function() {
+            if (isAuthenticated) {
+                return true;
+            } else {
+                return false;
             }
-        };
-    })
-    .factory('AuthService', ['$rootScope', 'ENV', '$http', 'Storage', '$state', '$q', 'FetchData', 'ngCart', '$timeout', function($rootScope, ENV, $http, Storage, $state, $q, FetchData, ngCart, $timeout) {
-        var isAuthenticated = false;
-        var user = Storage.get('user') || {};
-        return {
-            isLoggedIn: function() {
-                if (isAuthenticated) {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
+        },
 
-            login: function(data) {
-                var deferred = $q.defer();
-                var url = {
-                    'common': ENV.SERVER_URL + '/mall/vip/login',
-                    'phone': ENV.SERVER_URL + '/mall/vip/login/phone'
-                }[data.type];
-                $http.post(url, data.data).success(function(data, status) {
-                    if (status === 200 && data.ret) {
-                        isAuthenticated = true;
-                        $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
-                            user = data.data;
-                            if (user) {
-                                Storage.set('user', data.data);
-                                Storage.set('access_token', data.data.name);
-                            }
-                            if (data.savePW && data.type === 'common') {
-                                var pws = Storage.get('userPassword') || [];
-                                angular.forEach(pws, function(item) {
-                                    if (item.name == data.data.name) {
-                                        item.pwd = data.data.pwd
-                                    }
-                                });
-                                Storage.set('userPassword', pws);
-                            }
-                            deferred.resolve();
-                            $state.go('appIndex')
-                        });
-                        // 刷新购物车
-                        FetchData.get('/mall/mashopping/getAll').then(function(data) {
-                            ngCart.$loadCart(data.data);
-                        });
-                    } else {
-                        isAuthenticated = false;
-                        deferred.reject();
-                    }
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-
-                return deferred.promise;
-            },
-
-            setUsername: function(username) { //TODO 目前后台返回的data只有message，需要让后台返回新的user对象，然后前端Storage.set('user', data.user);
-                var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/mall/vip/updateName?name=' + username).success(function(data, status) {
-                    if (status === 200 && data.ret) {
-                        user = Storage.get('user');
-                        user.name = username;
-                        Storage.set('user', user);
-                        deferred.resolve(data);
-                    } else {
-                        deferred.reject(data);
-                    }
-                }).error(function(data) {
-                    deferred.reject(data);
-                });
-
-                return deferred.promise;
-            },
-
-            updateAvatar: function(filename) { //TODO 目前后台返回的data只有message，需要让后台返回新的user对象，然后前端Storage.set('user', data.user);
-                var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/api/users/update_avatar', {
-                    avatar_url: filename,
-                }).success(function(data, status) {
-                    if (status === 200 && data.message == "OK") {
-                        user = data.user;
-                        Storage.set('user', data.user);
-                        deferred.resolve(data);
-                    } else {
-                        deferred.reject(data);
-                    }
-                }).error(function(data) {
-                    deferred.reject(data);
-                });
-
-                return deferred.promise;
-            },
-
-            bindEmail: function(email, user_id) {
-                var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/api/auth/bind_email', {
-                    email: email,
-                    user_id: user_id,
-                }).success(function(data, status) {
-                    if (status === 200 && data.message == "OK") {
-                        isAuthenticated = true;
-                        user = data.user;
-                        Storage.set('user', data.user);
-                        Storage.set('access_token', data.remember_token);
-                        if (window.cordova && window.cordova.plugins) {
-                            plugins.jPushPlugin.setAlias(data.user.id);
-                        }
-                        deferred.resolve();
-                    } else {
-                        isAuthenticated = false;
-                        deferred.reject(data);
-                    }
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-
-                return deferred.promise;
-            },
-
-            forgotPassword: function(email) {
-                var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/api/auth/forgot_password', {
-                    email: email,
-                }).success(function(data, status) {
-                    if (status === 200 && data.message == "OK") {
-                        deferred.resolve();
-                    } else {
-                        isAuthenticated = false;
-                        deferred.reject(data);
-                    }
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-
-                return deferred.promise;
-            },
-
-            logout: function() {
-                var deferred = $q.defer();
-                $http.get(ENV.SERVER_URL + '/mall/vip/logout').success(function(data) {
-                    isAuthenticated = false;
-                    user = {};
-                    Storage.remove('user');
-                    Storage.remove('access_token');
-                    // 清空购物车
-                    Storage.set('cart', {
-                        shipping: null,
-                        taxRate: null,
-                        tax: null,
-                        items: [],
-                        selectedItems: []
-                    });
-                    window.location.href = "#/appIndex";
-                    $rootScope.authDialog.show();
-                    deferred.resolve();
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-
-                return deferred.promise;
-            },
-
-            authenticate: function(token) {
-                var deferred = $q.defer();
-                $http.post(ENV.SERVER_URL + '/api/auth/login_with_token', {
-                    token: token,
-                }).success(function(data, status) {
-                    if (status === 200 && data.message == "OK") {
-                        isAuthenticated = true;
-                        user = data.user;
-                        Storage.set('user', data.user);
-                        Storage.set('access_token', data.remember_token);
-                        if (window.cordova && window.cordova.plugins) {
-                            plugins.jPushPlugin.setAlias(data.user.id);
-                        }
-                        deferred.resolve();
-                    } else {
-                        isAuthenticated = false;
-                        deferred.reject();
-                    }
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-
-                return deferred.promise;
-            },
-
-            oauth: function(sitename, params) {
-                var deferred = $q.defer();
-
-                $http.get(ENV.SERVER_URL + '/api/auth/oauth/' + sitename, {
-                    params: params
-                }).success(function(data, status) {
-                    if (data.message == "OK" && data.login === true) {
-                        isAuthenticated = true;
-                        user = data.user;
-                        Storage.set('user', data.user);
-                        Storage.set('access_token', data.remember_token);
-                        if (window.cordova && window.cordova.plugins) {
-                            plugins.jPushPlugin.setAlias(data.user.id);
-                        }
-                        deferred.resolve(data);
-                    } else if (data.message == "OK" && data.login === false) {
-                        isAuthenticated = false;
-                        deferred.resolve(data);
-                    }
-                }).error(function(data) {
-                    isAuthenticated = false;
-                    deferred.reject();
-                });
-                return deferred.promise;
-            },
-
-            register: function(form) {
-                var deferred = $q.defer();
-
-                $http.post(ENV.SERVER_URL + '/mall/vip/app/save', {
-                    email: form.email,
-                    pwd: form.password,
-                    name: form.name,
-                    phone: form.phone
-                }).success(function(data, status) {
-                    if (status === 200 && data.ret) {
-                        isAuthenticated = true;
-                        if (data.data) {
-                            user = data.data;
+        login: function(data) {
+            var deferred = $q.defer();
+            var url = {
+                'common': ENV.SERVER_URL + '/mall/vip/login',
+                'phone': ENV.SERVER_URL + '/mall/vip/login/phone'
+            }[data.type];
+            $http.post(url, data.data).success(function(data, status) {
+                if (status === 200 && data.ret) {
+                    isAuthenticated = true;
+                    $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
+                        user = data.data;
+                        if (user) {
                             Storage.set('user', data.data);
                             Storage.set('access_token', data.data.name);
                         }
+                        if (data.savePW && data.type === 'common') {
+                            var pws = Storage.get('userPassword') || [];
+                            angular.forEach(pws, function(item) {
+                                if (item.name == data.data.name) {
+                                    item.pwd = data.data.pwd
+                                }
+                            });
+                            Storage.set('userPassword', pws);
+                        }
                         deferred.resolve();
-                        $state.go('appIndex');
-                    } else {
-                        isAuthenticated = false;
-                        deferred.reject(data.errmsg);
-                    }
-                }).error(function(data) {
+                        $state.go('appIndex')
+                    });
+                    // 刷新购物车
+                    FetchData.get('/mall/mashopping/getAll').then(function(data) {
+                        ngCart.$loadCart(data.data);
+                    });
+                } else {
+                    isAuthenticated = false;
                     deferred.reject();
-                });
+                }
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
 
-                return deferred.promise;
-            },
-            getUser: function() {
-                return user;
-            },
-            refreshUser: function() {
-                var deferred = $q.defer();
-                $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
-                    user = data.data;
-                    if (user) {
+            return deferred.promise;
+        },
+
+        setUsername: function(username) { //TODO 目前后台返回的data只有message，需要让后台返回新的user对象，然后前端Storage.set('user', data.user);
+            var deferred = $q.defer();
+            $http.post(ENV.SERVER_URL + '/mall/vip/updateName?name=' + username).success(function(data, status) {
+                if (status === 200 && data.ret) {
+                    user = Storage.get('user');
+                    user.name = username;
+                    Storage.set('user', user);
+                    deferred.resolve(data);
+                } else {
+                    deferred.reject(data);
+                }
+            }).error(function(data) {
+                deferred.reject(data);
+            });
+
+            return deferred.promise;
+        },
+
+        updateAvatar: function(filename) { //TODO 目前后台返回的data只有message，需要让后台返回新的user对象，然后前端Storage.set('user', data.user);
+            var deferred = $q.defer();
+            $http.post(ENV.SERVER_URL + '/api/users/update_avatar', {
+                avatar_url: filename,
+            }).success(function(data, status) {
+                if (status === 200 && data.message == "OK") {
+                    user = data.user;
+                    Storage.set('user', data.user);
+                    deferred.resolve(data);
+                } else {
+                    deferred.reject(data);
+                }
+            }).error(function(data) {
+                deferred.reject(data);
+            });
+
+            return deferred.promise;
+        },
+
+        bindEmail: function(email, user_id) {
+            var deferred = $q.defer();
+            $http.post(ENV.SERVER_URL + '/api/auth/bind_email', {
+                email: email,
+                user_id: user_id,
+            }).success(function(data, status) {
+                if (status === 200 && data.message == "OK") {
+                    isAuthenticated = true;
+                    user = data.user;
+                    Storage.set('user', data.user);
+                    Storage.set('access_token', data.remember_token);
+                    if (window.cordova && window.cordova.plugins) {
+                        plugins.jPushPlugin.setAlias(data.user.id);
+                    }
+                    deferred.resolve();
+                } else {
+                    isAuthenticated = false;
+                    deferred.reject(data);
+                }
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        },
+
+        forgotPassword: function(email) {
+            var deferred = $q.defer();
+            $http.post(ENV.SERVER_URL + '/api/auth/forgot_password', {
+                email: email,
+            }).success(function(data, status) {
+                if (status === 200 && data.message == "OK") {
+                    deferred.resolve();
+                } else {
+                    isAuthenticated = false;
+                    deferred.reject(data);
+                }
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        },
+
+        logout: function() {
+            var deferred = $q.defer();
+            $http.get(ENV.SERVER_URL + '/mall/vip/logout').success(function(data) {
+                isAuthenticated = false;
+                user = {};
+                Storage.remove('user');
+                Storage.remove('access_token');
+                // 清空购物车
+                Storage.set('cart', {
+                    shipping: null,
+                    taxRate: null,
+                    tax: null,
+                    items: [],
+                    selectedItems: []
+                });
+                window.location.href = "#/appIndex";
+                $rootScope.authDialog.show();
+                deferred.resolve();
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        },
+
+        authenticate: function(token) {
+            var deferred = $q.defer();
+            $http.post(ENV.SERVER_URL + '/api/auth/login_with_token', {
+                token: token,
+            }).success(function(data, status) {
+                if (status === 200 && data.message == "OK") {
+                    isAuthenticated = true;
+                    user = data.user;
+                    Storage.set('user', data.user);
+                    Storage.set('access_token', data.remember_token);
+                    if (window.cordova && window.cordova.plugins) {
+                        plugins.jPushPlugin.setAlias(data.user.id);
+                    }
+                    deferred.resolve();
+                } else {
+                    isAuthenticated = false;
+                    deferred.reject();
+                }
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        },
+
+        oauth: function(sitename, params) {
+            var deferred = $q.defer();
+
+            $http.get(ENV.SERVER_URL + '/api/auth/oauth/' + sitename, {
+                params: params
+            }).success(function(data, status) {
+                if (data.message == "OK" && data.login === true) {
+                    isAuthenticated = true;
+                    user = data.user;
+                    Storage.set('user', data.user);
+                    Storage.set('access_token', data.remember_token);
+                    if (window.cordova && window.cordova.plugins) {
+                        plugins.jPushPlugin.setAlias(data.user.id);
+                    }
+                    deferred.resolve(data);
+                } else if (data.message == "OK" && data.login === false) {
+                    isAuthenticated = false;
+                    deferred.resolve(data);
+                }
+            }).error(function(data) {
+                isAuthenticated = false;
+                deferred.reject();
+            });
+            return deferred.promise;
+        },
+
+        register: function(form) {
+            var deferred = $q.defer();
+
+            $http.post(ENV.SERVER_URL + '/mall/vip/app/save', {
+                email: form.email,
+                pwd: form.password,
+                name: form.name,
+                phone: form.phone
+            }).success(function(data, status) {
+                if (status === 200 && data.ret) {
+                    isAuthenticated = true;
+                    if (data.data) {
+                        user = data.data;
                         Storage.set('user', data.data);
                         Storage.set('access_token', data.data.name);
                     }
                     deferred.resolve();
-                });
-                return deferred.promise;
+                    $state.go('appIndex');
+                } else {
+                    isAuthenticated = false;
+                    deferred.reject(data.errmsg);
+                }
+            }).error(function(data) {
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        },
+        getUser: function() {
+            return user;
+        },
+        refreshUser: function() {
+            var deferred = $q.defer();
+            $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
+                user = data.data;
+                if (user) {
+                    Storage.set('user', data.data);
+                    Storage.set('access_token', data.data.name);
+                }
+                deferred.resolve();
+            });
+            return deferred.promise;
+        }
+    };
+}])
+
+.factory('User', ['ENV', '$http', '$state', '$q', function(ENV, $http, $state, $q) {
+
+    var users = [];
+    var hasNextPage = true;
+    var isEmpty = false;
+    var nextPage = 0;
+    var perPage = 20;
+
+    return {
+        getFollowers: getFollowers,
+        getFollowings: getFollowings,
+        getPostLikeUsers: getPostLikeUsers,
+
+        follow: follow,
+        unfollow: unfollow,
+        hasNextPage: function() {
+            return hasNextPage;
+        },
+        isEmpty: function() {
+            return isEmpty;
+        },
+    }
+
+    function unfollow(user_id) {
+        var deferred = $q.defer();
+        $http.get(ENV.SERVER_URL + '/api/users/unfollow/' + user_id).success(function(data) {
+            deferred.resolve();
+        }).error(function(data) {
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
+
+    function follow(user_id) {
+        var deferred = $q.defer();
+        $http.get(ENV.SERVER_URL + '/api/users/follow/' + user_id).success(function(data) {
+            deferred.resolve();
+        }).error(function(data) {
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
+
+    function getFollowers(userId, page) {
+        var deferred = $q.defer();
+        hasNextPage = true;
+        isEmpty = false;
+
+        $http.get(ENV.SERVER_URL + '/api/users/followers', {
+            params: {
+                currentPage: page,
+                pageSize: perPage,
+                user_id: userId,
             }
-        };
-    }])
-    .factory('User', ['ENV', '$http', '$state', '$q', function(ENV, $http, $state, $q) {
-
-        var users = [];
-        var hasNextPage = true;
-        var isEmpty = false;
-        var nextPage = 0;
-        var perPage = 20;
-
-        return {
-            getFollowers: getFollowers,
-            getFollowings: getFollowings,
-            getPostLikeUsers: getPostLikeUsers,
-
-            follow: follow,
-            unfollow: unfollow,
-            hasNextPage: function() {
-                return hasNextPage;
-            },
-            isEmpty: function() {
-                return isEmpty;
-            },
-        }
-
-        function unfollow(user_id) {
-            var deferred = $q.defer();
-            $http.get(ENV.SERVER_URL + '/api/users/unfollow/' + user_id).success(function(data) {
-                deferred.resolve();
-            }).error(function(data) {
+        }).success(function(r, status) {
+            if (status === 200 && r.message == "OK") {
+                if (r.users.length < perPage) {
+                    hasNextPage = false;
+                }
+                if (page == 0 && r.users.length === 0) {
+                    isEmpty = true;
+                }
+                deferred.resolve(r);
+            } else {
                 deferred.reject();
-            });
-            return deferred.promise;
-        }
+            }
+        }).error(function(data) {
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
 
-        function follow(user_id) {
-            var deferred = $q.defer();
-            $http.get(ENV.SERVER_URL + '/api/users/follow/' + user_id).success(function(data) {
-                deferred.resolve();
-            }).error(function(data) {
+    function getFollowings(userId, page) {
+        var deferred = $q.defer();
+        hasNextPage = true;
+        isEmpty = false;
+
+        $http.get(ENV.SERVER_URL + '/api/users/followings', {
+            params: {
+                currentPage: page,
+                pageSize: perPage,
+                user_id: userId,
+            }
+        }).success(function(r, status) {
+            if (status === 200 && r.message == "OK") {
+                if (r.users.length < perPage) {
+                    hasNextPage = false;
+                }
+                if (page == 0 && r.users.length === 0) {
+                    isEmpty = true;
+                }
+                deferred.resolve(r);
+            } else {
                 deferred.reject();
-            });
-            return deferred.promise;
-        }
+            }
+        }).error(function(data) {
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
 
-        function getFollowers(userId, page) {
-            var deferred = $q.defer();
-            hasNextPage = true;
-            isEmpty = false;
+    function getPostLikeUsers(postId, page) {
+        var deferred = $q.defer();
+        hasNextPage = true;
+        isEmpty = false;
 
-            $http.get(ENV.SERVER_URL + '/api/users/followers', {
-                params: {
-                    currentPage: page,
-                    pageSize: perPage,
-                    user_id: userId,
+        $http.get(ENV.SERVER_URL + '/api/post/' + postId + '/likes', {
+            params: {
+                page: page,
+                pageSize: perPage,
+            }
+        }).success(function(r, status) {
+            if (status === 200 && r.message == "OK") {
+                if (r.users.length < perPage) {
+                    hasNextPage = false;
                 }
-            }).success(function(r, status) {
-                if (status === 200 && r.message == "OK") {
-                    if (r.users.length < perPage) {
-                        hasNextPage = false;
-                    }
-                    if (page == 0 && r.users.length === 0) {
-                        isEmpty = true;
-                    }
-                    deferred.resolve(r);
-                } else {
-                    deferred.reject();
+                if (page == 0 && r.users.length === 0) {
+                    isEmpty = true;
                 }
-            }).error(function(data) {
+                deferred.resolve(r);
+            } else {
                 deferred.reject();
-            });
-            return deferred.promise;
-        }
+            }
+        }).error(function(data) {
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
 
-        function getFollowings(userId, page) {
-            var deferred = $q.defer();
-            hasNextPage = true;
-            isEmpty = false;
-
-            $http.get(ENV.SERVER_URL + '/api/users/followings', {
-                params: {
-                    currentPage: page,
-                    pageSize: perPage,
-                    user_id: userId,
-                }
-            }).success(function(r, status) {
-                if (status === 200 && r.message == "OK") {
-                    if (r.users.length < perPage) {
-                        hasNextPage = false;
-                    }
-                    if (page == 0 && r.users.length === 0) {
-                        isEmpty = true;
-                    }
-                    deferred.resolve(r);
-                } else {
-                    deferred.reject();
-                }
-            }).error(function(data) {
-                deferred.reject();
-            });
-            return deferred.promise;
-        }
-
-        function getPostLikeUsers(postId, page) {
-            var deferred = $q.defer();
-            hasNextPage = true;
-            isEmpty = false;
-
-            $http.get(ENV.SERVER_URL + '/api/post/' + postId + '/likes', {
-                params: {
-                    page: page,
-                    pageSize: perPage,
-                }
-            }).success(function(r, status) {
-                if (status === 200 && r.message == "OK") {
-                    if (r.users.length < perPage) {
-                        hasNextPage = false;
-                    }
-                    if (page == 0 && r.users.length === 0) {
-                        isEmpty = true;
-                    }
-                    deferred.resolve(r);
-                } else {
-                    deferred.reject();
-                }
-            }).error(function(data) {
-                deferred.reject();
-            });
-            return deferred.promise;
-        }
-
-    }])
+}])
 
 .factory('Items', ['ENV', '$http', '$log', '$q', '$rootScope', 'Storage', function(ENV, $http, $log, $q, $rootScope, Storage) {
         // 用来存储话题类别的数据结构，包含了下一页、是否有下一页等属性
@@ -607,10 +609,10 @@ angular.module('fourdotzero.services', [])
                     currentPage: 1,
                     pageSize: perPage,
                 };
-                if (query && query.query) {
-                    params.name = query.query
+                if (query && query.query.name) {
+                    params.name = query.query.name
                 }
-                currentTab && $http.get(ENV.SERVER_URL + '/mall/mapro/query', {
+                currentTab && $http.get(ENV.SERVER_URL + query.query.url, {
                     params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
@@ -637,12 +639,12 @@ angular.module('fourdotzero.services', [])
                 var deferred = $q.defer();
                 hasNextPage = true;
                 isEmpty = false;
-                $http.get(ENV.SERVER_URL + '/mall/mapro/query', {
+                $http.get(ENV.SERVER_URL + query.query.url, {
                     params: {
                         sub_category: sub_category,
                         currentPage: page,
                         pageSize: perPage,
-                        name: query
+                        name: query.name
                     }
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
@@ -685,10 +687,10 @@ angular.module('fourdotzero.services', [])
                     currentPage: nextPage,
                     pageSize: perPage,
                 };
-                if (query && query.query) {
-                    params.name = query.query
+                if (query && query.query.name) {
+                    params.name = query.query.name
                 }
-                $http.get(ENV.SERVER_URL + '/mall/mapro/query', {
+                $http.get(ENV.SERVER_URL + query.query.url, {
                     params: params
                 }).success(function(r, status) {
                     if (status === 200 && r.ret) {
@@ -853,11 +855,11 @@ angular.module('fourdotzero.services', [])
             done: done
         };
 
-        function cancel(id, tabId) {
-            FetchData.get('/mall/maorder/cancel?id=' + id).then(function(data) {
+        function cancel(url, id, tabId) {
+            FetchData.get(url + id).then(function(data) {
                 if (data.ret) {
                     $rootScope.$emit("alert", "订单已取消");
-                    $state.go('tab.orders', {
+                    $state.go('orders', {
                         status_id: tabId || 0
                     }, {
                         reload: true
@@ -868,12 +870,12 @@ angular.module('fourdotzero.services', [])
             })
         }
 
-        function del(id, tabId) {
-            FetchData.get('/mall/maorder/delete?id=' + id)
+        function del(url, id, tabId) {
+            FetchData.get(url + id)
                 .then(function(data) {
                     if (data.ret) {
                         $rootScope.$emit("alert", "订单删除成功！");
-                        $state.go('tab.orders', {
+                        $state.go('orders', {
                             status_id: tabId || 0
                         }, {
                             reload: true
@@ -884,12 +886,12 @@ angular.module('fourdotzero.services', [])
                 })
         }
 
-        function done(id, tabId) {
-            FetchData.get('/mall/maorder/confirm?id=' + id)
+        function done(url, id, tabId) {
+            FetchData.get(url + id)
                 .then(function(data) {
                     if (data.ret) {
                         $rootScope.$emit("alert", "交易成功！");
-                        $state.go('tab.orders', {
+                        $state.go('orders', {
                             status_id: tabId || 2
                         }, {
                             reload: true
@@ -1323,7 +1325,7 @@ angular.module('fourdotzero.services', [])
                         duration: 3000,
                     });
                 }
-                $state.go('tab.orders', {
+                $state.go('orders', {
                     status_id: 0
                 }, {
                     reload: true
@@ -1344,7 +1346,7 @@ angular.module('fourdotzero.services', [])
         //           template: '订单支付成功',
         //           duration: 3000,
         //       });
-        //       $state.go('tab.orders',{
+        //       $state.go('orders',{
         //           status_id: 2
         //       }, {
         //           reload: true
@@ -1502,7 +1504,7 @@ angular.module('fourdotzero.services', [])
                     template: '订单支付成功',
                     duration: 3000,
                 });
-                $state.go('tab.orders', {
+                $state.go('orders', {
                     status_id: 2
                 }, {
                     reload: true
@@ -1515,7 +1517,7 @@ angular.module('fourdotzero.services', [])
                         template: '您取消了支付',
                         duration: 2500,
                     });
-                    $state.go('tab.orders', {
+                    $state.go('orders', {
                         status_id: 0
                     }, {
                         reload: true
@@ -1526,7 +1528,7 @@ angular.module('fourdotzero.services', [])
                         template: '订单支付失败，请稍后重试或联系我们',
                         duration: 2500,
                     });
-                    $state.go('tab.orders', {
+                    $state.go('orders', {
                         status_id: 0
                     }, {
                         reload: true
@@ -1537,7 +1539,7 @@ angular.module('fourdotzero.services', [])
                         template: '网络连接出错，请稍后重试',
                         duration: 2500,
                     });
-                    $state.go('tab.orders', {
+                    $state.go('orders', {
                         status_id: 0
                     }, {
                         reload: true

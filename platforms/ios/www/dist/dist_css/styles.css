@@ -14859,6 +14859,21 @@ input.ion-google-place[readonly] {
       width: 80px;
       background-size: 80px; }
 
+.pm-index .item-image {
+  position: relative; }
+  .pm-index .item-image .hover-img {
+    color: #FFF;
+    position: absolute;
+    background-color: rgba(128, 128, 128, 0.5);
+    left: 5px;
+    bottom: 10px;
+    right: 5px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 12px;
+    text-align: left;
+    padding: 0 5px; }
+
 .assertive {
   color: #6fd6b9; }
 

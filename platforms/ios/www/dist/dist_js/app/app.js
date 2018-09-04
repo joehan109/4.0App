@@ -293,28 +293,61 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     })
 
     .state('appIndex', {
-            url: '/appIndex',
-            controller: 'appIndexCtrl',
-            templateUrl: 'appIndex.html',
-            loginRequired: true
-        })
-        .state('tab.home', {
-            url: '/home',
-            nativeTransitions: null,
-            views: {
-                'tab-cateHome': {
-                    controller: 'homeCtrl',
-                    templateUrl: 'home.html',
-                }
-            },
-            loginRequired: true,
-        })
-        .state('scan', {
-            url: '/scan',
-            controller: 'scanCtrl',
-            templateUrl: 'scan.html',
-            loginRequired: true
-        })
+        url: '/appIndex',
+        controller: 'appIndexCtrl',
+        templateUrl: 'appIndex.html',
+        loginRequired: true
+    })
+
+    .state('tab.home', {
+        url: '/home',
+        nativeTransitions: null,
+        views: {
+            'tab-cateHome': {
+                controller: 'homeCtrl',
+                templateUrl: 'home.html',
+            }
+        },
+        loginRequired: true,
+    })
+
+    .state('tab.xspm', {
+        url: '/xspm',
+        nativeTransitions: null,
+        views: {
+            'tab-xspm': {
+                controller: 'xspmCtrl',
+                templateUrl: 'xspm.html',
+            }
+        },
+        loginRequired: true,
+    })
+
+    .state('cpz', {
+        url: '/cpz',
+        controller: 'cpzCtrl',
+        templateUrl: 'cpz.html',
+        loginRequired: true
+    })
+
+    .state('tab.account', {
+        url: '/account',
+        nativeTransitions: null,
+        views: {
+            'tab-account': {
+                controller: 'accountCtrl',
+                templateUrl: 'account.html',
+            }
+        },
+        loginRequired: true,
+    })
+
+    .state('scan', {
+        url: '/scan',
+        controller: 'scanCtrl',
+        templateUrl: 'scan.html',
+        loginRequired: true
+    })
 
     .state('shopTab.cateHome', {
         url: '/cateHome',
@@ -522,14 +555,17 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         }
     })
 
-    .state('tab.item', {
+    .state('item', {
         url: '/item/:id',
-        views: {
-            'tab-cateHome': {
-                templateUrl: 'item.html',
-                controller: 'itemCtrl',
-            }
-        },
+        templateUrl: 'item.html',
+        controller: 'itemCtrl',
+        loginRequired: true
+    })
+
+    .state('pitem', {
+        url: '/pitem/:id',
+        templateUrl: 'pitem.html',
+        controller: 'pitemCtrl',
         loginRequired: true
     })
 
@@ -559,36 +595,24 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         loginRequired: true
     })
 
-    .state('tab.orders', {
+    .state('orders', {
         url: '/orders/:status_id',
-        views: {
-            'tab-account': {
-                templateUrl: 'orders.html',
-                controller: 'ordersCtrl'
-            }
-        },
+        templateUrl: 'orders.html',
+        controller: 'ordersCtrl',
         loginRequired: true
     })
 
-    .state('tab.order_detail', {
+    .state('order_detail', {
         url: '/order/:order_id?status_id',
-        views: {
-            'tab-account': {
-                templateUrl: 'order.html',
-                controller: 'orderDetailCtrl'
-            }
-        },
+        templateUrl: 'order.html',
+        controller: 'orderDetailCtrl',
         loginRequired: true
     })
 
-    .state('tab.order_logistic', {
+    .state('order_logistic', {
         url: '/order/logistics/:order_id?status_id',
-        views: {
-            'tab-account': {
-                templateUrl: 'logistics.html',
-                controller: 'logisticsDetailCtrl'
-            }
-        },
+        templateUrl: 'logistics.html',
+        controller: 'logisticsDetailCtrl',
         loginRequired: true
     })
 
@@ -649,6 +673,20 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         url: '/favors',
         templateUrl: 'favors.html',
         controller: 'favorCtrl',
+        loginRequired: true
+    })
+
+    .state('pfavors', {
+        url: '/pfavors',
+        templateUrl: 'pfavors.html',
+        controller: 'pfavorCtrl',
+        loginRequired: true
+    })
+
+    .state('precord', {
+        url: '/precord',
+        templateUrl: 'precord.html',
+        controller: 'precordCtrl',
         loginRequired: true
     })
 

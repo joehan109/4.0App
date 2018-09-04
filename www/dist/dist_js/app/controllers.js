@@ -1,9 +1,9 @@
 'use strict';
 
 appIndexCtrl.$inject = ['$scope', '$rootScope', '$state', '$cordovaToast', 'Photogram', 'PhotoService', '$timeout', 'geoService', 'FetchData', '$ionicSlideBoxDelegate', '$interval', 'Storage'];
-homeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
-xspmCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', '$location', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
-cpzCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', '$location', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
+homeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', 'utils', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
+xspmCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', '$location', 'utils', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
+cpzCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', '$location', 'utils', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
 cateHomeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
 introCtrl.$inject = ['$rootScope', '$scope', '$state', 'FetchData', '$ionicSlideBoxDelegate', 'Storage'];
 exploreCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicPopover', 'Photogram', 'FetchData'];
@@ -31,11 +31,11 @@ changePhoneCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV', '$interval', 
 settingsCtrl.$inject = ['$rootScope', '$scope', '$state', 'AuthService', '$ionicModal', 'Storage'];
 paymentSuccessCtrl.$inject = ['$location', '$timeout'];
 itemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup'];
-pitemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup', '$interval'];
+pitemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', 'utils', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup', '$interval'];
 itemsCtrl.$inject = ['$rootScope', '$scope', 'Items', '$state', '$stateParams'];
 boardCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$state'];
 favorCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart'];
-pfavorCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart'];
+pfavorCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart', 'utils'];
 precordCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart'];
 ordersCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', '$stateParams', '$state', 'utils', 'Storage'];
 calculateCtrl.$inject = ['$rootScope', '$scope', '$location', 'FetchData'];
@@ -888,7 +888,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 }
 
 function homeCtrl($scope, $rootScope, $log, $timeout, $state,
-    $ionicScrollDelegate, ngCart,
+    $ionicScrollDelegate, ngCart,utils,
     Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -979,8 +979,8 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
         var now;
         return data.map(function (item) {
             now = new Date().getTime();
-            item.begin = new Date(item.beginTime).getTime();
-            item.end = new Date(item.endTime).getTime();
+            item.begin = utils.getTimeAdapt(item.beginTime).getTime();
+            item.end = utils.getTimeAdapt(item.endTime).getTime();
             item.begined = item.begin <= now;
             item.ended = item.end <= now;
             return item;
@@ -989,7 +989,7 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
 }
 
 function xspmCtrl($scope, $rootScope, $log, $timeout, $state,
-    $ionicScrollDelegate, ngCart,$location,
+    $ionicScrollDelegate, ngCart,$location,utils,
     Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -1069,8 +1069,8 @@ function xspmCtrl($scope, $rootScope, $log, $timeout, $state,
         var now;
         return data.map(function (item) {
             now = new Date().getTime();
-            item.begin = new Date(item.beginTime).getTime();
-            item.end = new Date(item.endTime).getTime();
+            item.begin = utils.getTimeAdapt(item.beginTime).getTime();
+            item.end = utils.getTimeAdapt(item.endTime).getTime();
             item.begined = item.begin <= now;
             item.ended = item.end <= now;
             return item;
@@ -1080,16 +1080,16 @@ function xspmCtrl($scope, $rootScope, $log, $timeout, $state,
 }
 
 function cpzCtrl($scope, $rootScope, $log, $timeout, $state,
-    $ionicScrollDelegate, ngCart,$location,
+    $ionicScrollDelegate, ngCart,$location,utils,
     Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
-        $scope.searchQuery = { url: '/mall/aurecord/query?reType=0', name: '' };
+        $scope.searchQuery = {url: '/mall/aurecord/query?reType=1', name: '' };
         Items.setCurrentTab(1);
         Items.fetchTopItems({query:$scope.searchQuery}).then(function(data) {
             $scope.isFirst = false;
-            $scope.items = data;
+            $scope.items = setItem(data);
             // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
 
@@ -1106,7 +1106,7 @@ function cpzCtrl($scope, $rootScope, $log, $timeout, $state,
         // $state.go('tab.search', { 'query': query });
         Items.fetchTopItems({ 'query': query }).then(function(data) {
             $scope.isFirst = false;
-            $scope.items = data;
+            $scope.items = setItem(data);
             // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
 
@@ -1116,7 +1116,7 @@ function cpzCtrl($scope, $rootScope, $log, $timeout, $state,
     $scope.doRefresh = function() {
 
         Items.fetchTopItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
-            $scope.items = data;
+            $scope.items = setItem(data);
         });
         $scope.$broadcast('scroll.refreshComplete');
     };
@@ -1124,7 +1124,7 @@ function cpzCtrl($scope, $rootScope, $log, $timeout, $state,
     $scope.loadMore = function() {
         if (!$scope.isFirst && Items.hasNextPage()) {
             Items.increaseNewItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
-                $scope.items = $scope.items.concat(data);
+                $scope.items = $scope.items.concat(setItem(data));
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             });
         } else {
@@ -1140,6 +1140,19 @@ function cpzCtrl($scope, $rootScope, $log, $timeout, $state,
     $scope.isEmpty = function() {
         return Items.isEmpty();
     };
+
+    function setItem(data) {
+        var now;
+        return data.map(function (item) {
+            var realData = item.auProModel;
+            now = new Date().getTime();
+            realData.begin = utils.getTimeAdapt(realData.beginTime).getTime();
+            realData.end = utils.getTimeAdapt(realData.endTime).getTime();
+            realData.begined = realData.begin <= now;
+            realData.ended = realData.end <= now;
+            return realData;
+        })
+    }
 
 }
 
@@ -2097,7 +2110,7 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData,
 
 }
 
-function pitemCtrl($scope, $rootScope, $stateParams, FetchData,
+function pitemCtrl($scope, $rootScope, $stateParams, FetchData,utils,
     $ionicSlideBoxDelegate, sheetShare, $cordovaSocialSharing, $ionicPopup,$interval) {
     //商品详情
     //
@@ -2117,12 +2130,12 @@ function pitemCtrl($scope, $rootScope, $stateParams, FetchData,
     $scope.interval = null;
     $scope.joinJP = function() {
         $scope.showPrice = true;
-        $scope.favor(1)
+        $scope.favor(1,false)
     };
 
     $scope.addPrice = function () {
         FetchData.post('/mall/aulog/save?auProId=' + $stateParams.id +'&bidPrice=' + $scope.quantity).then(function(data) {
-            $scope.$emit('出价成功！');
+            $rootScope.$emit('alert','出价成功！');
         })
     }
 
@@ -2135,8 +2148,7 @@ function pitemCtrl($scope, $rootScope, $stateParams, FetchData,
     };
 
     $scope.beginPMFunc = function () {
-        $scope.beginPM = true;
-        $scope.interval = $interval(getPM, 2000);
+        beginPMFunc();
     }
 
     $scope.finishPMFunc = function () {
@@ -2146,29 +2158,29 @@ function pitemCtrl($scope, $rootScope, $stateParams, FetchData,
         $interval.cancel($scope.interval)
     }
 
-    $scope.favor = function(type) {
-        var url = '';
-        if ($scope.item.flag && (type === '0')) {
-            url = '/mall/aurecord/delete?id=' + $stateParams.id
-        } else {
-            url = '/mall/aurecord/save?auProId=' + $stateParams.id +'&retType='+type
-        }
-        FetchData.post(url).then(function(data) {
-            if (type === '0') {
-                $scope.item.flag = !$scope.item.flag;
-            }
+    $scope.favor = function(type, isAdd, key) {
+        var setting = isAdd ? {
+            url: '/mall/aurecord/delete?auProId=' + $stateParams.id +'&retType='+type,
+            msg: ['取消关注成功','','取消提醒成功']
+        } : {
+            url: '/mall/aurecord/save?auProId=' + $stateParams.id +'&retType='+type,
+            msg: ['关注成功','参加竞拍成功','设置提醒成功']
+        };
+        FetchData.post(setting.url).then(function(data) {
+            $scope.item[key] = !isAdd;
+            $scope.$emit('alert', setting.msg[type]);
         })
     };
 
     $scope.quantity = 1;
     $scope.rangePrice = 1;
     $scope.setQuantity = function(quantity, relative) {
-        var quantityInt = parseInt(quantity) * $scope.rangePrice;
+        var quantityInt = parseInt(quantity) * +$scope.rangePrice;
         if (quantityInt % 1 === 0) {
             if (relative === true) {
-                $scope.quantity += quantityInt;
+                $scope.quantity = +$scope.quantity + +quantityInt;
             } else {
-                $scope.quantity = quantityInt;
+                $scope.quantity = +quantityInt;
             }
             if ($scope.quantity < $scope.rangePrice) $scope.quantity = $scope.rangePrice;
 
@@ -2178,7 +2190,7 @@ function pitemCtrl($scope, $rootScope, $stateParams, FetchData,
         }
     };
     $scope.subTotal = function(price, quantity) {
-        return parseFloat(price * quantity);
+        return parseFloat(+price * +quantity);
     }
 
     $scope.selectedAttr = {};
@@ -2194,14 +2206,17 @@ function pitemCtrl($scope, $rootScope, $stateParams, FetchData,
 
     function getItem(){
         FetchData.get('/mall/aupro/app/get?id=' + $stateParams.id).then(function(data) {
-            $scope.item = data.data;
+            $scope.item = setItem(data.data);
             $scope.beginTime = $scope.item.beginTime;
             $scope.endTime = $scope.item.endTime;
             $scope.rangePrice = $scope.item.rangePrice;
             $scope.quantity = $scope.item.rangePrice;
+            if (data.data.applyFlag) {
+                // 已经参加过无需再点出价
+                $scope.showPrice = true;
+            }
             $ionicSlideBoxDelegate.$getByHandle('image-viewer').update();
             $ionicSlideBoxDelegate.$getByHandle('image-viewer').loop(true);
-
         });
     }
 
@@ -2212,6 +2227,28 @@ function pitemCtrl($scope, $rootScope, $stateParams, FetchData,
                 $scope.item.nowPrice = data.data.data[0].bidPrice;
             }
         });
+    }
+
+    function setItem(item) {
+        var now = new Date().getTime();
+        item.beginTime = utils.getTimeAdapt(item.beginTime).getTime();
+        item.endTime = utils.getTimeAdapt(item.endTime).getTime();
+        $scope.beginPM = item.beginTime <= now;
+        $scope.endPM = item.endTime <= now;
+        if ($scope.beginPM) {
+            $scope.beginPMFunc = beginPMFunc();
+        }
+        if ($scope.endPM) {
+            $scope.beginPMFunc = null;
+        }
+        return item;
+    }
+    function beginPMFunc() {
+        $scope.beginPM = true;
+        if ($scope.beginPM && !$scope.endPM){
+            getPM();
+            $scope.interval = $interval(getPM, 2000);
+        }
     }
 
 }
@@ -2311,7 +2348,7 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
     };
 }
 
-function pfavorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
+function pfavorCtrl($rootScope, $scope, FetchData, $state, ngCart,utils) {
     //我的喜欢
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
@@ -2333,10 +2370,23 @@ function pfavorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
         $state.go('pitem', { id: id });
     };
     function getFavor() {
-        FetchData.get('/mall/aurecord/query?reType=1').then(function(data) {
-            $scope.items = data.data.data;
+        FetchData.get('/mall/aurecord/query?reType=0').then(function(data) {
+            $scope.items = setItem(data.data.data);
         });
     }
+    function setItem(data) {
+        var now;
+        return data.map(function (item) {
+            var realData = item.auProModel;
+            now = new Date().getTime();
+            realData.begin = utils.getTimeAdapt(realData.beginTime).getTime();
+            realData.end = utils.getTimeAdapt(realData.endTime).getTime();
+            realData.begined = realData.begin <= now;
+            realData.ended = realData.end <= now;
+            return realData;
+        })
+    }
+
 }
 
 function precordCtrl($rootScope, $scope, FetchData, $state, ngCart) {
@@ -2456,6 +2506,19 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
         var url = $scope.isShop ? "shopTab.account": "tab.account";
         $state.go(url)
     };
+    function setItem(data) {
+        var now;
+        return $scope.isShop ? data : data.map(function (item) {
+            var realData = item;
+            now = new Date().getTime();
+            realData.begin = utils.getTimeAdapt(realData.beginTime).getTime();
+            realData.end = utils.getTimeAdapt(realData.endTime).getTime();
+            realData.begined = realData.begin <= now;
+            realData.ended = realData.end <= now;
+            return realData;
+        })
+    }
+
 }
 
 function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup, orderOpt,utils) {

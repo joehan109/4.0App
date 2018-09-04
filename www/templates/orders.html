@@ -10,10 +10,10 @@
         <section>
             <div class="order-btn-row">
                 <div class="btn-group cart-btn row" style="display:flex;padding:0 10px">
-                    <button class="btn order-btn col-25" ng-class="{'active': orderType == '0'}" ng-click="setType('0')">待付款</button>
-                    <button class="btn order-btn col-25" ng-class="{'active': orderType == '1'}" ng-click="setType('1')">待收货</button>
-                    <button class="btn order-btn col-25" ng-class="{'active': orderType == '2'}" ng-click="setType('2')">已完成</button>
-                    <button class="btn order-btn col-25" ng-class="{'active': orderType == '3'}" ng-click="setType('3')">已取消</button>
+                    <button class="btn order-btn" ng-class="{'active': orderType == '0'}" ng-style="{'width':isShop ? '25%': '33%'}" ng-click="setType('0')">待付款</button>
+                    <button class="btn order-btn" ng-class="{'active': orderType == '1'}" ng-style="{'width':isShop ? '25%': '33%'}" ng-click="setType('1')">待收货</button>
+                    <button class="btn order-btn" ng-class="{'active': orderType == '2'}" ng-style="{'width':isShop ? '25%': '33%'}" ng-click="setType('2')">已完成</button>
+                    <button class="btn order-btn col-25" ng-class="{'active': orderType == '3'}" ng-if="isShop" ng-click="setType('3')">已取消</button>
                 </div>
             </div>
             <div class="order-detail" ng-repeat="order in orders track by $index">
@@ -21,18 +21,21 @@
                     <thead>
                         <tr>
                             <td class="first-cell" colspan="2">
-                                <button class="button button-clear button-dark button-small">
-                                    订单号: {{order.code}}
+                                <button ng-if="isShop" class="button button-clear button-dark button-small">
+                                    订单号：{{order.code }}
+                                </button>
+                                <button ng-if="!isShop" style="font-weight: bold;font-size:14px" class="button button-clear button-dark button-small">
+                                    {{order.auProName}}
                                 </button>
                             </td>
-                            <td class="detail-cell">
+                            <td class="detail-cell" ng-if="isShop">
                                 <a class="button button-stable button-small" style="background-color: #fff;" ng-href="#/order/{{order.code}}?status_id={{order.status}}">详情 <i class="icon ion-ios-arrow-right"></i></a>
                             </td>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <tr ng-repeat="entry in order.detailList track by $index" style="border:0 none; background-color:#f9f9f9">
+                        <tr ng-if="isShop" ng-repeat="entry in order.detailList track by $index" style="border:0 none; background-color:#f9f9f9">
 
                             <td class="img-cell">
                                 <div>
@@ -41,38 +44,51 @@
                                     </a>
                                 </div>
                             </td>
-                            <td class="info-cell" ng-if="isShop">
+                            <td class="info-cell">
                                 <div>{{ entry.maProName }}</div>
                             </td>
-                            <td class="info-cell" ng-if="!isShop" style="width:80%">
-                                <div>{{ entry.auProName }}</div>
-                                <div>起拍价：{{ entry.beginPrice | currency:"￥"}}</div>
-                                <div>成交价：{{ entry.dealPrice | currency:"￥"}}</div>
-                                <div>成交时间：{{ entry.createTime }}</div>
-                            </td>
-                            <td class="price-cell" ng-if="isShop">
+                            <td class="price-cell">
                                 {{ entry.dealPrice | currency:'￥' }}
                                 <div style="color:#333">
                                     <span>x {{ entry.num | number }}</span>
                                 </div>
                             </td>
                         </tr>
-                    </tbody>
+                        <tr ng-if="!isShop" style="border:0 none; background-color:#f9f9f9">
 
+                                <td class="img-cell">
+                                    <div ng-if="!isShop">
+                                        <a ng-href="#/pitem/{{order.auProId}}">
+                                            <img ng-src="{{order.auProImg}}">
+                                        </a>
+                                    </div>
+                                </td>
+                                <td class="info-cell" style="width:80%;color:#333">
+                                    <div>订单号：{{ order.code }}</div>
+                                    <div>起拍价：{{ order.beginPrice | currency:""}} 元</div>
+                                    <div>成交价：{{ order.dealPrice | currency:""}} 元</div>
+                                    <div>成交时间：{{ order.createTime }}</div>
+                                </td>
+                                <td class="price-cell">
+                                    <div style="color:#333">
+                                    </div>
+                                </td>
+                            </tr>
+                       </tbody>
                     <tfoot>
-                        <tr>
+                        <tr ng-if="isShop">
                             <td colspan="3" class="fee-cell">运费:
                                 <span class="price-cell">{{ order.trackingAmount | currency:"￥" }}</span> 总计:
                                 <span class="price-cell">{{ order.totalAmount | currency:"￥" }}</span>
                             </td>
                         </tr>
-                        <tr style="height:40px">
+                        <tr ng-style="{'height':isShop ? '40px%': '50px'}">
                             <td colspan="3" class="status-cell" style="text-align:right;padding-right:10px;">
-                                <div class="orderTimer" ng-if="order.status=='0'">
+                                <div class="orderTimer" ng-if="order.status=='0' && isShop">
                                     <i class="icon ion-ios-timer-outline placeholder-icon" style="font-size:16px;padding-left: 10px"></i>
                                     <timer end-time="order.endTime" finish-callback="finished(order.id)">{{minutes}}分{{seconds}}秒</timer>
                                 </div>
-                                <a class="button button-default button-small" style="border:1px solid #aaa" ng-if="order.status=='0'" ng-click="orderCancel(order)">
+                                <a class="button button-default button-small" style="border:1px solid #aaa" ng-if="order.status=='0' && isShop" ng-click="orderCancel(order)">
                                     取消订单
                                 </a>
                                 <a class="button button-default button-small" style="border:1px solid #aaa" ng-if="order.status=='1' || order.status=='2'" ng-href="#/order/logistics/{{order.code}}?status_id={{order.status}}">

@@ -25,7 +25,6 @@ buildscript {
         maven {
             url "https://maven.google.com"
         }
-        google()
     }
 
     // Switch the Android Gradle plugin version requirement depending on the
@@ -33,7 +32,7 @@ buildscript {
     // http://tools.android.com/tech-docs/new-build-system/version-compatibility
     // and https://issues.apache.org/jira/browse/CB-8143
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.1'
+        classpath 'com.android.tools.build:gradle:3.0.0'
     }
 }
 
@@ -251,13 +250,12 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: '*.jar', dir: 'libs')
+    implementation fileTree(dir: 'libs', include: '*.jar')
     // SUB-PROJECT DEPENDENCIES START
     implementation(project(path: "CordovaLib"))
     compile "com.squareup.okhttp3:okhttp-urlconnection:3.10.0"
     compile "com.android.support:support-v4:27.+"
     // SUB-PROJECT DEPENDENCIES END
-    implementation files('libs/alipaySdk-20170725.jar')
 }
 
 def promptForReleaseKeyPassword() {

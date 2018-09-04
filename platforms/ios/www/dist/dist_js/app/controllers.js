@@ -1,7 +1,9 @@
 'use strict';
 
 appIndexCtrl.$inject = ['$scope', '$rootScope', '$state', '$cordovaToast', 'Photogram', 'PhotoService', '$timeout', 'geoService', 'FetchData', '$ionicSlideBoxDelegate', '$interval', 'Storage'];
-homeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', 'ngCart', '$ionicSlideBoxDelegate', 'Board', 'Items', 'FetchData', 'Categories'];
+homeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', 'utils', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
+xspmCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', '$location', 'utils', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
+cpzCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', '$location', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
 cateHomeCtrl.$inject = ['$scope', '$rootScope', '$log', '$timeout', '$state', '$ionicScrollDelegate', 'ngCart', 'Items', 'FetchData', 'Categories', '$ionicSlideBoxDelegate', '$http', 'ENV', 'Storage'];
 introCtrl.$inject = ['$rootScope', '$scope', '$state', 'FetchData', '$ionicSlideBoxDelegate', 'Storage'];
 exploreCtrl.$inject = ['$scope', '$rootScope', '$state', '$ionicPopover', 'Photogram', 'FetchData'];
@@ -29,14 +31,17 @@ changePhoneCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV', '$interval', 
 settingsCtrl.$inject = ['$rootScope', '$scope', '$state', 'AuthService', '$ionicModal', 'Storage'];
 paymentSuccessCtrl.$inject = ['$location', '$timeout'];
 itemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup'];
+pitemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup', '$interval'];
 itemsCtrl.$inject = ['$rootScope', '$scope', 'Items', '$state', '$stateParams'];
 boardCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$state'];
 favorCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart'];
-ordersCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', '$stateParams', '$state', 'utils'];
+pfavorCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart'];
+precordCtrl.$inject = ['$rootScope', '$scope', 'FetchData', '$state', 'ngCart'];
+ordersCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', '$stateParams', '$state', 'utils', 'Storage'];
 calculateCtrl.$inject = ['$rootScope', '$scope', '$location', 'FetchData'];
 expressCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', 'AuthService', '$state', 'expressList'];
 expressItemAddCtrl.$inject = ['$rootScope', '$scope', 'expressList'];
-orderDetailCtrl.$inject = ['$rootScope', '$scope', '$state', '$stateParams', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt'];
+orderDetailCtrl.$inject = ['$rootScope', '$scope', '$state', '$stateParams', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', 'utils'];
 logisticsDetailCtrl.$inject = ['$rootScope', '$scope', '$stateParams', '$state', 'FetchData', 'ngCart', '$location', '$timeout'];
 cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage', '$ionicPopup'];
 checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart'];
@@ -725,9 +730,10 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     $scope.$on('$ionicView.beforeEnter', function() {
         FetchData.get('/mall/mashopping/getAll').then(function(data) {
             ngCart.$loadCart(data.data);
-        }, function(err) {});
+        });
         $rootScope.hideTabs = '';
-        $scope.searchQuery = '';
+        Storage.set('shopOrSell', 'shop');
+        $scope.searchQuery = { url: '/mall/mapro/query', name: '' };
         if (Storage.get('cateHomeOrigin') == 'index') {
             $scope.currentIndex = 0;
             Storage.remove('cateHomeOrigin');
@@ -760,22 +766,9 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     $scope.ngCart = ngCart;
 
-    $scope.redirectTo = function(banner) {
-        if (banner.type == 'BOARD') {
-            $state.go('tab.board', { 'boardID': banner.target })
-        } else {
-            window.open(banner.target, '_blank', 'location=no,toolbarposition=top,closebuttoncaption=关闭,keyboardDisplayRequiresUserAction=no')
-        }
-    };
-
     $scope.goItem = function(id) {
-        $state.go('tab.item', { id: id });
+        $state.go('item', { id: id });
     };
-
-    $scope.slideHasChanged = function(index) {
-        var nextTab = GetCate(index);
-        $scope.changeTab(nextTab, index);
-    }
 
     $scope.isFirst = true;
     $scope.currentIndex = 0;
@@ -804,29 +797,16 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 
     $scope.searchItem = function(query) {
         // $state.go('tab.search', { 'query': query });
-        Items.fetchTopItems({ 'query': query }).then(function(data) {
+        Items.fetchTopItems({ 'query': {
+            url: '/mall/mapro/query',
+            name:query
+        } }).then(function(data) {
             $scope.isFirst = false;
             $scope.items = data;
             // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
         });
 
     }
-
-    /**
-    $scope.swipe = function (direction) {
-        var index = GetCateIndex($scope.currentTab);
-        if (direction == 'left') {
-            var nextTab = GetCate(index+1);
-            if (nextTab == null) return;
-            $scope.changeTab(nextTab, index+1);
-        } else {
-            var lastTab = GetCate(index-1);
-            if (lastTab == null) return;
-            $scope.changeTab(lastTab, index-1);
-
-        }
-    };
-    **/
 
     function setPosition(index) {
         var iconsDiv = angular.element(document.querySelectorAll("#category-scroll"));
@@ -908,73 +888,260 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
 }
 
 function homeCtrl($scope, $rootScope, $log, $timeout, $state,
-    ngCart, $ionicSlideBoxDelegate, Board,
-    Items, FetchData, Categories) {
+    $ionicScrollDelegate, ngCart,utils,
+    Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
     //登录
     $scope.$on('$ionicView.beforeEnter', function() {
-        $scope.$emit('alert', '该功能正在开发，请以后版本尝试')
-        $state.go('appIndex')
         $rootScope.hideTabs = '';
+        $scope.searchQuery = { url: '/mall/aupro/app/query?flag=&status=', name: '' };
+        // $scope.searchQuery = { url: '/mall/mapro/query', name: '' };
+        if (Storage.get('cateHomeOrigin') == 'index') {
+            $scope.currentIndex = 0;
+            Storage.remove('cateHomeOrigin');
+        }
+        Storage.set('shopOrSell', 'sell');
+        FetchData.get('/mall/aupro/app/query?flag=1&status=').then(function(res) {
+            $scope.tuijian = res.data.data;
+            $ionicSlideBoxDelegate.update();
+            $ionicSlideBoxDelegate.loop(true);
+        });
+        $scope.changeTab(1);
     });
-
-    // FetchData.get('/api/banners').then(function(data) {
-    //     $scope.banners = data.banners;
-    //     $ionicSlideBoxDelegate.$getByHandle('image-viewer').update();
-    //     $ionicSlideBoxDelegate.$getByHandle('image-viewer').loop(true);
-    // });
+    $scope.isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
+    $scope.style = {
+        "margin-top": ($scope.isX ? 15 : 0) + 'px'
+    }
 
     $scope.ngCart = ngCart;
 
-    $scope.redirectTo = function(banner) {
-        if (banner.type == 'BOARD') {
-            $state.go('tab.board', { 'boardID': banner.target })
-        } else {
-            window.open(banner.target, '_blank', 'location=no,toolbarposition=top,closebuttoncaption=关闭,keyboardDisplayRequiresUserAction=no')
-        }
+    $scope.goItem = function(id) {
+        $state.go('pitem', { id: id });
     };
 
-    $scope.goBoard = function(board_id) {
-        $state.go('tab.board', { 'boardID': board_id })
-    }
+    $scope.isFirst = true;
+    $scope.currentIndex = 0;
+    $scope.items = [];
+    $scope.tuijian = [];
+    $scope.currentTab = '';
+    $scope.model = {
+        activeIndex: 0
+    };
+    $scope.changeTab = function(index) {
+        $scope.currentIndex = index;
+        var query = $scope.searchQuery ? { query: $scope.searchQuery } : '';
+        Items.setCurrentTab($scope.currentIndex);
+        Items.fetchTopItems(query).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items = setItem(data);
+        });
+    };
 
     $scope.searchItem = function(query) {
-        $state.go('tab.search', { 'query': query });
+        Items.fetchTopItems({ 'query': {
+            url: '/mall/aupro/app/query?flag=&status=',
+            name: query
+        } }).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items =  setItem(data);
+        });
+
     }
 
-    $scope.boards = [];
-    var page = 0;
-
-    // Board.getBoards(page).then(function(data) {
-    //     $scope.boards = data.boards;
-    //     page++;
-    // });
 
     $scope.doRefresh = function() {
-        page = 0;
-        Board.getBoards(page).then(function(data) {
-            $scope.boards = data.boards;
-            page++;
+
+        Items.fetchTopItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
+            $scope.items =  setItem(data);
         });
         $scope.$broadcast('scroll.refreshComplete');
     };
 
-    // $scope.loadMore = function() {
-    //     Board.getBoards(page).then(function(data) {
-    //         $scope.boards = $scope.boards.concat(data.boards);
-    //         $scope.$broadcast('scroll.infiniteScrollComplete');
-    //         page++;
-    //     });
-    // };
+    $scope.loadMore = function() {
+        if (!$scope.isFirst && Items.hasNextPage()) {
+            Items.increaseNewItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
+                $scope.items = $scope.items.concat( setItem(data));
+                $scope.$broadcast('scroll.infiniteScrollComplete');
+            });
+        } else {
+            $scope.$broadcast('scroll.infiniteScrollComplete');
+            console.log($scope.isFirst, Items.hasNextPage())
+        }
+    };
 
     $scope.moreDataCanBeLoaded = function() {
-        return Board.hasNextPage();
+        return Items.hasNextPage();
     };
+
     $scope.isEmpty = function() {
-        return Board.isEmpty();
+        return Items.isEmpty();
+    };
+    function setItem(data) {
+        var now;
+        return data.map(function (item) {
+            now = new Date().getTime();
+            item.begin = utils.getTimeAdapt(item.beginTime).getTime();
+            item.end = utils.getTimeAdapt(item.endTime).getTime();
+            item.begined = item.begin <= now;
+            item.ended = item.end <= now;
+            return item;
+        })
+    }
+}
+
+function xspmCtrl($scope, $rootScope, $log, $timeout, $state,
+    $ionicScrollDelegate, ngCart,$location,utils,
+    Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
+    //登录
+    $scope.$on('$ionicView.beforeEnter', function() {
+        $rootScope.hideTabs = '';
+        $scope.searchQuery = { url: '/mall/aupro/app/query?flag=&status=1', name: '' };
+        if (Storage.get('cateHomeOrigin') == 'index') {
+            $scope.currentIndex = 0;
+            Storage.remove('cateHomeOrigin');
+        }
+        $scope.changeTab(1);
+    });
+
+    $scope.ngCart = ngCart;
+
+    $scope.goItem = function(id) {
+        $state.go('pitem', {id: id });
+    };
+
+    $scope.isFirst = true;
+    $scope.currentIndex = 0;
+    $scope.items = [];
+    $scope.tuijian = [];
+    $scope.currentTab = '';
+    $scope.model = {
+        activeIndex: 0
+    };
+    $scope.changeTab = function(index) {
+        $scope.currentIndex = index;
+        var query = $scope.searchQuery ? { query: $scope.searchQuery } : '';
+        Items.setCurrentTab($scope.currentIndex);
+        Items.fetchTopItems(query).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items = setItem(data);
+        });
+    };
+
+    $scope.searchItem = function(query) {
+        // $state.go('tab.search', { 'query': query });
+        Items.fetchTopItems({ 'query': query }).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items = setItem(data);
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+        });
+
+    }
+
+
+    $scope.doRefresh = function() {
+
+        Items.fetchTopItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
+            $scope.items = setItem(data);
+        });
+        $scope.$broadcast('scroll.refreshComplete');
+    };
+
+    $scope.loadMore = function() {
+        if (!$scope.isFirst && Items.hasNextPage()) {
+            Items.increaseNewItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
+                $scope.items = $scope.items.concat(setItem(data));
+                $scope.$broadcast('scroll.infiniteScrollComplete');
+            });
+        } else {
+            $scope.$broadcast('scroll.infiniteScrollComplete');
+            console.log($scope.isFirst, Items.hasNextPage())
+        }
+    };
+
+    $scope.moreDataCanBeLoaded = function() {
+        return Items.hasNextPage();
+    };
+
+    $scope.isEmpty = function() {
+        return Items.isEmpty();
+    };
+
+    function setItem(data) {
+        var now;
+        return data.map(function (item) {
+            now = new Date().getTime();
+            item.begin = utils.getTimeAdapt(item.beginTime).getTime();
+            item.end = utils.getTimeAdapt(item.endTime).getTime();
+            item.begined = item.begin <= now;
+            item.ended = item.end <= now;
+            return item;
+        })
     }
 
 }
 
+function cpzCtrl($scope, $rootScope, $log, $timeout, $state,
+    $ionicScrollDelegate, ngCart,$location,
+    Items, FetchData, Categories, $ionicSlideBoxDelegate, $http, ENV, Storage) {
+    //登录
+    $scope.$on('$ionicView.beforeEnter', function() {
+        $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.searchQuery = { url: '/mall/aurecord/query?reType=0', name: '' };
+        Items.setCurrentTab(1);
+        Items.fetchTopItems({query:$scope.searchQuery}).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items = data;
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+        });
+
+    });
+    
+    $scope.goItem = function(id) {
+        $state.go('pitem', {id: id });
+    };
+
+    $scope.isFirst = true;
+    $scope.currentIndex = 0;
+    $scope.items = [];
+    $scope.searchItem = function(query) {
+        // $state.go('tab.search', { 'query': query });
+        Items.fetchTopItems({ 'query': query }).then(function(data) {
+            $scope.isFirst = false;
+            $scope.items = data;
+            // $ionicSlideBoxDelegate.$getByHandle('delegateHandler').update();
+        });
+
+    }
+
+
+    $scope.doRefresh = function() {
+
+        Items.fetchTopItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
+            $scope.items = data;
+        });
+        $scope.$broadcast('scroll.refreshComplete');
+    };
+
+    $scope.loadMore = function() {
+        if (!$scope.isFirst && Items.hasNextPage()) {
+            Items.increaseNewItems($scope.searchQuery ? { query: $scope.searchQuery } : null).then(function(data) {
+                $scope.items = $scope.items.concat(data);
+                $scope.$broadcast('scroll.infiniteScrollComplete');
+            });
+        } else {
+            $scope.$broadcast('scroll.infiniteScrollComplete');
+            console.log($scope.isFirst, Items.hasNextPage())
+        }
+    };
+
+    $scope.moreDataCanBeLoaded = function() {
+        return Items.hasNextPage();
+    };
+
+    $scope.isEmpty = function() {
+        return Items.isEmpty();
+    };
+
+}
 
 function exploreCtrl($scope, $rootScope, $state, $ionicPopover, Photogram, FetchData) {
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -1334,14 +1501,6 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
     };
     $scope.user = AuthService;
 
-    // $scope.onUserDetailContentScroll = onUserDetailContentScroll;
-    //
-    // function onUserDetailContentScroll() {
-    //     var scrollDelegate = $ionicScrollDelegate.$getByHandle('userDetailContent');
-    //     var scrollView = scrollDelegate.getScrollView();
-    //     $scope.$broadcast('userDetailContent.scroll', scrollView);
-    // }
-
     $scope.gridStyle = 'list';
     $scope.switchListStyle = function(style) {
         $scope.gridStyle = style;
@@ -1360,31 +1519,6 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
     var userId = AuthService.getUser().id;
     var page = 0;
 
-    // Photogram.getUserPosts(userId, page).then(function(data){
-    //     $scope.posts = data.posts;
-    //     page++;
-    // });
-
-    // $scope.doRefresh = function() {
-    //     page = 0;
-    //     Photogram.getUserPosts(userId, page).then(function(data){
-    //         $scope.posts = data.posts;
-    //         page++;
-    //     });
-    //     $scope.$broadcast('scroll.refreshComplete');
-    // };
-    //
-    // $scope.loadMore = function() {
-    //     Photogram.getUserPosts(userId, page).then(function(data){
-    //         $scope.posts = $scope.posts.concat(data.posts);
-    //         $scope.$broadcast('scroll.infiniteScrollComplete');
-    //         page++;
-    //     });
-    // };
-
-    // $scope.moreDataCanBeLoaded = function() {
-    //     return Photogram.hasNextPage();
-    // };
 
     $scope.isEmpty = function() {
         return Photogram.isEmpty();
@@ -1963,6 +2097,125 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData,
 
 }
 
+function pitemCtrl($scope, $rootScope, $stateParams, FetchData,
+    $ionicSlideBoxDelegate, sheetShare, $cordovaSocialSharing, $ionicPopup,$interval) {
+    //商品详情
+    //
+    $scope.$on('$ionicView.beforeEnter', function() {
+        $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.beginPM = false;
+        $scope.endPM = false;
+        $scope.showPrice = false;
+        getItem();
+    });
+    $scope.$on('$ionicView.beforeLeave', function() {
+        $interval.cancel($scope.interval);
+        $scope.beginPMFunc = function () {};
+    });
+
+    $scope.priceList = [];
+    $scope.interval = null;
+    $scope.joinJP = function() {
+        $scope.showPrice = true;
+        $scope.favor(1)
+    };
+
+    $scope.addPrice = function () {
+        FetchData.post('/mall/aulog/save?auProId=' + $stateParams.id +'&bidPrice=' + $scope.quantity).then(function(data) {
+            $scope.$emit('出价成功！');
+        })
+    }
+
+    $scope.showFalse = function(type) {
+        var msg = [
+            '活动尚未开始，您可以先添加关注和提醒',
+            '活动已经结束，欢迎下次再来'
+        ][type];
+        $scope.$emit('alert', msg);
+    };
+
+    $scope.beginPMFunc = function () {
+        $scope.beginPM = true;
+        $scope.interval = $interval(getPM, 2000);
+    }
+
+    $scope.finishPMFunc = function () {
+        $scope.endPM = true;
+        $scope.beginPM = false;
+        $scope.showPrice = false;
+        $interval.cancel($scope.interval)
+    }
+
+    $scope.favor = function(type) {
+        var url = '';
+        if ($scope.item.flag && (type === '0')) {
+            url = '/mall/aurecord/delete?id=' + $stateParams.id
+        } else {
+            url = '/mall/aurecord/save?auProId=' + $stateParams.id +'&retType='+type
+        }
+        FetchData.post(url).then(function(data) {
+            if (type === '0') {
+                $scope.item.flag = !$scope.item.flag;
+            }
+        })
+    };
+
+    $scope.quantity = 1;
+    $scope.rangePrice = 1;
+    $scope.setQuantity = function(quantity, relative) {
+        var quantityInt = parseInt(quantity) * $scope.rangePrice;
+        if (quantityInt % 1 === 0) {
+            if (relative === true) {
+                $scope.quantity += quantityInt;
+            } else {
+                $scope.quantity = quantityInt;
+            }
+            if ($scope.quantity < $scope.rangePrice) $scope.quantity = $scope.rangePrice;
+
+        } else {
+            $scope.quantity = $scope.rangePrice;
+            $scope.$emit('Quantity must be an integer and was defaulted to 1');
+        }
+    };
+    $scope.subTotal = function(price, quantity) {
+        return parseFloat(price * quantity);
+    }
+
+    $scope.selectedAttr = {};
+    $scope.setAttr = function(k, val) {
+        $scope.selectedAttr[k] = val;
+        $scope.selectedSpec = containsObj($scope.selectedAttr, $scope.specs);
+        $scope.remainSpec = remainSpecs(k, val, $scope.specs);
+        $scope.selectedSpecData = {
+            'item': $scope.item,
+            'spec': $scope.selectedSpec
+        };
+    };
+
+    function getItem(){
+        FetchData.get('/mall/aupro/app/get?id=' + $stateParams.id).then(function(data) {
+            $scope.item = data.data;
+            $scope.beginTime = $scope.item.beginTime;
+            $scope.endTime = $scope.item.endTime;
+            $scope.rangePrice = $scope.item.rangePrice;
+            $scope.quantity = $scope.item.rangePrice;
+            $ionicSlideBoxDelegate.$getByHandle('image-viewer').update();
+            $ionicSlideBoxDelegate.$getByHandle('image-viewer').loop(true);
+
+        });
+    }
+
+    function getPM(){
+        FetchData.get('/mall/aulog/app/query?auProId=' + $stateParams.id).then(function(data) {
+            $scope.priceList = data.data.data;
+            if (data.data.data.length) {
+                $scope.item.nowPrice = data.data.data[0].bidPrice;
+            }
+        });
+    }
+
+}
+
 function boardCtrl($scope, $rootScope, $stateParams, FetchData, $state) {
     //专题详情
     $scope.$on('$ionicView.beforeEnter', function() {
@@ -1973,7 +2226,7 @@ function boardCtrl($scope, $rootScope, $stateParams, FetchData, $state) {
         $scope.board = data.board;
     });
     $scope.goItem = function(item_id) {
-        $state.go('tab.item', { itemID: item_id });
+        $state.go('item', { itemID: item_id });
     };
 
 }
@@ -1985,7 +2238,7 @@ function itemsCtrl($rootScope, $scope, Items, $state, $stateParams) {
     });
 
     $scope.goItem = function(item_id) {
-        $state.go('tab.item', { id: item_id });
+        $state.go('item', { id: item_id });
     };
 
     $scope.items = [];
@@ -2054,20 +2307,77 @@ function favorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
         // $scope.$emit("alert", "成功添加到购物车！");
     }
     $scope.goItem = function(id) {
-        $state.go('tab.item', { id: id });
+        $state.go('item', { id: id });
     };
 }
 
-function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt, $stateParams, $state, utils) {
-    //订单列表
-    //
+function pfavorCtrl($rootScope, $scope, FetchData, $state, ngCart) {
+    //我的喜欢
     $scope.$on('$ionicView.beforeEnter', function() {
+        $rootScope.hideTabs = 'tabs-item-hide';
+        getFavor();
+    });
+    $scope.items = [];
+
+    $scope.unfavor = function(item) {
+        FetchData.get('/mall/aurecord/delete?id=' + item.id).then(function(data) {
+            item.collectFlag = false;
+            getFavor()
+        })
+    };
+    $scope.addToCart = function(item) {
+        ngCart.addItem(item.id, item.name, item.price, 1, item);
+        // $scope.$emit("alert", "成功添加到购物车！");
+    }
+    $scope.goItem = function(id) {
+        $state.go('pitem', { id: id });
+    };
+    function getFavor() {
+        FetchData.get('/mall/aurecord/query?reType=1').then(function(data) {
+            $scope.items = data.data.data;
+        });
+    }
+}
+
+function precordCtrl($rootScope, $scope, FetchData, $state, ngCart) {
+    //我的喜欢
+    $scope.$on('$ionicView.beforeEnter', function() {
+        $rootScope.hideTabs = 'tabs-item-hide';
+        getRecord();
+    });
+    $scope.items = [];
+
+    $scope.goItem = function(id) {
+        $state.go('pitem', { id: id });
+    };
+    function getRecord() {
+        FetchData.get('/mall/macollect/getAll').then(function(data) {
+            $scope.items = data.data;
+        });
+    }
+}
+
+function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt, $stateParams, $state, utils, Storage) {
+    //订单列表
+    $scope.$on('$ionicView.beforeEnter', function() {
+        $scope.isShop = Storage.get('shopOrSell') === 'shop';
+        $scope.orderSetting = $scope.isShop ? {
+            ordersUrl: '/mall/maorder/query?code=&status=',
+            cancelUrl: '/mall/maorder/cancel?id=',
+            delUrl: '/mall/maorder/delete?id=',
+            doneUrl:'/mall/maorder/confirm?id='
+        } : {
+            ordersUrl:'/mall/auorder/query?status=',
+            cancelUrl: '',
+            delUrl: '',
+            doneUrl:'/mall/auorder/confirm?id='
+       };
         $scope.orders = [];
         $rootScope.hideTabs = 'tabs-item-hide';
         if ($stateParams.status_id) {
             $scope.orderType = $stateParams.status_id
         }
-        FetchData.get('/mall/maorder/query?code=&status=' + $scope.orderType).then(function(data) {
+        FetchData.get($scope.orderSetting.ordersUrl + $scope.orderType).then(function(data) {
             if ($scope.orderType == '0') {
                 angular.forEach(data.data.data, function(item) {
                     item.endTime = (utils.getTimeAdapt(item.createTime).getTime()) + 30 * 60 * 1000
@@ -2084,7 +2394,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
     $scope.setType = function(type) {
         if (type !== $scope.orderType) {
             $scope.orderType = type;
-            FetchData.get('/mall/maorder/query?code=&status=' + type).then(function(data) {
+            FetchData.get($scope.orderSetting.ordersUrl + type).then(function(data) {
                 if (type == '0') {
                     angular.forEach(data.data.data, function(item) {
                         item.endTime = (utils.getTimeAdapt(item.createTime).getTime()) + 30 * 60 * 1000
@@ -2104,7 +2414,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
         });
         confirmPopup.then(function(res) {
             if (res) {
-                orderOpt.done(order.id, $scope.orderType);
+                orderOpt.done($scope.orderSetting.ordersUrl, order.id, $scope.orderType);
             } else {
                 console.log('You are not sure');
             }
@@ -2120,7 +2430,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
         });
         confirmPopup.then(function(res) {
             if (res) {
-                orderOpt.del(order.id, $scope.orderType);
+                orderOpt.del($scope.orderSetting.delUrl, order.id, $scope.orderType);
             } else {
                 console.log('You are not sure');
             }
@@ -2136,20 +2446,20 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
         });
         confirmPopup.then(function(res) {
             if (res) {
-                orderOpt.cancel(order.id, $scope.orderType);
+                orderOpt.cancel($scope.orderSetting.cancelUrl, order.id, $scope.orderType);
             } else {
                 console.log('You are not sure');
             }
         });
     };
     $scope.goTo = function() {
-        $state.go('shopTab.account')
+        var url = $scope.isShop ? "shopTab.account": "tab.account";
+        $state.go(url)
     };
 }
 
-function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup, orderOpt) {
+function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup, orderOpt,utils) {
     //订单详情
-    //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
         $scope.statusId = $stateParams.status_id || '';
@@ -2165,7 +2475,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     });
     $scope.goTab = function() {
         if ($scope.statusId) {
-            $state.go('tab.orders', {
+            $state.go('orders', {
                 status_id: $scope.statusId
             });
         } else {
@@ -2245,7 +2555,7 @@ function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData
     });
     $scope.goTab = function() {
         if ($scope.statusId) {
-            $state.go('tab.orders', {
+            $state.go('orders', {
                 status_id: $scope.statusId
             });
         } else {
@@ -3010,6 +3320,8 @@ function introCtrl($rootScope, $scope, $state, FetchData, $ionicSlideBoxDelegate
 
 controllersModule.controller('appIndexCtrl', appIndexCtrl);
 controllersModule.controller('homeCtrl', homeCtrl);
+controllersModule.controller('xspmCtrl', xspmCtrl);
+controllersModule.controller('cpzCtrl', cpzCtrl);
 controllersModule.controller('cateHomeCtrl', cateHomeCtrl);
 controllersModule.controller('introCtrl', introCtrl);
 controllersModule.controller('exploreCtrl', exploreCtrl);
@@ -3038,9 +3350,12 @@ controllersModule.controller('settingsCtrl', settingsCtrl);
 controllersModule.controller('paymentSuccessCtrl', paymentSuccessCtrl);
 controllersModule.controller('paymentCancelCtrl', paymentCancelCtrl);
 controllersModule.controller('itemCtrl', itemCtrl);
+controllersModule.controller('pitemCtrl', pitemCtrl);
 controllersModule.controller('itemsCtrl', itemsCtrl);
 controllersModule.controller('boardCtrl', boardCtrl);
 controllersModule.controller('favorCtrl', favorCtrl);
+controllersModule.controller('pfavorCtrl', pfavorCtrl);
+controllersModule.controller('precordCtrl', precordCtrl);
 controllersModule.controller('ordersCtrl', ordersCtrl);
 controllersModule.controller('calculateCtrl', calculateCtrl);
 controllersModule.controller('expressCtrl', expressCtrl);

@@ -305,19 +305,19 @@ module.exports = [
     ]
   },
   {
-    "id": "phonegap-plugin-barcodescanner.BarcodeScanner",
-    "file": "plugins/phonegap-plugin-barcodescanner/www/barcodescanner.js",
-    "pluginId": "phonegap-plugin-barcodescanner",
-    "clobbers": [
-      "cordova.plugins.barcodeScanner"
-    ]
-  },
-  {
     "id": "ionic-plugin-deploy.IonicDeploy",
     "file": "plugins/ionic-plugin-deploy/www/ionicdeploy.js",
     "pluginId": "ionic-plugin-deploy",
     "clobbers": [
       "IonicDeploy"
+    ]
+  },
+  {
+    "id": "phonegap-plugin-barcodescanner.BarcodeScanner",
+    "file": "plugins/phonegap-plugin-barcodescanner/www/barcodescanner.js",
+    "pluginId": "phonegap-plugin-barcodescanner",
+    "clobbers": [
+      "cordova.plugins.barcodeScanner"
     ]
   }
 ];
@@ -334,10 +334,11 @@ module.exports.metadata =
   "cordova-plugin-ionic-keyboard": "2.0.5",
   "cordova-plugin-ionic-webview": "1.1.19",
   "cordova-plugin-splashscreen": "5.0.2",
+  "cordova-plugin-webserver": "1.0.3",
   "cordova-plugin-whitelist": "1.3.4-dev",
   "cordova-plugin-x-toast": "2.6.2",
-  "phonegap-plugin-barcodescanner": "7.1.2",
-  "ionic-plugin-deploy": "0.6.7"
+  "ionic-plugin-deploy": "0.6.7",
+  "phonegap-plugin-barcodescanner": "7.1.2"
 };
 // BOTTOM OF METADATA
 });
