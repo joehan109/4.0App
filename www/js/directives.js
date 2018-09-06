@@ -112,7 +112,7 @@ angular.module('fourdotzero.directives', [])
     };
 })
 
-.directive('ngcartCheckout', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state, $http, ENV, AlipayService) {
+.directive('ngcartCheckout', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state, $http, ENV, AlipayService,Storage) {
     return {
         restrict: 'E',
         link: function(scope, element, attrs) {
@@ -164,7 +164,8 @@ angular.module('fourdotzero.directives', [])
                         })
                     } else if (attrs.ordertype == 'existed') {
                         // 直接掉支付接口
-                        $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + attrs.orderid).success(function(r, status) {
+                        var url = Storage.get('shopOrSell') === 'shop' ? '/mall/alipay/maorder/pay?ids=' : '/auorder/pay?ids='
+                        $http.post(ENV.SERVER_URL + url + attrs.orderid).success(function(r, status) {
                             if (r.ret) {
                                 AlipayService.alipayCheckout(r.data)
                             }

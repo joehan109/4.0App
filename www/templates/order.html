@@ -24,7 +24,7 @@
             <div class="">
                 <table class="table ngCart cart-table">
                     <tbody>
-                        <tr ng-repeat="entry in order.detailList track by $index">
+                        <tr ng-if="isShop" ng-repeat="entry in order.detailList track by $index">
                             <td class="img-cell">
                                 <div>
                                     <img ng-src="{{entry.maProImg}}">
@@ -40,6 +40,21 @@
                                 </div>
                             </td>
                         </tr>
+                        <tr ng-if="!isShop">
+                            <td class="img-cell">
+                                <div>
+                                    <img ng-src="{{order.auProImg}}">
+                                </div>
+                            </td>
+                            <td class="info-cell" style="width:80%;color:#333">
+                                <div>订单号：{{ order.code }}</div>
+                                <div>起拍价：{{ order.beginPrice | currency:""}} 元</div>
+                                <div>成交价：{{ order.dealPrice | currency:""}} 元</div>
+                                <div>成交时间：{{ order.createTime }}</div>
+                            </td>
+                            
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -73,7 +88,7 @@
                 <div class="">
                     创建时间: {{order.createTime}}
                 </div>
-                <div class="energized" ng-if="order.status=='0'">
+                <div class="energized" ng-if="order.status=='0' && isShop">
                     剩余支付时间:
                     <timer end-time="order.endTime" finish-callback="finished(order.id)">{{minutes}}分{{seconds}}秒</timer>
                 </div>

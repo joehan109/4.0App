@@ -41,8 +41,8 @@ ordersCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', '$ionicPopu
 calculateCtrl.$inject = ['$rootScope', '$scope', '$location', 'FetchData'];
 expressCtrl.$inject = ['$rootScope', '$scope', 'FetchData', 'ngCart', 'AuthService', '$state', 'expressList'];
 expressItemAddCtrl.$inject = ['$rootScope', '$scope', 'expressList'];
-orderDetailCtrl.$inject = ['$rootScope', '$scope', '$state', '$stateParams', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', 'utils'];
-logisticsDetailCtrl.$inject = ['$rootScope', '$scope', '$stateParams', '$state', 'FetchData', 'ngCart', '$location', '$timeout'];
+orderDetailCtrl.$inject = ['$rootScope', '$scope', '$state', '$stateParams', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', 'utils', 'Storage'];
+logisticsDetailCtrl.$inject = ['$rootScope', '$scope', '$stateParams', '$state', 'FetchData', 'ngCart', '$location', '$timeout', 'Storage'];
 cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage', '$ionicPopup'];
 checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart'];
 addressCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
@@ -2521,16 +2521,19 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
 
 }
 
-function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup, orderOpt,utils) {
+function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ngCart, $ionicPopup, orderOpt,utils,Storage) {
     //订单详情
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.isShop = Storage.get('shopOrSell') === 'shop';
         $scope.statusId = $stateParams.status_id || '';
     });
 
     $scope.ngCart = ngCart;
 
-    FetchData.get('/mall/maorder/query?code=' + $stateParams.order_id + '&status=').then(function(data) {
+    var url = $scope.isShop ? '/mall/maorder/query?code=' : '/mall/auorder/query?code='
+
+    FetchData.get(url + $stateParams.order_id + '&status=').then(function(data) {
         $scope.order = data.data.data[0];
         if ($scope.order.status == '0') {
             $scope.order.endTime = (utils.getTimeAdapt($scope.order.createTime).getTime()) + 30 * 60 * 1000
@@ -2596,18 +2599,20 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     };
 }
 
-function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData, ngCart, $location, $timeout) {
+function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData, ngCart, $location, $timeout,Storage) {
     //商品详情
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
+        $scope.isShop = Storage.get('shopOrSell') === 'shop';
         $scope.nodata = false;
         $scope.statusId = $stateParams.status_id || '';
     });
+    var orderUrl = $scope.isShop ? '/mall/maorder/query?code=' : '/mall/auorder/query?code='
+    var expressUrl = $scope.isShop ? '/mall/maorder/express/query?id=' : '/mall/auorder/express/query?id='
 
-    FetchData.get('/mall/maorder/query?code=' + $stateParams.order_id + '&status=').then(function(res) {
+    FetchData.get(orderUrl + $stateParams.order_id + '&status=').then(function(res) {
         $scope.order = res.data.data[0];
-        var url = '/mall/maorder/express/query?id'
-        FetchData.get('/mall/maorder/express/query?id=' + $scope.order.id).then(function(res) {
+        FetchData.get(expressUrl + $scope.order.id).then(function(res) {
             $scope.logistics = res.data.data;
             $scope.logisticDetail = res.data;
         }, function() {
