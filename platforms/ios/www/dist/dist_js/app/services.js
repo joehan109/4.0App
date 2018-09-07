@@ -1294,7 +1294,7 @@ angular.module('fourdotzero.services', [])
         };
         return item;
     }])
-    .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading', '$state', 'utils', '$http', 'ENV', 'AlipayService', function(ngCart, $rootScope, $ionicLoading, $state, utils, $http, ENV, AlipayService) {
+    .service('fulfilmentProvider', ['ngCart', '$rootScope', '$ionicLoading', '$state', 'utils', '$http', 'ENV', 'AlipayService','Storage', function(ngCart, $rootScope, $ionicLoading, $state, utils, $http, ENV, AlipayService,Storage) {
 
         this.checkout = function(data, cb) {
             $http({
@@ -1309,7 +1309,8 @@ angular.module('fourdotzero.services', [])
                 }
             }).then(function(res) {
                 if (res.data.ret) {
-                    $http.post(ENV.SERVER_URL + '/mall/alipay/maorder/pay?ids=' + res.data.data).success(function(r, status) {
+                    var url = Storage.get('shopOrSell') === 'shop' ? '/mall/alipay/maorder/pay?ids=' : '/mall/alipay/auorder/pay?ids=';
+                    $http.post(ENV.SERVER_URL + url + res.data.data).success(function(r, status) {
                         $ionicLoading.show({
                             template: '订单生成成功',
                             duration: 3000,

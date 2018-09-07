@@ -110,7 +110,7 @@
             <button class="button button-energized" ng-click="doneOrder()" ng-if="order.status=='1' || order.status=='2'">
                 确认收货
             </button>
-            <button class="button button-default" style="border:1px solid #aaa" ng-click="cancelOrder()" ng-if="order.status=='0'">
+            <button class="button button-default" style="border:1px solid #aaa" ng-click="cancelOrder()" ng-if="order.status=='0' && isShop">
                 取消订单
             </button>
             <button class="button button-energized" ng-click="delOrder()" ng-if="order.status=='3'">

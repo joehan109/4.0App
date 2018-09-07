@@ -1309,7 +1309,7 @@ angular.module('fourdotzero.services', [])
                 }
             }).then(function(res) {
                 if (res.data.ret) {
-                    var url = Storage.get('shopOrSell') === 'shop' ? '/mall/alipay/maorder/pay?ids=' : '/auorder/pay?ids=';
+                    var url = Storage.get('shopOrSell') === 'shop' ? '/mall/alipay/maorder/pay?ids=' : '/mall/alipay/auorder/pay?ids=';
                     $http.post(ENV.SERVER_URL + url + res.data.data).success(function(r, status) {
                         $ionicLoading.show({
                             template: '订单生成成功',

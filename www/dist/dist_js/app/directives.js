@@ -164,7 +164,7 @@ angular.module('fourdotzero.directives', [])
                         })
                     } else if (attrs.ordertype == 'existed') {
                         // 直接掉支付接口
-                        var url = Storage.get('shopOrSell') === 'shop' ? '/mall/alipay/maorder/pay?ids=' : '/auorder/pay?ids='
+                        var url = Storage.get('shopOrSell') === 'shop' ? '/mall/alipay/maorder/pay?ids=' : '/mall/alipay/auorder/pay?ids='
                         $http.post(ENV.SERVER_URL + url + attrs.orderid).success(function(r, status) {
                             if (r.ret) {
                                 AlipayService.alipayCheckout(r.data)
