@@ -1506,7 +1506,7 @@ angular.module('fourdotzero.services', [])
                     duration: 3000,
                 });
                 $state.go('orders', {
-                    status_id: 2
+                    status_id: 1
                 }, {
                     reload: true
                 });
