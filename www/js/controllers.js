@@ -2309,7 +2309,8 @@ function pfavorCtrl($rootScope, $scope, FetchData, $state, ngCart,utils) {
     $scope.items = [];
 
     $scope.unfavor = function(item) {
-        FetchData.get('/mall/aurecord/delete?id=' + item.id).then(function(data) {
+        FetchData.get('/mall/aurecord/delete?retType=0&auProId=' + item.id).then(function(data) {
+            $scope.$emit("alert", "取消关注成功");
             item.collectFlag = false;
             getFavor()
         })
