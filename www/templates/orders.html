@@ -97,7 +97,7 @@
                                 <ngcart-checkout class="orderCheckBtn" ng-if="order.status=='0'" settings="{ order_id: order.id , order_type: 'existed'}" ordertype="existed" orderid={{order.id}} templateUrl="<a class='button button-energized button-small' style='border:1px solid #ff3300;padding:2px 10px 0'>去付款</a>">
                                     去付款
                                 </ngcart-checkout>
-                                <a class="button button-energized button-small" style="border:1px solid #ff3300" ng-if="order.status=='1' || order.status=='2'" ng-click="orderDone(order)">
+                                <a class="button button-energized button-small" style="border:1px solid #ff3300" ng-if="order.status=='1'" ng-click="orderDone(order)">
                                     确认收货
                                 </a>
                                 <a class="button button-energized button-small" style="border:1px solid #ff3300" ng-if="order.status=='3'" ng-click="orderDel(order)">

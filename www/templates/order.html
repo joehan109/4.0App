@@ -107,7 +107,7 @@
             <a class="button button-default" style="border:1px solid #aaa" ng-href="#/order/logistics/{{order.code}}" ng-if="order.status=='1' || order.status=='2'">
                 查看物流
             </a>
-            <button class="button button-energized" ng-click="doneOrder()" ng-if="order.status=='1' || order.status=='2'">
+            <button class="button button-energized" ng-click="doneOrder()" ng-if="order.status=='1'">
                 确认收货
             </button>
             <button class="button button-default" style="border:1px solid #aaa" ng-click="cancelOrder()" ng-if="order.status=='0' && isShop">

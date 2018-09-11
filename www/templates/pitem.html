@@ -64,8 +64,8 @@
                 <span>{{child.bidPrice}}</span>
             </div>
         </ion-item>
-        <div>
-        <!-- <div style='display: none;opacity: 0;'> -->
+        <!-- <div> -->
+        <div style='display: none;opacity: 0;'>
             <timer end-time="beginTime" finish-callback="beginPMFunc(order.id)">{{minutes}}分{{seconds}}秒</timer>
             <div>{{beginPM}}{{endPM}}</div>
         </div>
@@ -76,7 +76,7 @@
             <span>关注</span>
         </a>
         <a ng-click="favor(2,item.alertFlag,'alertFlag')" class="only-btn" style="margin-left:3px">
-            <i class="icon" ng-class="{'like-icon energized ion-ios-cart':item.alertFlag, 'dark ion-ios-cart-outline':!item.alertFlag}"></i>
+            <i class="icon" ng-class="{'like-icon energized ion-ios-bell':item.alertFlag, 'dark ion-ios-bell-outline':!item.alertFlag}"></i>
             <span>设置提醒</span>
         </a>
         <a ng-if="!beginPM && !endPM" class="add-to-cart item-bar-icon" ng-click="showFalse(0)">
@@ -95,7 +95,7 @@
                     <dd class="spec-info-val " style="margin:0 auto;line-height: inherit">
                         <div class="btn-group ">
                             <button class="btn del-num " ng-click="setQuantity(-1, true) ">-</button>
-                            <button class="btn num " style="width:98px">{{quantity | currency:'￥'}}</button>
+                            <button class="btn num " style="width:108px">{{quantity | currency:'￥'}}</button>
                             <button class="btn add-num " ng-click="setQuantity(1, true) ">+</button>
                         </div>
                     </dd>
