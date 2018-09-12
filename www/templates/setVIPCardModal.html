@@ -1,0 +1,21 @@
+<ion-modal-view>
+    <ion-header-bar>
+        <div class="buttons">
+            <button class="button button-clear icon ion-ios-arrow-back button-dark" ng-click="closeSetVIPCardBox()"></button>
+        </div>
+        <div class="title">绑定会员卡</div>
+    </ion-header-bar>
+    <ion-content class="signup-page overlay-content" ng-controller="setVIPCardCtrl">
+        <div class="list list-inset" style="margin-top: 0">
+            <label class="item item-input" style="border:0 none;border-bottom:1px solid #eee;margin-top:15px">
+              <i class="icon ion-card placeholder-icon" style="font-size:24px"></i>
+              <input type="text" placeholder="请输入会员卡号" ng-model="num">
+            </label>
+        </div>
+
+        <button class="button button-block login-btn" ng-click="submit()">
+        绑定会员卡
+    </button>
+
+    </ion-content>
+</ion-modal-view>

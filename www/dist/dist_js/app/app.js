@@ -88,6 +88,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
             $rootScope.signupDialog,
             $rootScope.forgotPWDialog,
             $rootScope.passwordDialog,
+            $rootScope.setVIPCardModal,
             $rootScope.phoneDialog,
             $rootScope.authDialog
         ], function(item) {
@@ -402,20 +403,35 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     })
 
     .state('userDetail', {
-            url: '/userDetail',
-            templateUrl: 'userDetail.html',
-            controller: 'userDetailCtrl',
-            loginRequired: true
-        })
-        .state('tab.accountUserDetail', {
-            url: '/userDetail/:userID',
-            views: {
-                'tab-account': {
-                    templateUrl: 'userDetail.html',
-                    controller: 'userDetailCtrl'
-                }
+        url: '/userDetail',
+        templateUrl: 'userDetail.html',
+        controller: 'userDetailCtrl',
+        loginRequired: true
+    })
+
+    .state('pointsDetail', {
+        url: '/pointsDetail',
+        templateUrl: 'pointsDetail.html',
+        controller: 'pointsDetailCtrl',
+        loginRequired: true
+    })
+
+    .state('vipCenter', {
+        url: '/vipCenter',
+        templateUrl: 'vipCenter.html',
+        controller: 'vipCenterCtrl',
+        loginRequired: true
+    })
+
+    .state('tab.accountUserDetail', {
+        url: '/userDetail/:userID',
+        views: {
+            'tab-account': {
+                templateUrl: 'userDetail.html',
+                controller: 'userDetailCtrl'
             }
-        })
+        }
+    })
 
     .state('tab.userList', {
         url: '/userList/:userID/:userType',

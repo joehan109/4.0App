@@ -12,7 +12,7 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
         // { name: '扫一扫', url: 'scan', icon: 'qr-scanner', pic: 'category' },
         { name: '4.0 商城', url: 'shopTab.cateHome', icon: 'ios-home-outline', pic: 'calculate' },
         { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline', pic: 'limit' },
-        { name: '会员中心', url: 'userDetail', icon: 'qr-scanner', pic: 'send' }
+        { name: '我的会员', url: 'userDetail', icon: 'qr-scanner', pic: 'send' }
     ];
     $scope.goto = function(url) {
         if (!Storage.get('access_token')) {
@@ -432,105 +432,56 @@ function postDetailCtrl($scope, $rootScope, $state, $stateParams, Photogram,
 
 }
 
-function userDetailCtrl($scope, $rootScope, $state, FetchData, $stateParams, AuthService,
+function userDetailCtrl($scope, $rootScope, $state, FetchData, $stateParams, AuthService,$ionicModal,
     Photogram, User, $ionicScrollDelegate) {
     $scope.$on('$ionicView.beforeEnter', function() {
-        $scope.$emit('alert', '该功能正在开发，请以后版本尝试')
-        $state.go('appIndex')
+        // $scope.$emit('alert', '该功能正在开发，请以后版本尝试')
+        // $state.go('appIndex')
         $rootScope.hideTabs = '';
     });
 
-    // FetchData.get('/api/users/user_info/' + $stateParams.userID).then(function(data) {
-    //     $scope.user = data.user;
-    // });
-
-    // $scope.onUserDetailContentScroll = onUserDetailContentScroll;
-
-    // function onUserDetailContentScroll() {
-    //     var scrollDelegate = $ionicScrollDelegate.$getByHandle('userDetailContent');
-    //     var scrollView = scrollDelegate.getScrollView();
-    //     $scope.$broadcast('userDetailContent.scroll', scrollView);
-    // }
-
-    $scope.gridStyle = 'list';
-    $scope.switchListStyle = function(style) {
-        $scope.gridStyle = style;
-    }
-
-    $scope.currentUserID = AuthService.getUser().id;
-
-    $scope.follow = function() {
-        var user = AuthService.getUser();
-
-        if ($scope.user.is_following) {
-            $scope.user.is_following = false;
-            $scope.user.num_followers -= 1;
-
-            User.unfollow($scope.user.id)
-                .then(function(data) {
-                    $scope.$emit('alert', "已取消关注");
-                }).catch(function(error) {
-                    $scope.user.is_following = true;
-                    $scope.user.num_followers += 1;
-                });
-        } else {
-            $scope.user.is_following = true;
-            $scope.user.num_followers += 1;
-
-            User.follow($scope.user.id)
-                .then(function(data) {
-                    $scope.$emit('alert', "关注成功");
-                }).catch(function(error) {
-                    $scope.user.is_following = false;
-                    $scope.user.num_followers -= 1;
-
-                });
-        }
-    };
-
-    $scope.zoom = function(img) {
-        if (ionic.Platform.isAndroid()) {
-            PhotoViewer.show(img, ''); //cordova photoviewer
-        } else {
-            ImageViewer.show(img); // cordova ImageViewer for IOS
-        }
-    };
-    $scope.posts = [];
-
-    var userId = $stateParams.userID;
-    var page = 0;
-
-    // Photogram.getUserPosts(userId, page).then(function(data) {
-    //     $scope.posts = data.posts;
-    //     page++;
-    // });
-
-    $scope.doRefresh = function() {
-        page = 0;
-        Photogram.getUserPosts(userId, page).then(function(data) {
-            $scope.posts = data.posts;
-            page++;
-        });
-        $scope.$broadcast('scroll.refreshComplete');
-    };
-
-    $scope.loadMore = function() {
-        Photogram.getUserPosts(userId, page).then(function(data) {
-            $scope.posts = $scope.posts.concat(data.posts);
-            $scope.$broadcast('scroll.infiniteScrollComplete');
-            page++;
+    // 绑定会员卡弹窗
+    $scope.setVIPCardBox = function() {
+        $ionicModal.fromTemplateUrl('setVIPCardModal.html', {
+            scope: $scope,
+            focusFirstInput: true,
+        }).then(function(modal) {
+            $rootScope.setVIPModal = modal;
+            $rootScope.setVIPModal.show();
         });
     };
 
-    $scope.moreDataCanBeLoaded = function() {
-        return Photogram.hasNextPage();
+    $scope.closeSetVIPCardBox = function() {
+        $rootScope.setVIPModal.hide();
+        $rootScope.setVIPModal.remove();
     };
 
-    $scope.isEmpty = function() {
-        return Photogram.isEmpty();
-    };
+    $scope.$on('setVIPCardModal:hide', function(event) {
+        $rootScope.setVIPModal.hide();
+        $rootScope.setVIPModal.remove();
+    })
 
 }
+
+function setVIPCardCtrl($rootScope, $scope, $http, ENV, $ionicPopup) {
+    $scope.submit = function() {
+        $http.post(ENV.SERVER_URL + '/mall/vipCard/use?num=' + $scope.num)
+            .success(function(res) {
+                if (res.ret) {
+                    var alertPopup = $ionicPopup.alert({
+                        template: "恭喜，您的会员卡已成功绑定！",
+                        okType: 'button-assertive'
+                    });
+                    alertPopup.then(function(res) {
+                        $rootScope.$broadcast('setVIPCardModal:hide');
+                    });
+                } else {
+                    $scope.$emit('alert', res.errmsg || "系统出错，请稍后再试");
+                }
+            });
+    }
+}
+
 
 function userListCtrl($scope, $rootScope, $state, FetchData, $stateParams,
     AuthService, User) {
@@ -3185,7 +3136,15 @@ function addressCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup)
         $rootScope.$ionicGoBack();
     };
 }
-
+function pointsDetailCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup) {
+    $scope.$on('$ionicView.beforeEnter', function() {
+        $rootScope.hideTabs = '';
+    });
+    FetchData.get('/mall/ing/query').then(function(data) {
+        $scope.points = data.data.data;
+    });
+}
+function vipCenterCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup) {}
 function fourZeroFour_controller() {}
 
 function feedbackCtrl($scope, FetchData, $rootScope) {
@@ -3366,6 +3325,7 @@ controllersModule.controller('profileCtrl', profileCtrl);
 controllersModule.controller('bindEmailCtrl', bindEmailCtrl);
 controllersModule.controller('forgotPWCtrl', forgotPWCtrl);
 controllersModule.controller('changePWCtrl', changePWCtrl);
+controllersModule.controller('setVIPCardCtrl', setVIPCardCtrl);
 controllersModule.controller('changePhoneCtrl', changePhoneCtrl);
 controllersModule.controller('settingsCtrl', settingsCtrl);
 controllersModule.controller('paymentSuccessCtrl', paymentSuccessCtrl);
@@ -3386,6 +3346,8 @@ controllersModule.controller('logisticsDetailCtrl', logisticsDetailCtrl);
 controllersModule.controller('cartCtrl', cartCtrl);
 controllersModule.controller('checkoutCtrl', checkoutCtrl);
 controllersModule.controller('addressCtrl', addressCtrl);
+controllersModule.controller('pointsDetailCtrl', pointsDetailCtrl);
+controllersModule.controller('vipCenterCtrl', vipCenterCtrl);
 controllersModule.controller('fourZeroFour_controller', fourZeroFour_controller);
 controllersModule.controller('aboutCtrl', aboutCtrl);
 controllersModule.controller('scanCtrl', scanCtrl);
