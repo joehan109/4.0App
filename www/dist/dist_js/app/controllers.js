@@ -48,7 +48,7 @@ cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage', '$
 checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart'];
 addressCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
 pointsDetailCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
-vipCenterCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
+vipCenterCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'Storage', 'utils'];
 aboutCtrl.$inject = ['$rootScope', '$scope', '$state', 'appUpdateService'];
 scanCtrl.$inject = ['$scope', '$rootScope', '$state', '$cordovaToast', 'Photogram', '$ionicPopup', '$timeout', 'geoService', 'FetchData', '$cordovaBarcodeScanner'];
 var controllersModule = angular.module('fourdotzero.controllers', [])
@@ -3195,7 +3195,21 @@ function pointsDetailCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicP
         $scope.points = data.data.data;
     });
 }
-function vipCenterCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup) {}
+function vipCenterCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup, Storage,utils) {
+    $scope.$on('$ionicView.beforeEnter', function() {
+        $rootScope.hideTabs = '';
+        if (Storage.get('user').id) {
+            $scope.userCenter = utils.deepCopy(Storage.get('user'));
+            $scope.cardStyle = 'level' + $scope.userCenter.level;
+            $scope.cardColor = {
+                color: [1,2].indexOf($scope.userCenter.level) >= 0 ? 'black' : 'white'
+            };
+        } else {
+            $scope.$emit('alert', '登录失效，请重新登录');
+            $state.go('appIndex')
+        }
+    });
+}
 function fourZeroFour_controller() {}
 
 function feedbackCtrl($scope, FetchData, $rootScope) {

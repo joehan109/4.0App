@@ -14910,6 +14910,50 @@ input.ion-google-place[readonly] {
 .pitem .only-btn {
   width: 20%; }
 
+.vipCenter {
+  padding: 20px; }
+  .vipCenter .title {
+    display: flex;
+    margin-bottom: 20px; }
+    .vipCenter .title .avatar {
+      width: 40px;
+      height: 40px; }
+    .vipCenter .title .level {
+      height: 40px;
+      line-height: 40px;
+      margin-left: 20px;
+      display: inline-block; }
+  .vipCenter .vipCard .card1 {
+    position: relative; }
+    .vipCenter .vipCard .card1.level0 {
+      background: url("../img/vipCard/cardNormal.jpg") no-repeat;
+      background-size: 100% 100%; }
+    .vipCenter .vipCard .card1.level1 {
+      background: url("../img/vipCard/cardGold.jpg") no-repeat;
+      background-size: 100% 100%; }
+    .vipCenter .vipCard .card1.level2 {
+      background: url("../img/vipCard/cardWhitegold.jpg") no-repeat;
+      background-size: 100% 100%; }
+    .vipCenter .vipCard .card1.level3 {
+      background: url("../img/vipCard/cardDimond.jpg") no-repeat;
+      background-size: 100% 100%; }
+    .vipCenter .vipCard .card1 .cardPoints {
+      position: absolute;
+      left: 9%;
+      top: 5%; }
+      .vipCenter .vipCard .card1 .cardPoints .cardp {
+        margin-top: 10px;
+        font-size: 37px; }
+    .vipCenter .vipCard .card1 .cardNum {
+      position: absolute;
+      right: 10%;
+      bottom: 15%;
+      font-size: 12px; }
+  .vipCenter .description {
+    padding: 10px; }
+    .vipCenter .description img {
+      width: 100%; }
+
 .assertive {
   color: #6fd6b9; }
 

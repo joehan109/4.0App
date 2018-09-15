@@ -385,5 +385,61 @@
     }
 }
 .vipCenter{
-    
+    padding:20px;
+    .title{
+        display: flex;
+        margin-bottom: 20px;
+        .avatar {
+            width: 40px;
+            height: 40px;
+        }
+        .level{
+            height: 40px;
+            line-height: 40px;
+            margin-left: 20px;
+            display: inline-block;
+        }
+    }
+    .vipCard{
+        .card1{
+            position: relative;
+            &.level0{
+                background: url("../img/vipCard/cardNormal.jpg") no-repeat;
+                background-size: 100% 100%;
+            }
+            &.level1{
+                background: url("../img/vipCard/cardGold.jpg") no-repeat;
+                background-size: 100% 100%;
+            }
+            &.level2{
+                background: url("../img/vipCard/cardWhitegold.jpg") no-repeat;
+                background-size: 100% 100%;
+            }
+            &.level3{
+                background: url("../img/vipCard/cardDimond.jpg") no-repeat;
+                background-size: 100% 100%;
+            }
+            .cardPoints{
+                position: absolute;
+                left: 9%;
+                top:5%;
+                .cardp{
+                    margin-top: 10px;
+                    font-size: 37px;
+                }
+            }
+            .cardNum{
+                position: absolute;
+                right: 10%;
+                bottom: 15%;
+                font-size: 12px;
+            }
+        }
+    }
+    .description{
+        padding:10px;
+        img{
+            width: 100%;
+        }
+    }
 }

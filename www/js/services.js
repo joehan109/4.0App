@@ -13,7 +13,8 @@ angular.module('fourdotzero.services', [])
     .service('utils', function($rootScope) {
         return {
             formatGetParams: formatGetParams,
-            getTimeAdapt: getTimeAdapt
+            getTimeAdapt: getTimeAdapt,
+            deepCopy: deepCopy
         };
 
         function formatGetParams(obj) {
@@ -27,6 +28,10 @@ angular.module('fourdotzero.services', [])
         function getTimeAdapt(dateFormat) {
             // 适配sarafi和chrome的获取时间格式（ios需要中间有个T）
             return new Date(dateFormat.substr(0, 10) + "T" + dateFormat.substr(11, 8));
+        }
+
+        function deepCopy(obj){
+            return JSON.parse(JSON.stringify(obj || {}))
         }
     })
     .service('sheetShare', function($rootScope, $bottomSheet) {
