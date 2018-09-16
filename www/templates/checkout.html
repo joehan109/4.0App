@@ -82,7 +82,33 @@
             </div>
         </section>
 
-        <!-- <section>
+        <section>
+            <div class="checkout-info">
+                <div class="partner-info-1" ng-click="showProviderChoices()">
+                    <div class="selected-partner">使用积分折扣 ：(当前可用的积分为 {{maxPoints}} 分)</div>
+                </div>
+            </div>
+            <div class="checkout-choices">
+                <div class="usePoints select-row">
+                    <div class="checkout-choice" ng-repeat="choice in yesOrNo" ng-click="selectPoints(choice)">
+                        {{choice.name}}
+                        <i class="icon  ion-ios-circle-outline" ng-if="usePoints !== choice.id"></i>
+                        <i class="icon  ion-ios-checkmark-outline selected" ng-if="usePoints == choice.id"></i>
+                    </div>
+                    <div class="spec-info-field" ng-if="usePoints">
+                        <dd class="spec-info-val ">
+                            <div class="btn-group ">
+                                <button class="btn del-num " ng-click="setPoint(-1, true) ">-</button>
+                                <input class="btn num " ng-model="params.point" />
+                                <button class="btn add-num " ng-click="setPoint(1, true) ">+</button>
+                            </div>
+                        </dd>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+                    <!-- <section>
 <div class="checkout-info">
     <div class="item-info-table">
         <dl class="item-info-field">

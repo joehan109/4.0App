@@ -67,7 +67,16 @@
                 </div>
             </div>
         </section>
-
+        <section ng-if="order.integral">
+            <div class="checkout-info">
+                <div class="partner-info" style="margin-left: 8px;">
+                    <div class="selected-partner">积分抵扣:
+                        <span class="detail-price pull-right">{{order.integral | currency:'￥' }}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
         <section>
             <!-- <div class="checkout-info">
     <div class="item-info-table">

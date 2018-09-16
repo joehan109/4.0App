@@ -922,6 +922,7 @@ angular.module('fourdotzero.services', [])
                 tax: null,
                 items: [],
                 selectedItems: [],
+                vipPoints:null
             };
             this.$addr = {
                 id: undefined,
@@ -1029,6 +1030,16 @@ angular.module('fourdotzero.services', [])
             return this.getCart().shipping;
         };
 
+        this.setVipPoints = function(vipPoints) {
+            this.$cart.vipPoints = vipPoints;
+            return this.getVipPoints();
+        };
+
+        this.getVipPoints = function() {
+            if (this.getCart().items.length === 0) return 0;
+            return this.getCart().vipPoints;
+        };
+
         this.setTaxRate = function(taxRate) {
             this.$cart.taxRate = +parseFloat(taxRate).toFixed(2);
             return this.getTaxRate();
@@ -1090,7 +1101,7 @@ angular.module('fourdotzero.services', [])
         };
 
         this.totalCost = function() {
-            return +parseFloat(this.getSubTotal() + this.$cart.shipping).toFixed(2);
+            return +parseFloat(this.getSubTotal() + this.$cart.shipping - this.$cart.vipPoints).toFixed(2);
         };
 
         this.removeItemById = function(id) {
@@ -1165,6 +1176,7 @@ angular.module('fourdotzero.services', [])
 
             return {
                 shipping: this.getShipping(),
+                vipPoints:this.getVipPoints(),
                 tax: this.getTax(),
                 taxRate: this.getTaxRate(),
                 subTotal: this.getSubTotal(),
@@ -1504,6 +1516,8 @@ angular.module('fourdotzero.services', [])
 
     this.alipayCheckout = function(data) {
         var payInfo = data;
+        // 扣减积分 TODO 重新获取user 支付之前调用 看用户还有多少积分 如果够用 再继续
+
         cordova.plugins.alipay.payment(payInfo, function success(e) {
             if (e.resultStatus == 9000) {
                 $ionicLoading.show({

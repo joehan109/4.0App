@@ -152,7 +152,8 @@ angular.module('fourdotzero.directives', [])
                         receiptName: data.name,
                         receiptPhone: data.phone,
                         receiptPostcode: data.postcode,
-                        receiptDetail: data.detail
+                        receiptDetail: data.detail,
+                        integral: scope.ngCart.getVipPoints()
                     }
                     if (attrs.ordertype == 'new') {
                         if (!order.receiptId) {

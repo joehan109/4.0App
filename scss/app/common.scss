@@ -443,3 +443,15 @@
         }
     }
 }
+.usePoints{
+    display: flex;
+    padding: 5px;
+    line-height: 30px;
+    .spec-info-field{
+        margin-left: 10px;
+    }
+    .num{
+        width: 50px!important;
+        text-align: center;
+    }
+}

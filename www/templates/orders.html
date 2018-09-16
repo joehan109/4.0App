@@ -76,9 +76,17 @@
                             </tr>
                        </tbody>
                     <tfoot>
-                        <tr ng-if="isShop">
-                            <td colspan="3" class="fee-cell">运费:
-                                <span class="price-cell">{{ order.trackingAmount | currency:"￥" }}</span> 总计:
+                        <tr ng-if="isShop && order.integral != 0" style="height: 30px;">
+                            <td colspan="3" class="fee-cell">
+                                积分抵扣:
+                                <span class="price-cell">{{ order.integral | currency:"￥" }}</span> 
+                            </td>
+                        </tr>
+                        <tr ng-if="isShop" style="height: 40px;">
+                            <td colspan="3" class="fee-cell">
+                                运费:
+                                <span class="price-cell">{{ order.trackingAmount | currency:"￥" }}</span> 
+                                总计:
                                 <span class="price-cell">{{ order.totalAmount | currency:"￥" }}</span>
                             </td>
                         </tr>
