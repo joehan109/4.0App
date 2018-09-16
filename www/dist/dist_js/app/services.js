@@ -1516,8 +1516,6 @@ angular.module('fourdotzero.services', [])
 
     this.alipayCheckout = function(data) {
         var payInfo = data;
-        // 扣减积分 TODO 重新获取user 支付之前调用 看用户还有多少积分 如果够用 再继续
-
         cordova.plugins.alipay.payment(payInfo, function success(e) {
             if (e.resultStatus == 9000) {
                 $ionicLoading.show({

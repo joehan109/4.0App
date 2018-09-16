@@ -810,6 +810,7 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
         });
         $scope.changeTab(1);
     });
+
     $scope.isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
     $scope.style = {
         "margin-top": ($scope.isX ? 15 : 0) + 'px'
@@ -830,12 +831,13 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
         activeIndex: 0
     };
     $scope.changeTab = function(index) {
+            // $scope.items = [];
         $scope.currentIndex = index;
         var query = $scope.searchQuery ? { query: $scope.searchQuery } : '';
         Items.setCurrentTab($scope.currentIndex);
         Items.fetchTopItems(query).then(function(data) {
             $scope.isFirst = false;
-            $scope.items = setItem(data);
+            $scope.items = [].concat(setItem(data));
         });
     };
 
@@ -865,6 +867,7 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
                 $scope.items = $scope.items.concat( setItem(data));
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             });
+            console.log($scope.isFirst, Items.hasNextPage(),111)
         } else {
             $scope.$broadcast('scroll.infiniteScrollComplete');
             console.log($scope.isFirst, Items.hasNextPage())
@@ -2889,12 +2892,14 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage, $ionicPopup) {
 }
 
 
-function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart, Storage) {
+function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart, Storage, AuthService) {
     // 结算
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
-        $scope.maxPoints = Storage.get('user').integral;
+        AuthService.refreshUser().then(function(){
+            $scope.maxPoints = Storage.get('user').integral;
+        })
         $scope.addr = ngCart.getAddress();
         if ($rootScope.provider_prices) {
             ngCart.setExpress($rootScope.provider_prices[0]);

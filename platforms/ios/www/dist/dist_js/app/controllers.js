@@ -45,7 +45,7 @@ expressItemAddCtrl.$inject = ['$rootScope', '$scope', 'expressList'];
 orderDetailCtrl.$inject = ['$rootScope', '$scope', '$state', '$stateParams', 'FetchData', 'ngCart', '$ionicPopup', 'orderOpt', 'utils', 'Storage'];
 logisticsDetailCtrl.$inject = ['$rootScope', '$scope', '$stateParams', '$state', 'FetchData', 'ngCart', '$location', '$timeout', 'Storage'];
 cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage', '$ionicPopup'];
-checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart'];
+checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart', 'Storage', 'AuthService'];
 addressCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
 pointsDetailCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
 vipCenterCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'Storage', 'utils'];
@@ -2940,11 +2940,14 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage, $ionicPopup) {
 }
 
 
-function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
+function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart, Storage, AuthService) {
     // 结算
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
+        AuthService.refreshUser().then(function(){
+            $scope.maxPoints = Storage.get('user').integral;
+        })
         $scope.addr = ngCart.getAddress();
         if ($rootScope.provider_prices) {
             ngCart.setExpress($rootScope.provider_prices[0]);
@@ -2957,7 +2960,17 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
         name: '同城闪送',
         id: '1'
     }];
-
+    $scope.usePoints = false;
+    $scope.yesOrNo = [{
+        name:'否',
+        id: false
+    },{
+        name:'是',
+        id: true
+    }];
+    $scope.params = {
+        point: 0
+    };
     $scope.ngCart = ngCart;
     $scope.selectedProvider = {};
     $scope.clearSelectedCart = function() {
@@ -3003,109 +3016,49 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart) {
             return;
         }
         $scope.providersShown = !$scope.providersShown;
-        // FetchData.post('/api/logistic/channel_prices', {
-        //     'entries': ngCart.selectedItemsObjects(),
-        //     'country': $scope.addr.data.country,
-        // }).then(function(data) {
-        //     $scope.provider_prices = data.logistics.providers;
-        //     $scope.selectedProvider = data.logistics.providers[0];
-        // });
+        
     };
 
     $scope.selectPartner = function(provider) {
         $scope.selectedProvider = provider;
         $scope.providersShown = !$scope.providersShown;
         ngCart.setExpress(provider);
-        // FetchData.post('/api/orders/cal_entries_price', {
-        //     'entries': ngCart.selectedItemsObjects(),
-        //     'address_id': ngCart.getAddress().id,
-        //     'coupon_codes': [$scope.coupon_codes.code],
-        //     'logistic_provider': $scope.selectedProvider.name,
-        // }).then(function(data) {
-        //     $scope.order = data.order;
-        // });
     };
 
-    // coupon actions
-    // $scope.coupon_codes = '';
-    // $scope.couponsShown = false;
-    // $scope.couponInputSelected = false;
-    // $scope.noCouponSelected = false;
-    // $scope.showCouponsChoices = function() {
-    //     if (ngCart.getAddress().id === undefined) {
-    //         $scope.$emit('alert', "请先添加地址");
-    //         return;
-    //     }
-    //     if ($scope.selectedProvider == null) {
-    //         $scope.$emit('alert', "请先选择运输方式");
-    //         return;
-    //     }
-    //     $scope.couponsShown = !$scope.couponsShown;
-    //     FetchData.post('/api/users/coupons/by_entries', {
-    //         'entries': ngCart.selectedItemsObjects(),
-    //     }).then(function(data) {
-    //         $scope.availableCoupons = data.consumable_coupons;
-    //         $scope.coupon_codes = '';
-    //     });
-    // };
-    // $scope.noCoupon = function() {
-    //     $scope.coupon_codes = '';
-    //     $scope.couponInputSelected = false;
-    //     $scope.noCouponSelected = true;
-    //     $scope.couponsShown = !$scope.couponsShown;
-    //     FetchData.post('/api/orders/cal_entries_price', {
-    //         'entries': ngCart.selectedItemsObjects(),
-    //         'address_id': ngCart.getAddress().id,
-    //         'coupon_codes': [],
-    //         'logistic_provider': $scope.selectedProvider.name,
-    //     }).then(function(data) {
-    //         $scope.order = data.order;
-    //     });
-    // };
-    // $scope.selectCoupon = function(coupon) {
-    //     $scope.coupon_codes = coupon;
-    //     $scope.couponsShown = !$scope.couponsShown;
-    //     $scope.couponInputSelected = false;
-    //     $scope.noCouponSelected = false;
-    //     FetchData.post('/api/orders/cal_entries_price', {
-    //         'entries': ngCart.selectedItemsObjects(),
-    //         'address_id': ngCart.getAddress().id,
-    //         'coupon_codes': [$scope.coupon_codes.code],
-    //         'logistic_provider': $scope.selectedProvider.name,
-    //     }).then(function(data) {
-    //         $scope.order = data.order;
-    //     });
-    // };
-    // $scope.selectInputCoupon = function() {
-    //     $scope.coupon_codes = '';
-    //     $scope.couponInputSelected = true;
-    //     $scope.noCouponSelected = false;
-    // };
-    //
-    // $scope.confirmCoupon = function() {
-    //     $scope.couponInputSelected = true;
-    //     FetchData.post('/api/orders/cal_entries_price', {
-    //         'entries': ngCart.selectedItemsObjects(),
-    //         'address_id': ngCart.getAddress().id,
-    //         'coupon_codes': [$scope.couponInput],
-    //         'logistic_provider': $scope.selectedProvider.name,
-    //     }).then(function(data) {
-    //         $scope.coupon_codes = {
-    //             code: $scope.couponInput,
-    //             description: $scope.couponInput,
-    //         };
-    //         if (data.order.discount.length === 0) {
-    //             $scope.coupon_codes['description'] = "无效折扣码";
-    //         } else {
-    //             $scope.coupon_codes['saving'] = data.order.discount[0].value;
-    //             $scope.couponsShown = !$scope.couponsShown;
-    //         };
-    //         $scope.order = data.order;
-    //
-    //     }).catch(function() {
-    //         $scope.$emit("alert", "something wrong..");
-    //     });
-    // };
+    $scope.selectPoints = function (choice) {
+        if (!$scope.maxPoints) {
+            $scope.$emit('alert','您当前无可用积分');
+            return;
+        }
+        $scope.usePoints = choice.id;
+        if (choice.id) {
+            $scope.params.point = $scope.maxPoints;
+        } else {
+            $scope.params.point = 0;
+        }
+    };
+    $scope.setPoint = function (num,type) {
+        var range = 1;
+        $scope.params.point = +$scope.params.point + num * range;
+    };
+    $scope.$watch('params',function (newVal,oldVal) {
+        if (typeof newVal.point !== 'number') {
+            $scope.params.point = parseInt(newVal.point || 0);
+        }
+        if (newVal.point < 0 ) {
+            $scope.$emit('alert','可使用不允许小于0')
+            $scope.params.point = 0;
+        } else if (newVal.point > $scope.maxPoints) {
+            $scope.$emit('alert','您最多可使用' + $scope.maxPoints +'积分')
+            $scope.params.point = $scope.maxPoints
+        } else {
+            if (newVal.point === '') {
+                newVal.point = 0;
+            } else {
+                ngCart.setVipPoints($scope.params.point);
+            }
+        }
+    },true);
 }
 
 function addressCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup) {

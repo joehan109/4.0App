@@ -91,9 +91,9 @@
             <div class="checkout-choices">
                 <div class="usePoints select-row">
                     <div class="checkout-choice" ng-repeat="choice in yesOrNo" ng-click="selectPoints(choice)">
-                        {{choice.name}}
                         <i class="icon  ion-ios-circle-outline" ng-if="usePoints !== choice.id"></i>
                         <i class="icon  ion-ios-checkmark-outline selected" ng-if="usePoints == choice.id"></i>
+                        {{choice.name}}
                     </div>
                     <div class="spec-info-field" ng-if="usePoints">
                         <dd class="spec-info-val ">
