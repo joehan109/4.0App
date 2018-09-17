@@ -1036,7 +1036,6 @@ angular.module('fourdotzero.services', [])
         };
 
         this.getVipPoints = function() {
-            if (this.getCart().items.length === 0) return 0;
             return this.getCart().vipPoints;
         };
 
@@ -1100,8 +1099,9 @@ angular.module('fourdotzero.services', [])
             return +parseFloat(total).toFixed(2);
         };
 
-        this.totalCost = function() {
-            return +parseFloat(this.getSubTotal() + this.$cart.shipping - this.$cart.vipPoints).toFixed(2);
+        this.totalCost = function(points) {
+            points = points || this.$cart.vipPoints
+            return +parseFloat(this.getSubTotal() + this.$cart.shipping - +points).toFixed(2);
         };
 
         this.removeItemById = function(id) {

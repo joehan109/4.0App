@@ -14949,10 +14949,8 @@ input.ion-google-place[readonly] {
       right: 10%;
       bottom: 15%;
       font-size: 12px; }
-  .vipCenter .description {
-    padding: 10px; }
-    .vipCenter .description img {
-      width: 100%; }
+  .vipCenter .description img {
+    width: 100%; }
 
 .usePoints {
   display: flex;
@@ -14961,7 +14959,7 @@ input.ion-google-place[readonly] {
   .usePoints .spec-info-field {
     margin-left: 10px; }
   .usePoints .num {
-    width: 50px !important;
+    width: 70px !important;
     text-align: center; }
 
 .assertive {

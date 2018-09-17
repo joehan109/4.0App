@@ -2896,8 +2896,9 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart, Storage, Au
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
+        
         AuthService.refreshUser().then(function(){
-            $scope.maxPoints = Storage.get('user').integral;
+            setMaxPoints();
         })
         $scope.addr = ngCart.getAddress();
         if ($rootScope.provider_prices) {
@@ -2974,6 +2975,8 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart, Storage, Au
         $scope.selectedProvider = provider;
         $scope.providersShown = !$scope.providersShown;
         ngCart.setExpress(provider);
+        // 更新最大金额
+        setMaxPoints();
     };
 
     $scope.selectPoints = function (choice) {
@@ -3010,6 +3013,13 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart, Storage, Au
             }
         }
     },true);
+    function setMaxPoints () {
+        var maxCost = +ngCart.totalCost('0') - 1;
+        $scope.maxPoints = (maxCost >= +Storage.get('user').integral ? +Storage.get('user').integral : maxCost);
+        if (+$scope.params.point) {
+            $scope.params.point = $scope.maxPoints;
+        }
+    }
 }
 
 function addressCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup) {
