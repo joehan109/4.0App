@@ -861,6 +861,7 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
         });
         $scope.changeTab(1);
     });
+
     $scope.isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
     $scope.style = {
         "margin-top": ($scope.isX ? 15 : 0) + 'px'
@@ -881,12 +882,13 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
         activeIndex: 0
     };
     $scope.changeTab = function(index) {
+            // $scope.items = [];
         $scope.currentIndex = index;
         var query = $scope.searchQuery ? { query: $scope.searchQuery } : '';
         Items.setCurrentTab($scope.currentIndex);
         Items.fetchTopItems(query).then(function(data) {
             $scope.isFirst = false;
-            $scope.items = setItem(data);
+            $scope.items = [].concat(setItem(data));
         });
     };
 
@@ -916,6 +918,7 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
                 $scope.items = $scope.items.concat( setItem(data));
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             });
+            console.log($scope.isFirst, Items.hasNextPage(),111)
         } else {
             $scope.$broadcast('scroll.infiniteScrollComplete');
             console.log($scope.isFirst, Items.hasNextPage())
@@ -2481,19 +2484,18 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
         $scope.isShop = Storage.get('shopOrSell') === 'shop';
+        $scope.url = $scope.isShop ? '/mall/maorder/query?code=' : '/mall/auorder/query?code=';
+        FetchData.get($scope.url + $stateParams.order_id + '&status=').then(function(data) {
+            $scope.order = data.data.data[0];
+            if ($scope.order.status == '0') {
+                $scope.order.endTime = (utils.getTimeAdapt($scope.order.createTime).getTime()) + 30 * 60 * 1000
+            }
+        });
         $scope.statusId = $stateParams.status_id || '';
     });
 
     $scope.ngCart = ngCart;
 
-    var url = $scope.isShop ? '/mall/maorder/query?code=' : '/mall/auorder/query?code='
-
-    FetchData.get(url + $stateParams.order_id + '&status=').then(function(data) {
-        $scope.order = data.data.data[0];
-        if ($scope.order.status == '0') {
-            $scope.order.endTime = (utils.getTimeAdapt($scope.order.createTime).getTime()) + 30 * 60 * 1000
-        }
-    });
     $scope.goTab = function() {
         if ($scope.statusId) {
             $state.go('orders', {

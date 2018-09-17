@@ -2433,19 +2433,18 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
         $scope.isShop = Storage.get('shopOrSell') === 'shop';
+        $scope.url = $scope.isShop ? '/mall/maorder/query?code=' : '/mall/auorder/query?code=';
+        FetchData.get($scope.url + $stateParams.order_id + '&status=').then(function(data) {
+            $scope.order = data.data.data[0];
+            if ($scope.order.status == '0') {
+                $scope.order.endTime = (utils.getTimeAdapt($scope.order.createTime).getTime()) + 30 * 60 * 1000
+            }
+        });
         $scope.statusId = $stateParams.status_id || '';
     });
 
     $scope.ngCart = ngCart;
 
-    var url = $scope.isShop ? '/mall/maorder/query?code=' : '/mall/auorder/query?code='
-
-    FetchData.get(url + $stateParams.order_id + '&status=').then(function(data) {
-        $scope.order = data.data.data[0];
-        if ($scope.order.status == '0') {
-            $scope.order.endTime = (utils.getTimeAdapt($scope.order.createTime).getTime()) + 30 * 60 * 1000
-        }
-    });
     $scope.goTab = function() {
         if ($scope.statusId) {
             $state.go('orders', {
