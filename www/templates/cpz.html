@@ -20,10 +20,10 @@
             <div class=" item item-text-wrap " href="# ">
                 <h3 class="product-title " style="overflow: hidden; ">{{item.name}}</h3>
                 <p class="product-prices ">
-                    当前价：<span class="curr-price " style="color:#ff3300 ">{{::item.nowPrice | currency:'￥'}}</span>
+                    当前价：<span class="curr-price " style="color:#ff3300 ">{{item.nowPrice | currency:'￥'}}</span>
                 </p>
                 <p class="product-prices ">
-                    围观人数：<span class="curr-price ">{{::item.favoriteNum}}</span>人
+                    围观人数：<span class="curr-price ">{{item.favoriteNum}}</span>人
                 </p>
             </div>
         </div>

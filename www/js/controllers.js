@@ -465,6 +465,10 @@ function userDetailCtrl($scope, $rootScope, $state, FetchData, $stateParams, Aut
 
 function setVIPCardCtrl($rootScope, $scope, $http, ENV, $ionicPopup) {
     $scope.submit = function() {
+        if (!/^\d{32}$/.test($scope.num)) {
+            $scope.$emit('alert','会员卡号由32位数字组成，请检查是否有误');
+            return;
+        }
         $http.post(ENV.SERVER_URL + '/mall/vipCard/use?num=' + $scope.num)
             .success(function(res) {
                 if (res.ret) {
@@ -481,7 +485,6 @@ function setVIPCardCtrl($rootScope, $scope, $http, ENV, $ionicPopup) {
             });
     }
 }
-
 
 function userListCtrl($scope, $rootScope, $state, FetchData, $stateParams,
     AuthService, User) {
@@ -2538,24 +2541,7 @@ function logisticsDetailCtrl($rootScope, $scope, $stateParams, $state, FetchData
     };
 
     $scope.allStatus = [];
-    // FetchData.get('/api/orders/get/' + $stateParams.order_id).then(function(data) {
-    //     $scope.ngCart = ngCart;
-    //     $scope.order = data.order;
-    //     $scope.logistic = data.order.logistics[0];
-    //     angular.forEach($scope.logistic.all_status, function(status, index) {
-    //         $scope.allStatus.push(status.status);
-    //     });
-    // });
-
     $scope.currTab = 0;
-    // $scope.goTab = function(index, lo) {
-    //     $scope.currTab = index;
-    //     $scope.logistic = lo;
-    //     angular.forEach($scope.logistic.all_status, function(status, index) {
-    //         $scope.allStatus.push(status.status);
-    //     });
-
-    // }
 
     $scope.addr = ngCart.getAddress();
     $scope.gotoAddress = function() {
@@ -3109,15 +3095,17 @@ function pointsDetailCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicP
         $scope.points = data.data.data;
     });
 }
-function vipCenterCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup, Storage,utils) {
+function vipCenterCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup, Storage,utils,AuthService) {
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
         if (Storage.get('user').id) {
-            $scope.userCenter = utils.deepCopy(Storage.get('user'));
-            $scope.cardStyle = 'level' + $scope.userCenter.level;
-            $scope.cardColor = {
-                color: [1,2].indexOf($scope.userCenter.level) >= 0 ? 'black' : 'white'
-            };
+            AuthService.refreshUser().then(function(){
+                $scope.userCenter = utils.deepCopy(Storage.get('user'));
+                $scope.cardStyle = 'level' + $scope.userCenter.level;
+                $scope.cardColor = {
+                    color: [1,2].indexOf($scope.userCenter.level) >= 0 ? 'black' : 'white'
+                };
+            })
         } else {
             $scope.$emit('alert', '登录失效，请重新登录');
             $state.go('appIndex')
