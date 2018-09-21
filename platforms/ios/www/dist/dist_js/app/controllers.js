@@ -140,6 +140,7 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
         $scope.showOpen = false;
         $scope.showCode = false;
         $scope.alreadyShow = false;
+        $scope.city = $rootScope.cityInfo && $rootScope.cityInfo.city;
         scan();
     });
     $scope.getDetail = false;

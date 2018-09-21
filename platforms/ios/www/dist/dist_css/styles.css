@@ -14647,6 +14647,9 @@ input.ion-google-place[readonly] {
 .modal .title {
   text-align: center !important; }
 
+.button-assertive {
+  background-color: #6fd6b9; }
+
 .button-energized {
   background-color: #ff3000; }
 
@@ -14861,18 +14864,103 @@ input.ion-google-place[readonly] {
 
 .pm-index .item-image {
   position: relative; }
-  .pm-index .item-image .hover-img {
-    color: #FFF;
-    position: absolute;
-    background-color: rgba(128, 128, 128, 0.5);
-    left: 5px;
-    bottom: 10px;
-    right: 5px;
-    height: 24px;
-    line-height: 24px;
-    font-size: 12px;
-    text-align: left;
-    padding: 0 5px; }
+
+.hover-slideImg {
+  color: #FFF;
+  position: absolute;
+  background-color: rgba(128, 128, 128, 0.5);
+  left: 5px;
+  bottom: 10px;
+  right: 5px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 12px;
+  text-align: left;
+  padding: 0 5px; }
+
+.pitem .slider-pager {
+  bottom: 30px; }
+
+.pitem .item {
+  border-color: #EAEAEA;
+  margin: 10px -1px; }
+
+.pitem .detail2, .pitem .detail3 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 15px; }
+
+.pitem .detail4 {
+  padding: 0;
+  border-bottom: 1px solid #EAEAEA;
+  flex-direction: column; }
+  .pitem .detail4 .list {
+    padding: 10px 16px;
+    margin: 0;
+    border-bottom: 1px solid #EAEAEA;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; }
+    .pitem .detail4 .list:first-child {
+      color: red; }
+    .pitem .detail4 .list:last-child {
+      border-bottom: 0 none; }
+
+.pitem .only-btn {
+  width: 20%; }
+
+.vipCenter {
+  padding: 20px; }
+  .vipCenter .title {
+    display: flex;
+    margin-bottom: 20px; }
+    .vipCenter .title .avatar {
+      width: 40px;
+      height: 40px; }
+    .vipCenter .title .level {
+      height: 40px;
+      line-height: 40px;
+      margin-left: 20px;
+      display: inline-block; }
+  .vipCenter .vipCard .card1 {
+    position: relative; }
+    .vipCenter .vipCard .card1.level0 {
+      background: url("../img/vipCard/cardNormal.jpg") no-repeat;
+      background-size: 100% 100%; }
+    .vipCenter .vipCard .card1.level1 {
+      background: url("../img/vipCard/cardGold.jpg") no-repeat;
+      background-size: 100% 100%; }
+    .vipCenter .vipCard .card1.level2 {
+      background: url("../img/vipCard/cardWhitegold.jpg") no-repeat;
+      background-size: 100% 100%; }
+    .vipCenter .vipCard .card1.level3 {
+      background: url("../img/vipCard/cardDimond.jpg") no-repeat;
+      background-size: 100% 100%; }
+    .vipCenter .vipCard .card1 .cardPoints {
+      position: absolute;
+      left: 9%;
+      top: 5%; }
+      .vipCenter .vipCard .card1 .cardPoints .cardp {
+        margin-top: 10px;
+        font-size: 37px; }
+    .vipCenter .vipCard .card1 .cardNum {
+      position: absolute;
+      right: 10%;
+      bottom: 15%;
+      font-size: 12px; }
+  .vipCenter .description img {
+    width: 100%; }
+
+.usePoints {
+  display: flex;
+  padding: 5px;
+  line-height: 30px; }
+  .usePoints .spec-info-field {
+    margin-left: 10px; }
+  .usePoints .num {
+    width: 70px !important;
+    text-align: center; }
 
 .assertive {
   color: #6fd6b9; }
@@ -15351,7 +15439,7 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
   padding-right: 8px; }
 
 .cart-table .info-cell {
-  width: 55%; }
+  width: 52%; }
 
 .cart-table .detail-cell {
   position: relative;
@@ -15359,7 +15447,7 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
   padding-right: 12px; }
 
 .cart-table .price-cell {
-  width: 25%;
+  width: 28%;
   min-width: 60px;
   font-size: 14px;
   color: #ff3000;

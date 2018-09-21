@@ -178,6 +178,10 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     if (window.device) {
         $rootScope.isIphoneX = ['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0
     }
+    // 获取登录城市
+    $http.jsonp('http://whois.pconline.com.cn/ipJson.jsp?callback=JSON_CALLBACK').success(function (data){
+        $rootScope.cityInfo = data;
+    })
 
     // $timeout(function() {
     //     if (!Storage.get('access_token')) {
