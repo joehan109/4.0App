@@ -478,17 +478,6 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         }
     })
 
-    .state('tab.settings', {
-        url: '/settings',
-        views: {
-            'tab-account': {
-                templateUrl: 'settings.html',
-                controller: 'settingsCtrl'
-            }
-        },
-        loginRequired: true
-    })
-
     .state('tab.profile', {
         url: '/account/profile',
         views: {
@@ -510,7 +499,6 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
             }
         }
     })
-
 
     .state('cart', {
         url: '/cart',
@@ -604,6 +592,13 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         cache: false,
         templateUrl: 'address.html',
         controller: 'addressCtrl',
+        loginRequired: true
+    })
+
+    .state('settings', {
+        url: '/settings',
+        templateUrl: 'settings.html',
+        controller: 'settingsCtrl',
         loginRequired: true
     })
 

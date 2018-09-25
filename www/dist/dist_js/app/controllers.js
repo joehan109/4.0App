@@ -3052,7 +3052,7 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart, Storage, Au
         }
     },true);
     function setMaxPoints () {
-        var maxCost = +ngCart.totalCost('0') - 1;
+        var maxCost = (+ngCart.totalCost('0') - 1 >= 0) ? (+ngCart.totalCost('0') - 1) : 0;
         $scope.maxPoints = (maxCost >= +Storage.get('user').integral ? +Storage.get('user').integral : maxCost);
         if (+$scope.params.point) {
             $scope.params.point = $scope.maxPoints;
