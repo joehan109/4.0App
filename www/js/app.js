@@ -88,7 +88,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
             $rootScope.signupDialog,
             $rootScope.forgotPWDialog,
             $rootScope.passwordDialog,
-            $rootScope.setVIPCardModal,
+            $rootScope.setVIPModal,
             $rootScope.phoneDialog,
             $rootScope.authDialog
         ], function(item) {
@@ -490,14 +490,11 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     })
 
 
-    .state('tab.about', {
+    .state('about', {
         url: '/about',
-        views: {
-            'tab-account@tab': {
-                templateUrl: 'about.html',
-                controller: 'aboutCtrl'
-            }
-        }
+        templateUrl: 'about.html',
+        controller: 'aboutCtrl',
+        loginRequired: true
     })
 
     .state('cart', {

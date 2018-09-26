@@ -53,9 +53,13 @@
                             <div>
                             </div>
                             <div class="btn-group">
-                                <button class="btn del-num" ng-class="{'disabled':item.getQuantity()==1}" ng-click="setQuantity(item, -1, true)">-</button>
+                                <button class="btn del-num" ng-class="{'disabled':item.getQuantity()==1}" ng-click="setQuantity(item, -1, true)" style="padding:0;">
+                                    <i class="icon ion-ios-minus-empty"></i>
+                                </button>
                                 <button class="btn num">{{ item.getQuantity() | number }}</button>
-                                <button class="btn add-num" ng-click="setQuantity(item, 1, true)">+</button>
+                                <button class="btn add-num" ng-click="setQuantity(item, 1, true)" style="padding:0;">
+                                    <i class="icon ion-ios-plus-empty"></i>
+                                </button>
                             </div>
                         </td>
                         <td class="price-cell">{{ item.getPrice() | currency:'￥' }}</td>

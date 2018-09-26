@@ -94,9 +94,13 @@
                 <div class="spec-info-field " style="line-height: 44px;">
                     <dd class="spec-info-val " style="margin:0 auto;line-height: inherit">
                         <div class="btn-group ">
-                            <button class="btn del-num " ng-click="setQuantity(-1, true) ">-</button>
+                            <button class="btn del-num " ng-click="setQuantity(-1, true) " style="padding:0;">
+                                <i class="icon ion-ios-minus-empty"></i>
+                            </button>
                             <button class="btn num " style="width:108px">{{quantity | currency:'￥'}}</button>
-                            <button class="btn add-num " ng-click="setQuantity(1, true) ">+</button>
+                            <button class="btn add-num " ng-click="setQuantity(1, true) " style="padding:0;">
+                                <i class="icon ion-ios-plus-empty"></i> 
+                            </button>
                         </div>
                     </dd>
                 </div>

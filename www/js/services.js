@@ -897,7 +897,7 @@ angular.module('fourdotzero.services', [])
                     if (data.ret) {
                         $rootScope.$emit("alert", "交易成功！");
                         $state.go('orders', {
-                            status_id: tabId || 2
+                            status_id: 2
                         }, {
                             reload: true
                         });

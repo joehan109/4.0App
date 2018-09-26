@@ -13,8 +13,11 @@
                         <a href="#" style="position: relative;">
                             <img ng-src="{{item.mainUrl}}" cache-src style="width:130px;height:130px">
                             <div class="hover-slideImg" style="font-size:12px;text-align: center;line-height: 1.5;height: 40px;bottom:0;">
-                                <span>正在进行</span>
-                                <span style="display:block">20170809 结束</span>
+                                <i class="icon ion-ios-clock-outline" style="font-size:14px;"></i>
+                                <span ng-if="!item.ended && item.begined">进行中</span>
+                                <span ng-if="!item.begined">{{item.begin | date:"yyyy.MM.dd HH:mm:ss"}} 开始</span>
+                                <span ng-if="!item.ended && item.begined">{{item.end | date:"yyyy.MM.dd HH:mm:ss"}} 结束</span>
+                                <span ng-if="item.ended">已结束</span>
                             </div>
                         </a>
                     </div>

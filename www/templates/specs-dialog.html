@@ -13,9 +13,13 @@
                     <dd class="spec-info-key ">购买数量</dd>
                     <dd class="spec-info-val ">
                         <div class="btn-group ">
-                            <button class="btn del-num " ng-click="setQuantity(-1, true) ">-</button>
+                            <button class="btn del-num " ng-click="setQuantity(-1, true) " style="padding:0;">
+                                <i class="icon ion-ios-minus-empty"></i>
+                            </button>
                             <button class="btn num ">{{quantity}}</button>
-                            <button class="btn add-num " ng-click="setQuantity(1, true) ">+</button>
+                            <button class="btn add-num " ng-click="setQuantity(1, true) " style="padding:0;">
+                                <i class="icon ion-ios-plus-empty"></i>
+                            </button>
                         </div>
                     </dd>
                 </div>

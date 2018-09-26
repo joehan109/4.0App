@@ -24,8 +24,25 @@
     padding: 0;
     min-height: 45px;
     border-top: 1px solid #aaa;
+    .button{
+        margin-right: 0;
+    }
 }
-
+.button-small{
+    padding:1px 8px!important;
+    min-height: 24px!important;
+    line-height: 24px!important;
+}
+.ion-ios-minus-empty{
+    &::before{
+        font-weight: bold;
+    }
+}
+.ion-ios-plus-empty{
+    &::before{
+        font-weight: bold;
+    }
+}
 .isX {
     margin-top: 20px;
 }

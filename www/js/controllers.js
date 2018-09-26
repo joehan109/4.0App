@@ -466,8 +466,8 @@ function userDetailCtrl($scope, $rootScope, $state, FetchData, $stateParams, Aut
 
 function setVIPCardCtrl($rootScope, $scope, $http, ENV, $ionicPopup) {
     $scope.submit = function() {
-        if (!/^\d{32}$/.test($scope.num)) {
-            $scope.$emit('alert','会员卡号由32位数字组成，请检查是否有误');
+        if (!/^\d{12}$/.test($scope.num)) {
+            $scope.$emit('alert','会员卡号由12位数字组成，请检查是否有误');
             return;
         }
         $http.post(ENV.SERVER_URL + '/mall/vipCard/use?num=' + $scope.num)
@@ -2332,7 +2332,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
             cancelUrl: '',
             delUrl: '',
             doneUrl:'/mall/auorder/confirm?id='
-       };
+        };
         $scope.orders = [];
         $rootScope.hideTabs = 'tabs-item-hide';
         if ($stateParams.status_id) {
@@ -2375,7 +2375,7 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
         });
         confirmPopup.then(function(res) {
             if (res) {
-                orderOpt.done($scope.orderSetting.ordersUrl, order.id, $scope.orderType);
+                orderOpt.done($scope.orderSetting.doneUrl, order.id, $scope.orderType);
             } else {
                 console.log('You are not sure');
             }
@@ -2437,8 +2437,19 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
         $scope.isShop = Storage.get('shopOrSell') === 'shop';
-        $scope.url = $scope.isShop ? '/mall/maorder/query?code=' : '/mall/auorder/query?code=';
-        FetchData.get($scope.url + $stateParams.order_id + '&status=').then(function(data) {
+        $scope.orderSetting = $scope.isShop ? {
+            ordersUrl: '/mall/maorder/query?code=',
+            cancelUrl: '/mall/maorder/cancel?id=',
+            delUrl: '/mall/maorder/delete?id=',
+            doneUrl:'/mall/maorder/confirm?id='
+        } : {
+            ordersUrl:'/mall/auorder/query?code=',
+            cancelUrl: '',
+            delUrl: '',
+            doneUrl:'/mall/auorder/confirm?id='
+        };
+
+        FetchData.get($scope.orderSetting.ordersUrl + $stateParams.order_id + '&status=').then(function(data) {
             $scope.order = data.data.data[0];
             if ($scope.order.status == '0') {
                 $scope.order.endTime = (utils.getTimeAdapt($scope.order.createTime).getTime()) + 30 * 60 * 1000
@@ -2469,7 +2480,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         });
         confirmPopup.then(function(res) {
             if (res) {
-                orderOpt.cancel($scope.order.id);
+                orderOpt.cancel($scope.orderSetting.cancelUrl, $scope.order.id);
             } else {
                 console.log('You are not sure');
             }
@@ -2485,7 +2496,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         });
         confirmPopup.then(function(res) {
             if (res) {
-                orderOpt.del($scope.order.id, 3);
+                orderOpt.del($scope.orderSetting.delUrl, $scope.order.id, 3);
             } else {
                 console.log('You are not sure');
             }
@@ -2501,7 +2512,7 @@ function orderDetailCtrl($rootScope, $scope, $state, $stateParams, FetchData, ng
         });
         confirmPopup.then(function(res) {
             if (res) {
-                orderOpt.done($scope.order.id, 3);
+                orderOpt.done($scope.orderSetting.doneUrl, $scope.order.id, 3);
             } else {
                 console.log('You are not sure');
             }
