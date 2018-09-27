@@ -5,19 +5,19 @@
     </div>
     <ion-content class="has-header content" style="background-color: #F8F8F8">
         <div scroll-height rate="2/5">
-            <ion-slide-box class="indexSlide" on-slide-changed="slideHasChanged($index)" auto-play="true" does-continue="true" slide-interval=2000 show-pager="true" pager-click="pageClick(index)" active-slide="model.activeIndex" delegate-handle="delegateHandler"
+            <ion-slide-box class="indexSlide"  auto-play="true" does-continue="true" slide-interval="3000" on-slide-changed="slideChanged($index)" delegate-handle="delegateHandler"
                 ng-click="coverFlowClick()">
-                <ion-slide>
+                <ion-slide repeat-done="repeatDone()">
                     <div class="box">
                         <img src="../www/img/icons/slider/1.jpg" />
                     </div>
                 </ion-slide>
-                <ion-slide>
+                <ion-slide repeat-done="repeatDone()">
                     <div class="box">
                         <img src="../www/img/icons/slider/2.jpg" />
                     </div>
                 </ion-slide>
-                <ion-slide>
+                <ion-slide repeat-done="repeatDone()">
                     <div class="box">
                         <img src="../www/img/icons/slider/3.jpg" />
                     </div>

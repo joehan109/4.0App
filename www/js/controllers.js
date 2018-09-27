@@ -40,29 +40,17 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
     $scope.articles = [{ id: 0, avatar: 1, img: 2, title: 3, des: 4, see: 5 },
         { id: 1, avatar: 1, img: 2, title: 3, des: 4, see: 5 }
     ];
-    //为了验证属性active-slide定义的模型，angularjs是mvc模式
-    $scope.model = {
-        activeIndex: 0
+    $scope.slideChanged = function(index) {  
+        $scope.slideIndex = index;  
+        if ( ($ionicSlideBoxDelegate.count() -1 ) == index ) {  
+            $timeout(function(){  
+                $ionicSlideBoxDelegate.slide(0);  
+            },3000);  
+        }  
     };
-    //滑动图片的点击事件
-    $scope.coverFlowClick = function() {
-            var index = $ionicSlideBoxDelegate.currentIndex();
-            console.log("coverFlowClick index = ", index);
-        }
-        //此事件对应的是pager-click属性，当显示图片是有对应数量的小圆点，这是小圆点的点击事件
-    $scope.pageClick = function(index) {
-        //alert(index);
-        console.log("pageClick index = ", index);
-        $scope.model.activeIndex = index;
+    $scope.repeatDone = function() {
+      $ionicSlideBoxDelegate.update();
     };
-
-    //当图片切换后，触发此事件，注意参数
-    $scope.slideHasChanged = function($index) {
-        //alert($index);
-        // console.log("slideHasChanged index = ", $index);
-    };
-    //这是属性delegate-handle的验证使用的，其实没必要重定义，直接使用$ionicSlideBoxDelegate就可以
-    $scope.delegateHandle = $ionicSlideBoxDelegate;
 }
 
 function shopTabsCtrl($scope, $rootScope, $state, $cordovaToast,
@@ -646,13 +634,26 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
             Storage.remove('cateHomeOrigin');
             $scope.banners && $scope.changeTab($scope.banners[0], 0);
         }
-        FetchData.get('/mall/mapro/getAll').then(function(res) {
-            $scope.tuijian = res.data;
-            $ionicSlideBoxDelegate.update();
-            $ionicSlideBoxDelegate.loop(true);
-        });
-
+        $ionicSlideBoxDelegate.update();
+        $ionicSlideBoxDelegate.loop(true);
     });
+    FetchData.get('/mall/mapro/getAll').then(function(res) {
+        $scope.tuijian = res.data;
+        $ionicSlideBoxDelegate.update();
+        $ionicSlideBoxDelegate.loop(true);
+    });
+    $scope.slideChanged = function(index) {  
+        $scope.slideIndex = index;  
+        if ( ($ionicSlideBoxDelegate.count() -1 ) == index ) {  
+            $timeout(function(){  
+                $ionicSlideBoxDelegate.slide(0);  
+            },3000);  
+        }  
+    };
+    $scope.repeatDone = function() {
+      $ionicSlideBoxDelegate.update();
+    };
+
     $scope.isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
     $scope.style = {
         "margin-top": ($scope.isX ? 15 : 0) + 'px'
@@ -807,20 +808,29 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
             Storage.remove('cateHomeOrigin');
         }
         Storage.set('shopOrSell', 'sell');
-        FetchData.get('/mall/aupro/app/query?flag=1&status=').then(function(res) {
-            $scope.tuijian = res.data.data;
-            $ionicSlideBoxDelegate.update();
-            $ionicSlideBoxDelegate.loop(true);
-        });
+        
         $scope.changeTab(1);
     });
 
+    FetchData.get('/mall/aupro/app/query?flag=1&status=').then(function(res) {
+        $scope.tuijian = res.data.data;
+        $ionicSlideBoxDelegate.update();
+    });
     $scope.isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
     $scope.style = {
         "margin-top": ($scope.isX ? 15 : 0) + 'px'
     }
-
-    $scope.ngCart = ngCart;
+    $scope.slideChanged = function(index) {  
+        $scope.slideIndex = index;  
+        if ( ($ionicSlideBoxDelegate.count() -1 ) == index ) {  
+            $timeout(function(){  
+                $ionicSlideBoxDelegate.slide(0);  
+            },3000);  
+        }  
+    };
+    $scope.repeatDone = function() {
+      $ionicSlideBoxDelegate.update();
+    };
 
     $scope.goItem = function(id) {
         $state.go('pitem', { id: id });
