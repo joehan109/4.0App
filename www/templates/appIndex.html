@@ -7,19 +7,9 @@
         <div scroll-height rate="2/5">
             <ion-slide-box class="indexSlide"  auto-play="true" does-continue="true" slide-interval="3000" on-slide-changed="slideChanged($index)" delegate-handle="delegateHandler"
                 ng-click="coverFlowClick()">
-                <ion-slide repeat-done="repeatDone()">
+                <ion-slide ng-repeat="item in bannerList track by $index" repeat-done="repeatDone()">
                     <div class="box">
-                        <img src="../www/img/icons/slider/1.jpg" />
-                    </div>
-                </ion-slide>
-                <ion-slide repeat-done="repeatDone()">
-                    <div class="box">
-                        <img src="../www/img/icons/slider/2.jpg" />
-                    </div>
-                </ion-slide>
-                <ion-slide repeat-done="repeatDone()">
-                    <div class="box">
-                        <img src="../www/img/icons/slider/3.jpg" />
+                        <img ng-src="{{item.imgUrl}}" />
                     </div>
                 </ion-slide>
             </ion-slide-box>
