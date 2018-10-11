@@ -59,6 +59,13 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
     $scope.$on('$ionicView.beforeEnter', function() {
         $ionicSlideBoxDelegate.start();
     });
+    FetchData.get('/mall/img/query?type=1').then(function(res) {
+        if (res.ret) {
+            $scope.bannerList = res.data.data;
+        } else {
+            $scope.$emit("alert", res.errmsg);
+        }
+    });
     $scope.types = [
         // { name: '扫一扫', url: 'scan', icon: 'qr-scanner', pic: 'category' },
         { name: '4.0 商城', url: 'shopTab.cateHome', icon: 'ios-home-outline', pic: 'calculate' },
