@@ -14892,6 +14892,9 @@ input.ion-google-place[readonly] {
   text-align: left;
   padding: 0 5px; }
 
+.slider-pager {
+  bottom: 10px !important; }
+
 .pitem .slider-pager {
   bottom: 30px; }
 
