@@ -14661,6 +14661,9 @@ input.ion-google-place[readonly] {
 .modal .title {
   text-align: center !important; }
 
+.bar .title {
+  font-size: 16px !important; }
+
 .button-assertive {
   background-color: #6fd6b9; }
 
