@@ -748,32 +748,43 @@ angular.module('fourdotzero.services', [])
                         //$ionicLoading.hide();
                         d.resolve(res);
                     } else {
-                        if (res.data === 'login') {
-                            $ionicLoading.show({
-                                template: res.errmsg || '请先登录',
-                                duration: 1000
-                            });
-                            Storage.remove('user');
-                            Storage.remove('access_token');
-                            // 清空购物车
-                            Storage.set('cart', {
-                                shipping: null,
-                                taxRate: null,
-                                tax: null,
-                                items: [],
-                                selectedItems: []
-                            });
-                            $state.go('appIndex');
-                        } else {
-                            $ionicLoading.show({
-                                template: res.errmsg || '出错了',
-                                duration: 1000
-                            });
-                        }
+                        // if (res.data === 'login') {
+                        //     $ionicLoading.show({
+                        //         template: res.errmsg || '请先登录',
+                        //         duration: 1000
+                        //     });
+                        // } else {
+                        //     $ionicLoading.show({
+                        //         template: res.errmsg || '出错了',
+                        //         duration: 1000
+                        //     });
+                        // }
+                        Storage.remove('user');
+                        Storage.remove('access_token');
+                        // 清空购物车
+                        Storage.set('cart', {
+                            shipping: null,
+                            taxRate: null,
+                            tax: null,
+                            items: [],
+                            selectedItems: []
+                        });
+                        $state.go('appIndex');
+
                         d.reject();
                     }
                 }).error(function(data, status) {
                     //$ionicLoading.hide();
+                    Storage.remove('user');
+                    Storage.remove('access_token');
+                    // 清空购物车
+                    Storage.set('cart', {
+                        shipping: null,
+                        taxRate: null,
+                        tax: null,
+                        items: [],
+                        selectedItems: []
+                    });
                     $ionicLoading.show({
                         template: "网络连接失败, " + status,
                         duration: 1000
@@ -803,27 +814,28 @@ angular.module('fourdotzero.services', [])
                         d.resolve(res);
                     } else {
                         if (res.data === 'login') {
-                            $ionicLoading.show({
-                                template: res.errmsg || '请先登录',
-                                duration: 1000
-                            });
-                            Storage.remove('user');
-                            Storage.remove('access_token');
-                            // 清空购物车
-                            Storage.set('cart', {
-                                shipping: null,
-                                taxRate: null,
-                                tax: null,
-                                items: [],
-                                selectedItems: []
-                            });
-                            $state.go('appIndex');
+                            // $ionicLoading.show({
+                            //     template: res.errmsg || '请先登录',
+                            //     duration: 1000
+                            // });
+                            
                         } else {
-                            $ionicLoading.show({
-                                template: res.errmsg || '出错了',
-                                duration: 1000
-                            });
+                            // $ionicLoading.show({
+                            //     template: res.errmsg || '出错了',
+                            //     duration: 1000
+                            // });
                         }
+                        Storage.remove('user');
+                        Storage.remove('access_token');
+                        // 清空购物车
+                        Storage.set('cart', {
+                            shipping: null,
+                            taxRate: null,
+                            tax: null,
+                            items: [],
+                            selectedItems: []
+                        });
+                        $state.go('appIndex');
                         d.reject();
                     }
                 }).error(function(data, status) {
@@ -832,6 +844,17 @@ angular.module('fourdotzero.services', [])
                         template: "网络出错, " + status,
                         duration: 1000
                     });
+                    Storage.remove('user');
+                    Storage.remove('access_token');
+                    // 清空购物车
+                    Storage.set('cart', {
+                        shipping: null,
+                        taxRate: null,
+                        tax: null,
+                        items: [],
+                        selectedItems: []
+                    });
+                    $state.go('appIndex');
                     d.reject();
                 });
                 return d.promise;

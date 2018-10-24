@@ -113,7 +113,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
             }
             if ($location.path() == '/shopTab/account') {
                 $state.go('shopTab.cateHome')
-            } else if ($location.path() == '/shopTab/cateHome') {
+            } else if (($location.path() == '/shopTab/cateHome') || ($location.path() == '/home')) {
                 $state.go('appIndex')
             } else if ($location.path() == '/appIndex') {
                 showConfirm();

@@ -14732,8 +14732,7 @@ input.ion-google-place[readonly] {
     background-size: 36px; }
 
 .cateHomeSlide {
-  height: 100%;
-  margin-bottom: 10px; }
+  height: 100%; }
   .cateHomeSlide .box img {
     height: 100%;
     width: 100%; }

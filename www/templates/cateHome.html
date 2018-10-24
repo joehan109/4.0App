@@ -21,7 +21,7 @@
     </div>
 
     <ion-content class="has-header has-subheader homepage" overflow-scroll="true">
-        <div scroll-height rate="35/75" style="padding-bottom: 20px;">
+        <div scroll-height rate="35/75" style="padding-bottom: 10px;">
             <ion-slide-box class="cateHomeSlide" auto-play="true" does-continue="true" slide-interval="3000" on-slide-changed="slideChanged($index)" delegate-handle="delegateHandler2">
                 <ion-slide ng-repeat="item in tuijian track by $index" repeat-done="repeatDone()">
                     <div class="box" ng-click="goItem(item.maProId)">
