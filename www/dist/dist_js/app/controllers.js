@@ -58,15 +58,19 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
     // 解决每次路由切换轮播停止
     $scope.$on('$ionicView.beforeEnter', function() {
         $ionicSlideBoxDelegate.start();
+        $ionicSlideBoxDelegate.loop(true);
+    });
+    $scope.$on('authDialog:hide', function(event) {
         FetchData.get('/mall/img/query?type=1').then(function(res) {
             if (res.ret) {
                 $scope.bannerList = res.data.data;
+                $ionicSlideBoxDelegate.loop(true);
             } else {
                 $scope.$emit("alert", res.errmsg);
             }
         });
-    });
-    
+    })
+
     $scope.types = [
         // { name: '扫一扫', url: 'scan', icon: 'qr-scanner', pic: 'category' },
         { name: '4.0 商城', url: 'shopTab.cateHome', icon: 'ios-home-outline', pic: 'calculate' },
@@ -109,6 +113,7 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
     };
     $scope.repeatDone = function() {
       $ionicSlideBoxDelegate.update();
+      $ionicSlideBoxDelegate.loop(true);
     };
 }
 
@@ -874,6 +879,7 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
     FetchData.get('/mall/aupro/app/query?flag=1&status=').then(function(res) {
         $scope.tuijian = res.data.data;
         $ionicSlideBoxDelegate.update();
+        $ionicSlideBoxDelegate.loop(true);
     });
     $scope.isX = window.device && (['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0);
     $scope.style = {
@@ -889,6 +895,7 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
     };
     $scope.repeatDone = function() {
       $ionicSlideBoxDelegate.update();
+      $ionicSlideBoxDelegate.loop(true);
     };
 
     $scope.goItem = function(id) {
@@ -2227,6 +2234,8 @@ function pitemCtrl($scope, $rootScope, $stateParams, FetchData,utils,
         if ($scope.beginPM && !$scope.endPM){
             getPM();
             $scope.interval = $interval(getPM, 2000);
+        } else if ($scope.endPM){
+            getPM();
         }
     }
 

@@ -13,19 +13,19 @@
                 <div class="list">
                     <label class="item item-input">
             <div class="input-label" ng-class="{'warning': addressForm.name.$error.required && !addressForm.name.$pristine}">
-                收货人
+                收货人：
             </div>
             <input type="text" ng-model="addr.name" name="name" required />
         </label>
                     <label class="item item-input">
             <div class="input-label" ng-class="{'warning': addressForm.phone.$error.required && !addressForm.phone.$pristine}">
-                联系方式
+                联系方式：
             </div>
             <input type="text" ng-model="addr.phone" name="phone" required />
         </label>
                     <label class="item item-input">
             <div class="input-label" ng-class="{'warning': addressForm.detail.$error.required && !addressForm.detail.$pristine}">
-                详细地址
+                详细地址：
             </div>
             <input type="text" ng-model="addr.detail" name="detail" required />
         </label>
@@ -65,7 +65,7 @@
                     <!-- </label> -->
                     <label class="item item-input">
             <div class="input-label" ng-class="{'warning': addressForm.postcode.$error.required && !addressForm.postcode.$pristine}">
-                邮编
+                邮编：
             </div>
             <input type="text" ng-model="addr.postcode" name="postcode" required />
         </label>

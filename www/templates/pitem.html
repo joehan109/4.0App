@@ -35,7 +35,7 @@
                 {{item.name}}
             </div>
             <div class="product-prices">
-                当前价格：<span style="color:red">{{ item.nowPrice | currency:'￥' }}</span>
+                当前价：<span style="color:red">{{ item.nowPrice | currency:'￥' }}</span>
             </div>
         </ion-item>
         <ion-item class="item item-details detail2">
@@ -59,7 +59,7 @@
         </ion-item>
         <ion-item class="item item-details detail4">
             <div ng-repeat="child in priceList track by $index" class="list">
-                <span>{{child.vipName}}</span>
+                <span>{{child.vipPhoneStr}}</span>
                 <span>{{child.createTime | date : 'yyyy-MM-dd HH:mm:ss'}}</span>
                 <span>{{child.bidPrice}}</span>
             </div>

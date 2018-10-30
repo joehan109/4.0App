@@ -629,7 +629,7 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
 .cart-table .img-cell img {
     width: 80px;
     height: 80px;
-    margin: 0 5px;
+    margin: 0 8px;
 }
 
 .cart-table .fee-cell {
@@ -968,9 +968,14 @@ span.checklist-icon {
     color: white;
     margin-top: 18px;
     padding: 0;
-    height: 52px;
-    min-height: 52px;
-    width: 52px;
+    height: 32px;
+    min-height: 32px;
+    width: 32px;
+    min-width: 32px;
+}
+
+.button.item-header-button:before {
+    line-height: 32px;
 }
 
 .button.button-cart {

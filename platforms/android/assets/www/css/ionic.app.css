@@ -14981,6 +14981,23 @@ input.ion-google-place[readonly] {
     width: 70px !important;
     text-align: center; }
 
+.slider-pager {
+  position: absolute;
+  bottom: 20px !important;
+  width: 98%;
+  height: 5px;
+  text-align: right; }
+
+.slider-pager .slider-pager-page {
+  display: inline-block;
+  margin: 0px 2px;
+  width: 12px;
+  height: 12px;
+  color: white;
+  text-decoration: none;
+  opacity: 0.4;
+  font-size: 10px; }
+
 .assertive {
   color: #6fd6b9; }
 
@@ -15451,7 +15468,7 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
 .cart-table .img-cell img {
   width: 80px;
   height: 80px;
-  margin: 0 5px; }
+  margin: 0 8px; }
 
 .cart-table .fee-cell {
   text-align: right;
@@ -15729,9 +15746,13 @@ span.checklist-icon {
   color: white;
   margin-top: 18px;
   padding: 0;
-  height: 52px;
-  min-height: 52px;
-  width: 52px; }
+  height: 32px;
+  min-height: 32px;
+  width: 32px;
+  min-width: 32px; }
+
+.button.item-header-button:before {
+  line-height: 32px; }
 
 .button.button-cart {
   color: white;

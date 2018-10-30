@@ -239,6 +239,7 @@ angular.module('fourdotzero.services', [])
                             Storage.set('userPassword', pws);
                         }
                         deferred.resolve();
+                        $rootScope.$broadcast('authDialog:hide');
                         $state.go('appIndex')
                     });
                     // 刷新购物车

@@ -11,12 +11,12 @@
             <div class="checkout-info" ng-click="gotoAddress()">
                 <div ng-show="addr.id">
                     <div class="address-info-1">
-                        <div class="row">
-                            <div class="col">收货人：{{addr.data.name}}</div>
+                        <div class="row" style="padding:3px 0">
+                            <div class="col" style="padding:3px 0">收货人：{{addr.data.name}}</div>
                             <div class="col" style="text-align:right">{{addr.data.phone}}</div>
                         </div>
-                        <div class="row">
-                            <div class="col">收货地址：{{addr.data.detail}}</div>
+                        <div class="row" style="padding:3px 0">
+                            <div class="col" style="padding:3px 0">收货地址：{{addr.data.detail}}</div>
                         </div>
                     </div>
                     <div class="select-arrow address"></div>
@@ -73,7 +73,7 @@
             </div>
             <div class="checkout-choices">
                 <div class="select-row row" ng-repeat="provider in provider_prices" ng-click="selectPartner(provider)">
-                    <div class="checkout-choice col-80">
+                    <div class="checkout-choice col-80" style="margin-left: 2px;">
                         {{provider.codeVal}} -（{{provider.codeDesc}}元）
                     </div>
                     <i class="icon col ion-ios-circle-outline" ng-if="selectedProvider.codeKey !== provider.codeKey"></i>
@@ -90,7 +90,7 @@
             </div>
             <div class="checkout-choices">
                 <div class="usePoints select-row">
-                    <div class="checkout-choice" ng-repeat="choice in yesOrNo" ng-click="selectPoints(choice)">
+                    <div class="checkout-choice" ng-repeat="choice in yesOrNo" ng-click="selectPoints(choice)" style="margin:0 2px;">
                         <i class="icon  ion-ios-circle-outline" ng-if="usePoints !== choice.id"></i>
                         <i class="icon  ion-ios-checkmark-outline selected" ng-if="usePoints == choice.id"></i>
                         {{choice.name}}
