@@ -1,10 +1,15 @@
 <ion-modal-view>
-  <ion-header-bar>
+  <div class="bar bar-header">
+    <button class="button button-clear icon ion-ios-arrow-back button-dark" ng-click="closeBindEmailBox()"></button>
+
+    <div class="title">绑定邮箱</div>
+  </div>
+  <!-- <ion-header-bar>
     <div class="buttons">
       <button class="button button-clear icon ion-ios-arrow-back button-dark" ng-click="closeBindEmailBox()"></button>
     </div>
-    <div class="title">绑定邮箱</div>
-  </ion-header-bar>
+    <div class="title" style="margin-left:-21px">绑定邮箱</div>
+  </ion-header-bar> -->
   <ion-content class="login-page overlay-content" scroll="false" ng-controller="bindEmailCtrl">
     <div class="list list-inset">
       <label class="item item-input">

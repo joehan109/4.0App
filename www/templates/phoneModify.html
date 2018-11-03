@@ -1,10 +1,15 @@
 <ion-modal-view>
-    <ion-header-bar>
+    <div class="bar bar-header">
+        <button class="button button-clear icon ion-ios-arrow-back button-dark" ng-click="closePhoneModifyBox()"></button>
+
+        <div class="title">修改手机号码</div>
+    </div>
+    <!-- <ion-header-bar>
         <div class="buttons">
             <button class="button button-clear icon ion-ios-arrow-back button-dark" ng-click="closePhoneModifyBox()"></button>
         </div>
-        <div class="title">修改手机号码</div>
-    </ion-header-bar>
+        <div class="title" style="margin-left:-21px">修改手机号码</div>
+    </ion-header-bar> -->
     <ion-content class="overlay-content" ng-controller="changePhoneCtrl" style="padding:15px;">
         <div class="list list-inset" style="margin: 10px">
             <label class="item item-input" style="border:0 none;border-bottom:1px solid #eee">

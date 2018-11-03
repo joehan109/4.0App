@@ -16,7 +16,4 @@ Build version 7C1002
 
 // TODOLIST
 空页面适配（4个）
-扫一扫返回url
-订单列表页表头
-loading页
 弹窗标题居中

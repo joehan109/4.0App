@@ -15252,6 +15252,31 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
       padding-top: 8px;
       margin-bottom: 0px; }
 
+.icon2 {
+  width: 100%;
+  background-size: 30% 30%;
+  margin-top: 45%;
+  margin-left: 35%;
+  text-align: left;
+  overflow: hidden; }
+  .icon2.fav {
+    background: url("../img/icons/fav.png") no-repeat;
+    background-size: 36px; }
+  .icon2.sel {
+    background: url("../img/icons/sel.png") no-repeat;
+    background-size: 36px; }
+  .icon2.rec {
+    background: url("../img/icons/rec.png") no-repeat;
+    background-size: 36px; }
+  .icon2.cart {
+    background: url("../img/icons/cartEmpty.png") no-repeat;
+    background-size: 36px; }
+  .icon2 .title {
+    margin-top: 32%;
+    width: 30%;
+    text-align: center;
+    font-size: 16px; }
+
 .item-text-wrap {
   padding: 0 8px 8px;
   border: 0 none;
@@ -15601,16 +15626,14 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
   height: 30px; }
 
 .btn-group .order-btn {
-  height: 34px; }
+  height: 34px;
+  border: 0 none;
+  border-bottom: 1px solid #eee;
+  width: auto !important; }
 
 .btn-group .active {
-  background: #eee; }
-
-.btn-group .btn:first-child {
-  border-radius: 4px 0 0 4px; }
-
-.btn-group .btn:last-child {
-  border-radius: 0 4px 4px 0; }
+  border-bottom: 1px solid #ff3000;
+  color: #ff3000; }
 
 .footer-wrapper .btn-empty {
   background-color: #d8d8d8;

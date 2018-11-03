@@ -1,169 +1,178 @@
 {
-  "images": [
+  "images" : [
     {
-      "idiom": "universal",
-      "scale": "1x",
-      "width-class": "compact",
-      "height-class": "compact"
+      "idiom" : "universal",
+      "scale" : "1x"
     },
     {
-      "idiom": "universal",
-      "scale": "1x",
-      "width-class": "compact"
+      "idiom" : "universal",
+      "filename" : "1242x2208-恢复的.jpg",
+      "scale" : "2x"
     },
     {
-      "idiom": "universal",
-      "scale": "1x",
-      "height-class": "compact"
+      "idiom" : "universal",
+      "filename" : "1242x2208-恢复的-1.jpg",
+      "scale" : "3x"
     },
     {
-      "idiom": "universal",
-      "scale": "1x"
+      "idiom" : "universal",
+      "scale" : "1x",
+      "height-class" : "compact"
     },
     {
-      "idiom": "universal",
-      "scale": "2x",
-      "width-class": "compact",
-      "height-class": "compact"
+      "idiom" : "universal",
+      "filename" : "1242x2208-恢复的-2.jpg",
+      "height-class" : "compact",
+      "scale" : "2x"
     },
     {
-      "idiom": "universal",
-      "scale": "2x",
-      "width-class": "compact"
+      "idiom" : "universal",
+      "filename" : "1242x2208-恢复的-3.jpg",
+      "height-class" : "compact",
+      "scale" : "3x"
     },
     {
-      "idiom": "universal",
-      "scale": "2x",
-      "height-class": "compact"
+      "idiom" : "universal",
+      "scale" : "1x",
+      "width-class" : "compact"
     },
     {
-      "idiom": "universal",
-      "scale": "2x",
-      "filename": "Default@2x~universal~anyany.png"
+      "idiom" : "universal",
+      "filename" : "1242x2208-恢复的-4.jpg",
+      "width-class" : "compact",
+      "scale" : "2x"
     },
     {
-      "idiom": "universal",
-      "scale": "3x",
-      "width-class": "compact",
-      "height-class": "compact"
+      "idiom" : "universal",
+      "filename" : "1242x2208-恢复的-5.jpg",
+      "width-class" : "compact",
+      "scale" : "3x"
     },
     {
-      "idiom": "universal",
-      "scale": "3x",
-      "width-class": "compact"
+      "idiom" : "universal",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "1x"
     },
     {
-      "idiom": "universal",
-      "scale": "3x",
-      "height-class": "compact"
+      "idiom" : "universal",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "2x"
     },
     {
-      "idiom": "universal",
-      "scale": "3x"
+      "idiom" : "universal",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "3x"
     },
     {
-      "idiom": "ipad",
-      "scale": "1x",
-      "width-class": "compact",
-      "height-class": "compact"
+      "idiom" : "iphone",
+      "scale" : "1x"
     },
     {
-      "idiom": "ipad",
-      "scale": "1x",
-      "width-class": "compact"
+      "idiom" : "iphone",
+      "filename" : "1242x2208-恢复的-6.jpg",
+      "scale" : "2x"
     },
     {
-      "idiom": "ipad",
-      "scale": "1x",
-      "height-class": "compact"
+      "idiom" : "iphone",
+      "scale" : "3x"
     },
     {
-      "idiom": "ipad",
-      "scale": "1x"
+      "idiom" : "iphone",
+      "scale" : "1x",
+      "height-class" : "compact"
     },
     {
-      "idiom": "ipad",
-      "scale": "2x",
-      "width-class": "compact",
-      "height-class": "compact"
+      "idiom" : "iphone",
+      "scale" : "2x",
+      "height-class" : "compact"
     },
     {
-      "idiom": "ipad",
-      "scale": "2x",
-      "width-class": "compact"
+      "idiom" : "iphone",
+      "scale" : "3x",
+      "height-class" : "compact"
     },
     {
-      "idiom": "ipad",
-      "scale": "2x",
-      "height-class": "compact"
+      "idiom" : "iphone",
+      "scale" : "1x",
+      "width-class" : "compact"
     },
     {
-      "idiom": "ipad",
-      "scale": "2x"
+      "idiom" : "iphone",
+      "scale" : "2x",
+      "width-class" : "compact"
     },
     {
-      "idiom": "iphone",
-      "scale": "1x",
-      "width-class": "compact",
-      "height-class": "compact"
+      "idiom" : "iphone",
+      "scale" : "3x",
+      "width-class" : "compact"
     },
     {
-      "idiom": "iphone",
-      "scale": "1x",
-      "width-class": "compact"
+      "idiom" : "iphone",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "1x"
     },
     {
-      "idiom": "iphone",
-      "scale": "1x",
-      "height-class": "compact"
+      "idiom" : "iphone",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "2x"
     },
     {
-      "idiom": "iphone",
-      "scale": "1x"
+      "idiom" : "iphone",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "3x"
     },
     {
-      "idiom": "iphone",
-      "scale": "2x",
-      "width-class": "compact",
-      "height-class": "compact"
+      "idiom" : "ipad",
+      "scale" : "1x"
     },
     {
-      "idiom": "iphone",
-      "scale": "2x",
-      "width-class": "compact"
+      "idiom" : "ipad",
+      "filename" : "1242x2208-恢复的-7.jpg",
+      "scale" : "2x"
     },
     {
-      "idiom": "iphone",
-      "scale": "2x",
-      "height-class": "compact"
+      "idiom" : "ipad",
+      "scale" : "1x",
+      "height-class" : "compact"
     },
     {
-      "idiom": "iphone",
-      "scale": "2x"
+      "idiom" : "ipad",
+      "filename" : "1242x2208-恢复的-8.jpg",
+      "height-class" : "compact",
+      "scale" : "2x"
     },
     {
-      "idiom": "iphone",
-      "scale": "3x",
-      "width-class": "compact",
-      "height-class": "compact"
+      "idiom" : "ipad",
+      "scale" : "1x",
+      "width-class" : "compact"
     },
     {
-      "idiom": "iphone",
-      "scale": "3x",
-      "width-class": "compact"
+      "idiom" : "ipad",
+      "filename" : "1242x2208-恢复的-9.jpg",
+      "width-class" : "compact",
+      "scale" : "2x"
     },
     {
-      "idiom": "iphone",
-      "scale": "3x",
-      "height-class": "compact"
+      "idiom" : "ipad",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "1x"
     },
     {
-      "idiom": "iphone",
-      "scale": "3x"
+      "idiom" : "ipad",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "2x"
     }
   ],
-  "info": {
-    "author": "Xcode",
-    "version": 1
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
   }
 }

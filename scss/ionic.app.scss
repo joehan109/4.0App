@@ -355,6 +355,36 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
         }
     }
 }
+.icon2 {
+    width: 100%;
+    background-size: 30% 30%;
+    margin-top: 45%;
+    margin-left: 35%;
+    text-align: left;
+    overflow: hidden;
+    &.fav {
+        background: url("../img/icons/fav.png") no-repeat;
+        background-size: 36px;
+    }
+    &.sel {
+        background: url("../img/icons/sel.png") no-repeat;
+        background-size: 36px;
+    }
+    &.rec {
+        background: url("../img/icons/rec.png") no-repeat;
+        background-size: 36px;
+    }
+    &.cart {
+        background: url("../img/icons/cartEmpty.png") no-repeat;
+        background-size: 36px;
+    }
+    .title{
+        margin-top: 32%;
+        width:30%;
+        text-align: center;
+        font-size: 16px;
+    }
+}
 
 .item-text-wrap {
     padding: 0 8px 8px;
@@ -791,18 +821,23 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
 
 .btn-group .order-btn {
     height: 34px;
+    border: 0 none;
+    border-bottom: 1px solid #eee; 
+    width: auto!important;
 }
 
 .btn-group .active {
-    background: #eee;
+    // background: #eee;
+    border-bottom: 1px solid $energized; 
+    color:$energized;
 }
 
 .btn-group .btn:first-child {
-    border-radius: 4px 0 0 4px;
+    // border-radius: 4px 0 0 4px;
 }
 
 .btn-group .btn:last-child {
-    border-radius: 0 4px 4px 0
+    // border-radius: 0 4px 4px 0
 }
 
 .footer-wrapper .btn-empty {

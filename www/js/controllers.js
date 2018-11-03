@@ -8,6 +8,12 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
     $scope.$on('$ionicView.beforeEnter', function() {
         $ionicSlideBoxDelegate.start();
         $ionicSlideBoxDelegate.loop(true);
+        FetchData.get('/mall/img/query?type=1').then(function(res) {
+            if (res.ret) {
+                $scope.bannerList = res.data.data;
+                $ionicSlideBoxDelegate.loop(true);
+            }
+        });
     });
     $scope.$on('authDialog:hide', function(event) {
         FetchData.get('/mall/img/query?type=1').then(function(res) {
@@ -131,25 +137,36 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
             .then(function(barcodeData) {
                 $scope.barcodeData = barcodeData;
                 if (barcodeData.text) {
-                    FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text).then(function(res) {
-                        if (res.ret) {
-                            console.log(res.data)
-                            $scope.data = res.data;
-                            $scope.imgUrl = res.data.proUrl;
-                            $scope.getDetail = true;
-                            if (res.data.pwdFlag) {
-                                $scope.showCode = true;
-                                $scope.openCode = res.data.sonPwd;
-                                $scope.num = res.data.num || 0;
-                            } else {
-                                $scope.showOpen = true;
+                    // 如果以boxUrl开头，则为包装箱二维码，直接展示
+                    // 如果以getCode开头，则为要发请求
+                    if (barcodeData.text.indexOf('boxUrl') === 0) {
+                        $scope.showImg = true;
+                        $scope.imgSrc = barcodeData.text.split('boxUrl')[1];
+                    } else if (barcodeData.text.indexOf('getCode') === 0) {
+                        $scope.showImg = false;
+                        FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text.split('getCode')[1]).then(function(res) {
+                            if (res.ret) {
+                                console.log(res.data)
+                                $scope.data = res.data;
+                                $scope.imgUrl = res.data.proUrl;
+                                $scope.getDetail = true;
+                                if (res.data.pwdFlag) {
+                                    $scope.showCode = true;
+                                    $scope.openCode = res.data.sonPwd;
+                                    $scope.num = res.data.num || 0;
+                                } else {
+                                    $scope.showOpen = true;
+                                }
                             }
-                        }
-                    }, function(res) {
-                        // 查询数据出错
+                        }, function(res) {
+                            // 查询数据出错
+                            $state.go('appIndex');
+                            $scope.$emit("alert", '数据不存在，请重新扫码');
+                        }); 
+                    } else {
                         $state.go('appIndex');
-                        $scope.$emit("alert", '数据不存在，请重新扫码');
-                    });
+                        $scope.$emit("alert", '请扫描包装箱二维码或瓶盖二维码');
+                    }
                 }
                 if (barcodeData.cancelled) {
                     // 点击返回 
@@ -2883,6 +2900,10 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage, $ionicPopup) {
         }
     };
     $scope.delete = function() {
+        var items = ngCart.getSelectedItems();
+        if (!items.length){
+            return;
+        }
         var confirmPopup = $ionicPopup.confirm({
             template: '确定删除已选中的项目?',
             cancelText: '否',
@@ -2892,7 +2913,7 @@ function cartCtrl(FetchData, $rootScope, $scope, ngCart, Storage, $ionicPopup) {
         });
         confirmPopup.then(function(res) {
             if (res) {
-                ngCart.getSelectedItems().forEach(function(item) {
+                items.forEach(function(item) {
                     ngCart.removeItemById(item._data.id);
                 })
             } else {

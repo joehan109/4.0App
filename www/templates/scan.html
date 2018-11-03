@@ -3,7 +3,7 @@
         <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button>
         <div class="title">扫码开锁</div>
     </div>
-    <ion-content class="has-header account">
+    <ion-content class="has-header account" ng-if="!showImg">
         <div style="display:flex;flex-direction:row" ng-if="getDetail">
             <img style="height:150px;width:150px;" ng-src="{{imgUrl}}" alt="">
             <div style="display: flex;flex-direction: column;justify-content: space-around;margin: 10px 5px;">
@@ -34,5 +34,8 @@
                 <p>开锁密码为：{{password}}</p>
             </div>
         </div>
+    </ion-content>
+    <ion-content class="has-header account" ng-if="showImg">
+        <img style="width:100%" ng-src="{{imgSrc}}">
     </ion-content>
 </ion-view>

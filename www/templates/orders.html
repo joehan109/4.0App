@@ -9,11 +9,15 @@
 
         <section>
             <div class="order-btn-row">
-                <div class="btn-group cart-btn row" style="display:flex;padding:0 10px">
+                <div class="btn-group cart-btn row" style="display:flex;border-bottom: 1px solid #eee;
+                justify-content: space-between;
+                height: 34px;
+                padding:0;
+                overflow: initial;">
                     <button class="btn order-btn" ng-class="{'active': orderType == '0'}" ng-style="{'width':isShop ? '25%': '33%'}" ng-click="setType('0')">待付款</button>
                     <button class="btn order-btn" ng-class="{'active': orderType == '1'}" ng-style="{'width':isShop ? '25%': '33%'}" ng-click="setType('1')">待收货</button>
                     <button class="btn order-btn" ng-class="{'active': orderType == '2'}" ng-style="{'width':isShop ? '25%': '33%'}" ng-click="setType('2')">已完成</button>
-                    <button class="btn order-btn col-25" ng-class="{'active': orderType == '3'}" ng-if="isShop" ng-click="setType('3')">已取消</button>
+                    <button class="btn order-btn" ng-class="{'active': orderType == '3'}" ng-if="isShop" ng-click="setType('3')">已取消</button>
                 </div>
             </div>
             <div class="order-detail" ng-repeat="order in orders track by $index">
@@ -29,7 +33,7 @@
                                 </button>
                             </td>
                             <td class="detail-cell">
-                                <a class="button button-stable button-small" style="background-color: #fff;" ng-href="#/order/{{order.code}}?status_id={{order.status}}">详情 <i class="icon ion-ios-arrow-right"></i></a>
+                                <a class="button button-stable button-small" style="background-color: #fff;padding:1px 2px!important;" ng-href="#/order/{{order.code}}?status_id={{order.status}}">详情 <i class="icon ion-ios-arrow-right"></i></a>
                             </td>
                         </tr>
                     </thead>
@@ -63,13 +67,13 @@
                                         </a>
                                     </div>
                                 </td>
-                                <td class="info-cell" style="width:80%;color:#333">
+                                <td class="info-cell" style="width:80%;color:#333;word-break: break-word;">
                                     <div>订单号：{{ order.code }}</div>
                                     <div>起拍价：{{ order.beginPrice | currency:""}} 元</div>
                                     <div>成交价：{{ order.dealPrice | currency:""}} 元</div>
                                     <div>成交时间：{{ order.createTime }}</div>
                                 </td>
-                                <td class="price-cell">
+                                <td class="price-cell" style="width:0%;color:#333">
                                     <div style="color:#333">
                                     </div>
                                 </td>
@@ -116,6 +120,12 @@
                     </tfoot>
                 </table>
 
+            </div>
+
+            <div class="" ng-if="!orders.length">
+                <div scroll-height rate="1/2" class='icon2 rec' style='width:100%;background-size: 30% 60%'>
+                    <p class="title">暂无记录</p>
+                </div>
             </div>
         </section>
     </ion-content>

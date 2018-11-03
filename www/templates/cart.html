@@ -7,12 +7,17 @@
         <button class="button button-clear button-dark icon ion-ios-trash-outline" ng-click="delete()"></button>
 
     </div>
-    <ion-content class="has-header has-footer has-subfooter">
+    <ion-content class="has-header has-footer">
 
-        <div class="center-ico" ng-show="ngCart.getTotalItems() === 0">
+        <!-- <div class="center-ico" ng-show="ngCart.getTotalItems() === 0">
             <i class="icon ion-ios-cart-outline"></i>
             <h1>购物车为空
             </h1>
+        </div> -->
+        <div class="" ng-show="ngCart.getTotalItems() === 0">
+            <div scroll-height rate="1/2" class='icon2 cart' style='width:100%;background-size: 30% 60%'>
+                <p class="title">购物车为空</p>
+            </div>
         </div>
 
         <div ng-show="ngCart.getTotalItems() > 0">

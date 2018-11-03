@@ -5,7 +5,7 @@
         <div class="title">收藏商品</div>
     </div>
     <ion-content class="has-header homepage">
-        <table class="table ngCart cart-table">
+        <table class="table ngCart cart-table" ng-if="items.length">
             <tr ng-repeat="item in items track by $index">
 
                 <td class="img-cell" ng-click="goItem(item.id)">
@@ -32,7 +32,11 @@
                 </td>
             </tr>
         </table>
-
+        <div class="" ng-if="!items.length">
+            <div scroll-height rate="1/2" class='icon2 sel' style='width:100%;background-size: 30% 60%'>
+                <p class="title">暂无收藏</p>
+            </div>
+        </div>
         <!-- <div class="col col-50 animated fadeIn" collection-repeat="item in items track by $index">
             <div class="item item-image" ng-click="goItem(item.id)">
                 <img ng-src="{{item.mainUrl}}" cache-src>
