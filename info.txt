@@ -15,5 +15,4 @@ Xcode 7.2.1
 Build version 7C1002
 
 // TODOLIST
-空页面适配（4个）
 弹窗标题居中

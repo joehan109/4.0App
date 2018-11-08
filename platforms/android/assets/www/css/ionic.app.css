@@ -14993,10 +14993,13 @@ input.ion-google-place[readonly] {
   margin: 0px 2px;
   width: 12px;
   height: 12px;
-  color: white;
+  color: gray;
   text-decoration: none;
-  opacity: 0.4;
+  opacity: 0.5;
   font-size: 10px; }
+
+.slider-pager .slider-pager-page.active {
+  color: white; }
 
 .assertive {
   color: #6fd6b9; }
@@ -15422,7 +15425,7 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
   text-shadow: 0 1px 0 #fff; }
 
 .about .logo {
-  background-image: url("../img/icon.jpg");
+  background-image: url("../img/icon.png");
   width: 100px;
   height: 100px;
   margin: 10% auto 10% auto;

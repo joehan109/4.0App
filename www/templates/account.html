@@ -1,7 +1,7 @@
 <ion-view>
     <div class="avatar-section" ng-style="style">
         <div ng-if="user.getUser().name" class="avatar-content">
-            <div class="avatar-wrap" ng-click="$state.go('tab.profile')">
+            <div class="avatar-wrap" ng-click="$state.go('profile')">
                 <p><img class="avatar" ng-src="{{user.getUser().image}}" alt=""></p>
                 <p ng-if="user.getUser().name" class="user dark">{{user.getUser().name}}</p>
             </div>

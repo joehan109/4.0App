@@ -1298,6 +1298,11 @@ function likePostsCtrl($scope, $rootScope, AuthService, Photogram) {
 
 function authCtrl($rootScope, $scope, FetchData, $state,
     AuthService, $ionicModal, $cordovaFacebook, $interval, $http, ENV, Storage) {
+    $scope.$on('authDialog:hide', function(event) {
+        if (!$scope.savePW) {
+            $scope.password = '';
+        }
+    })
 
     $scope.commonLogin = false;
     $scope.checkLogin = function(i) {
@@ -1309,16 +1314,19 @@ function authCtrl($rootScope, $scope, FetchData, $state,
     $scope.savePW = true;
     $scope.autoLogin = true;
 
-    $scope.$watch('email', function(newVal, oldVal) {
-        if (newVal && $scope.savePW) {
-            var pws = Storage.get('userPassword') || [];
-            angular.forEach(pws, function(item) {
-                if (item.name == newVal) {
-                    $scope.password = item.pwd;
-                }
-            });
-        }
-    });
+    $scope.email = (Storage.get('userPassword') || {}).name;
+    $scope.password = (Storage.get('userPassword') || {}).pwd;
+
+    // $scope.$watch('email', function(newVal, oldVal) {
+    //     if (newVal && $scope.savePW) {
+    //         var pws = Storage.get('userPassword') || {};
+    //         angular.forEach(pws, function(item) {
+    //             if (item.name == newVal) {
+    //                 $scope.password = item.pwd;
+    //             }
+    //         });
+    //     }
+    // });
     $scope.getValidateCode = function() {
         if ($scope.phone) {
             $http.get(ENV.SERVER_URL + '/mall/vip/login/getCode?type=0&phone=' + $scope.phone).success(function(data) {

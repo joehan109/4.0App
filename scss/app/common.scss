@@ -489,10 +489,13 @@
     margin: 0px 2px;
     width: 12px;
     height: 12px;
-    color: white;
+    color: gray;
     text-decoration: none;
-    opacity: 0.4;
+    opacity: 0.5;
     font-size: 10px;
+}
+.slider-pager .slider-pager-page.active{
+    color: white;
 }
 // 为了给轮播图的小圆点加外框
 // .ion-record::before{

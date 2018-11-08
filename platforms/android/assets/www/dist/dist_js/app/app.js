@@ -478,14 +478,10 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         }
     })
 
-    .state('tab.profile', {
-        url: '/account/profile',
-        views: {
-            'tab-account': {
-                templateUrl: 'profile.html',
-                controller: 'profileCtrl'
-            }
-        },
+    .state('profile', {
+        url: '/profile',
+        templateUrl: 'profile.html',
+        controller: 'profileCtrl',
         loginRequired: true
     })
 

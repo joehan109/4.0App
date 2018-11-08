@@ -27,7 +27,10 @@ angular.module('fourdotzero.services', [])
 
         function getTimeAdapt(dateFormat) {
             // 适配sarafi和chrome的获取时间格式（ios需要中间有个T）
-            return new Date(dateFormat.substr(0, 10) + "T" + dateFormat.substr(11, 8));
+            // console.log(dateFormat)
+            // console.log(new Date(dateFormat.substr(0, 10) + "T" + dateFormat.substr(11, 8)))
+            // return new Date(dateFormat.substr(0, 10) + "T" + dateFormat.substr(11, 8));
+            return new Date(dateFormat.replace(/-/g,"/"));
         }
 
         function deepCopy(obj){
@@ -220,23 +223,25 @@ angular.module('fourdotzero.services', [])
                 'common': ENV.SERVER_URL + '/mall/vip/login',
                 'phone': ENV.SERVER_URL + '/mall/vip/login/phone'
             }[data.type];
-            $http.post(url, data.data).success(function(data, status) {
-                if (status === 200 && data.ret) {
+            $http.post(url, data.data).success(function(result, status) {
+                if (status === 200 && result.ret) {
                     isAuthenticated = true;
-                    $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(data) {
-                        user = data.data;
+                    $http.get(ENV.SERVER_URL + '/mall/vip/get').success(function(res) {
+                        user = res.data;
                         if (user) {
-                            Storage.set('user', data.data);
-                            Storage.set('access_token', data.data.name);
+                            Storage.set('user', res.data);
+                            Storage.set('access_token', res.data.name);
                         }
                         if (data.savePW && data.type === 'common') {
-                            var pws = Storage.get('userPassword') || [];
-                            angular.forEach(pws, function(item) {
-                                if (item.name == data.data.name) {
-                                    item.pwd = data.data.pwd
-                                }
-                            });
+                            var pws = Storage.get('userPassword') || {};
+                            pws.name = data.data.name
+                            pws.pwd = data.data.pwd
                             Storage.set('userPassword', pws);
+                        }
+                        if (!data.savePW) {
+                            Storage.set('userPassword', {
+                                name:data.data.name
+                            });
                         }
                         deferred.resolve();
                         $rootScope.$broadcast('authDialog:hide');
