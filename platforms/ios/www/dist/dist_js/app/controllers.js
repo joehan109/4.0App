@@ -162,7 +162,7 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
         });
         confirmPopup.then(function(res) {
             if (res) {
-                FetchData.get('/mall/mascan/getPwd?id=' + $scope.data.id).then(function(res) {
+                FetchData.get('/mall/mascan/getPwd?id=' + $scope.data.id + "&area=" + $scope.city).then(function(res) {
                     if (res.ret) {
                         $scope.openCode = res.data.sonPwd.split('');
                         $scope.num = res.data.num || 0;
@@ -195,7 +195,7 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
                         $scope.imgSrc = barcodeData.text.split('boxUrl')[1];
                     } else if (barcodeData.text.indexOf('getCode') === 0) {
                         $scope.showImg = false;
-                        FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text.split('getCode')[1]).then(function(res) {
+                        FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text.split('getCode')[1] + "&area=" + $scope.city).then(function(res) {
                             if (res.ret) {
                                 console.log(res.data)
                                 $scope.data = res.data;
