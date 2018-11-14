@@ -420,6 +420,13 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         loginRequired: true
     })
 
+    .state('scanDetail', {
+        url: '/scanDetail',
+        templateUrl: 'scanDetail.html',
+        controller: 'scanDetailCtrl',
+        loginRequired: true
+    })
+
     .state('vipCenter', {
         url: '/vipCenter',
         templateUrl: 'vipCenter.html',

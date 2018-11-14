@@ -48,6 +48,7 @@ cartCtrl.$inject = ['FetchData', '$rootScope', '$scope', 'ngCart', 'Storage', '$
 checkoutCtrl.$inject = ['$state', '$scope', '$rootScope', 'FetchData', 'ngCart', 'Storage', 'AuthService'];
 addressCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
 pointsDetailCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
+scanDetailCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup'];
 vipCenterCtrl.$inject = ['$rootScope', '$state', '$scope', 'FetchData', 'ngCart', '$ionicPopup', 'Storage', 'utils', 'AuthService'];
 aboutCtrl.$inject = ['$rootScope', '$scope', '$state', 'appUpdateService'];
 scanCtrl.$inject = ['$scope', '$rootScope', '$state', '$cordovaToast', 'Photogram', '$ionicPopup', '$timeout', 'geoService', 'FetchData', '$cordovaBarcodeScanner'];
@@ -144,11 +145,14 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
 
     // 每次一进页面就调用照相机
     $scope.$on('$ionicView.beforeEnter', function() {
-        $scope.showOpen = false;
-        $scope.showCode = false;
-        $scope.alreadyShow = false;
-        $scope.city = $rootScope.cityInfo && $rootScope.cityInfo.city;
-        scan();
+        if (!$rootScope.backFromScanDetail) {
+            $scope.showOpen = false;
+            $scope.showCode = false;
+            $scope.alreadyShow = false;
+            $scope.city = $rootScope.cityInfo && $rootScope.cityInfo.city;
+            scan();
+        }
+        $rootScope.backFromScanDetail = false;
     });
     $scope.getDetail = false;
 
@@ -196,8 +200,33 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
                     } else if (barcodeData.text.indexOf('getCode') === 0) {
                         $scope.showImg = false;
                         FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text.split('getCode')[1] + "&area=" + $scope.city).then(function(res) {
+                            var res = {
+                                "ret": true,
+                                "data": {
+                                    "id": 5,
+                                    "parentCode": "getCode",
+                                    "sonCode": "getCode1",
+                                    "sonPwd": "1234",
+                                    "num": 6,
+                                    "proName": "产品名称",
+                                    "proArea": "产品地域",
+                                    "proType": "产品类型",
+                                    "proUrl": "http://39.106.199.108:8080/mall/img/app/download?name=main.jpg",
+                                    "proDu": "58",
+                                    "pwdFlag": 1,
+                                    "creater": "",
+                                    "pwdFlagStr": "已获取",
+                                    "storage": "8年60天",
+                                    "proTime": "2018-11-08 00:00:00",
+                                    "createTime": "2018-06-27 21:25:12"
+                                }
+                            }
                             if (res.ret) {
-                                console.log(res.data)
+                                if (typeof res.data == 'string'){
+                                    $state.go('appIndex');
+                                    $scope.$emit("alert", res.data);
+                                    return;
+                                }
                                 $scope.data = res.data;
                                 $scope.imgUrl = res.data.proUrl;
                                 $scope.getDetail = true;
@@ -231,6 +260,18 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
     }
 
 
+}
+function scanDetailCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup) {
+    $scope.$on('$ionicView.beforeEnter', function() {
+        $rootScope.hideTabs = '';
+    });
+    FetchData.get('/mall/ing/query').then(function(data) {
+        $scope.points = data.data.data;
+    });
+    $scope.goBack = function () {
+        $rootScope.backFromScanDetail = true;
+        $state.go('scan')
+    }
 }
 
 function tabsCtrl($scope, $rootScope, $state, $ionicModal, $cordovaToast,
@@ -3433,6 +3474,7 @@ controllersModule.controller('cartCtrl', cartCtrl);
 controllersModule.controller('checkoutCtrl', checkoutCtrl);
 controllersModule.controller('addressCtrl', addressCtrl);
 controllersModule.controller('pointsDetailCtrl', pointsDetailCtrl);
+controllersModule.controller('scanDetailCtrl', scanDetailCtrl);
 controllersModule.controller('vipCenterCtrl', vipCenterCtrl);
 controllersModule.controller('fourZeroFour_controller', fourZeroFour_controller);
 controllersModule.controller('aboutCtrl', aboutCtrl);

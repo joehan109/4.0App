@@ -6,11 +6,11 @@
     <ion-content class="has-header account" ng-if="!showImg">
         <div style="display:flex;flex-direction:row" ng-if="getDetail">
             <img style="height:150px;width:150px;" ng-src="{{imgUrl}}" alt="">
-            <div style="display: flex;flex-direction: column;justify-content: space-around;margin: 10px 5px;">
-                <p>{{data.proName}}</p>
-                <!-- <p>这是产品介绍这是产品介绍这是产品介绍这是产品介绍这是产品介绍{{data.proName}}</p> -->
-                <p>香型：{{data.proType}}</p>
-                <p>产地：{{data.proArea}}</p>
+            <div style="display: flex;flex-direction: column;flex:1;justify-content: space-between;margin: 10px;font-size: 16px;letter-spacing:2px;font-family: -apple-system">
+                <p><span class="sacnDetailSpan">名  称</span>：{{data.proName}}</p>
+                <p><span class="sacnDetailSpan">酒精度</span>：{{data.proDu}}%vol</p>
+                <p><span class="sacnDetailSpan">酒  龄</span>：{{data.storage}}</p>
+                <p><span class="sacnDetailSpan">密  码</span>：{{data.pwdFlagStr}}</p>
             </div>
         </div>
         <div style="margin-top:50px;text-align:center">
@@ -27,6 +27,7 @@
                     <button class="button button-assertive">{{openCode[3]}}</button>
                 </div>
                 <p style="font-size:18px;">第<span class="energized">{{num}}</span>次获取开锁密码</p>
+                <p class="energized" ng-click="$state.go('scanDetail')">查看扫码记录</p>
             </div>
 
             <div ng-if="alreadyShow">
