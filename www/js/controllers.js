@@ -149,27 +149,27 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
                     } else if (barcodeData.text.indexOf('getCode') === 0) {
                         $scope.showImg = false;
                         FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text.split('getCode')[1] + "&area=" + $scope.city).then(function(res) {
-                            var res = {
-                                "ret": true,
-                                "data": {
-                                    "id": 5,
-                                    "parentCode": "getCode",
-                                    "sonCode": "getCode1",
-                                    "sonPwd": "1234",
-                                    "num": 6,
-                                    "proName": "产品名称",
-                                    "proArea": "产品地域",
-                                    "proType": "产品类型",
-                                    "proUrl": "http://39.106.199.108:8080/mall/img/app/download?name=main.jpg",
-                                    "proDu": "58",
-                                    "pwdFlag": 1,
-                                    "creater": "",
-                                    "pwdFlagStr": "已获取",
-                                    "storage": "8年60天",
-                                    "proTime": "2018-11-08 00:00:00",
-                                    "createTime": "2018-06-27 21:25:12"
-                                }
-                            }
+                            // var res = {
+                            //     "ret": true,
+                            //     "data": {
+                            //         "id": 5,
+                            //         "parentCode": "getCode",
+                            //         "sonCode": "getCode1",
+                            //         "sonPwd": "1234",
+                            //         "num": 6,
+                            //         "proName": "产品名称",
+                            //         "proArea": "产品地域",
+                            //         "proType": "产品类型",
+                            //         "proUrl": "http://39.106.199.108:8080/mall/img/app/download?name=main.jpg",
+                            //         "proDu": "58",
+                            //         "pwdFlag": 1,
+                            //         "creater": "",
+                            //         "pwdFlagStr": "已获取",
+                            //         "storage": "8年60天",
+                            //         "proTime": "2018-11-08 00:00:00",
+                            //         "createTime": "2018-06-27 21:25:12"
+                            //     }
+                            // }
                             if (res.ret) {
                                 if (typeof res.data == 'string'){
                                     $state.go('appIndex');
