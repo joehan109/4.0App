@@ -11,26 +11,26 @@
                 <div>
                     <div class="row">
                         <div class="col col-35" style="text-align: center">
-                            <div class="col">日期</div>
+                            <div class="col">扫码序号</div>
                         </div>
                         <div class="col col-30" style="text-align: center">
-                            <div class="col">入 / 出</div>
+                            <div class="col">扫码时间</div>
                         </div>
                         <div class="col col-35" style="text-align: center">
-                            <div class="col">订单号</div>
+                            <div class="col">扫码地区</div>
                         </div>
                     </div>
                 </div>
                 <div ng-repeat="addr in points track by $index" style="border-bottom: 1px solid #ddd;background-color: white">
                     <div class="row">
                         <div class="col col-35" style="text-align: center">
-                            <div class="col">{{addr.createTime}}</div>
+                            <div class="col">第 {{addr.num}} 次</div>
                         </div>
                         <div class="col col-30" style="text-align: center">
-                            <div class="col">{{addr.integral}}</div>
+                            <div class="col">{{addr.createTime | date:'yyyy-MM-dd'}}</div>
                         </div>
                         <div class="col col-35" style="text-align: center">
-                            <div class="col">{{addr.code}}</div>
+                            <div class="col">{{addr.area}}</div>
                         </div>
                     </div>
                 </div>

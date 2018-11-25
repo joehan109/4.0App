@@ -1,0 +1,180 @@
+// 适配iphonex
+@media only screen and (width: 375px) and (height: 812px){
+    .tabs,.bar-footer,.bar-subfooter{
+        margin-bottom: env(safe-area-inset-bottom)!important;
+        margin-bottom: constant(safe-area-inset-top)!important;
+        padding:0;
+        box-sizing: content-box;
+        border: 0 none;
+    }
+    .iphonexlh44{
+        line-height: 44px!important;
+    }
+    .bar-header{
+        margin-top: calc(env(safe-area-inset-top) - 30px);
+        margin-top: calc(constant(safe-area-inset-top) - 30px);
+    }
+    .platform-ios.platform-cordova:not(.fullscreen) .has-header, .platform-ios.platform-cordova:not(.fullscreen) .bar-subheader{
+        top: calc(env(safe-area-inset-top) + 30px)!important;
+        top: calc(constant(safe-area-inset-top) + 30px)!important;
+    }
+    .item-page,.buttons1{
+        padding-top: constant(safe-area-inset-top);
+        padding-top: env(safe-area-inset-top);
+    }
+    #index-footer{
+        margin-bottom: 0!important;
+        padding-bottom: 30px;
+    }
+    .pane {
+        background-color: #f8f8f8;
+    }
+    .homepage {
+        margin-top: calc(constant(safe-area-inset-top)) !important;
+        margin-top: calc(env(safe-area-inset-top)) !important;
+        margin-bottom: calc(constant(safe-area-inset-bottom)) !important;
+        margin-bottom: calc(env(safe-area-inset-bottom)) !important;
+    }
+    .notab{
+        margin-top: 0 !important;
+    }
+    .avatar-section .avatar-wrap {
+        top: env(safe-area-inset-top)!important;
+        top: constant(safe-area-inset-top)!important;
+    }
+}
+// 适配iphoneXR
+@media only screen and (width: 414px) and (height: 896px) and (-webkit-device-pixel-ratio : 2) {
+    .tabs,.bar-footer,.bar-subfooter{
+        margin-bottom: env(safe-area-inset-bottom)!important;
+        margin-bottom: constant(safe-area-inset-top)!important;
+        padding:0;
+        box-sizing: content-box;
+        border: 0 none;
+    }
+    .iphonexlh44{
+        line-height: 44px!important;
+    }
+    .bar-header{
+        margin-top: calc(env(safe-area-inset-top) - 30px);
+        margin-top: calc(constant(safe-area-inset-top) - 30px);
+    }
+    .platform-ios.platform-cordova:not(.fullscreen) .has-header, .platform-ios.platform-cordova:not(.fullscreen) .bar-subheader{
+        top: calc(env(safe-area-inset-top) + 30px)!important;
+        top: calc(constant(safe-area-inset-top) + 30px)!important;
+    }
+    .item-page,.buttons1{
+        padding-top: constant(safe-area-inset-top);
+        padding-top: env(safe-area-inset-top);
+    }
+    #index-footer{
+        margin-bottom: 0!important;
+        padding-bottom: 30px;
+    }
+    .pane {
+        background-color: #f8f8f8;
+    }
+    .homepage {
+        margin-top: calc(constant(safe-area-inset-top)) !important;
+        margin-top: calc(env(safe-area-inset-top)) !important;
+        margin-bottom: calc(constant(safe-area-inset-bottom)) !important;
+        margin-bottom: calc(env(safe-area-inset-bottom)) !important;
+    }
+    .notab{
+        margin-top: 0 !important;
+    }
+    .avatar-section .avatar-wrap {
+        top: env(safe-area-inset-top)!important;
+        top: constant(safe-area-inset-top)!important;
+    }
+}
+// 适配iphoneXS
+@media only screen and (width: 375px) and (height: 812px) and (-webkit-device-pixel-ratio : 3) {
+    .tabs,.bar-footer,.bar-subfooter{
+        margin-bottom: env(safe-area-inset-bottom)!important;
+        margin-bottom: constant(safe-area-inset-top)!important;
+        padding:0;
+        box-sizing: content-box;
+        border: 0 none;
+    }
+    .iphonexlh44{
+        line-height: 44px!important;
+    }
+    .bar-header{
+        margin-top: calc(env(safe-area-inset-top) - 30px);
+        margin-top: calc(constant(safe-area-inset-top) - 30px);
+    }
+    .platform-ios.platform-cordova:not(.fullscreen) .has-header, .platform-ios.platform-cordova:not(.fullscreen) .bar-subheader{
+        top: calc(env(safe-area-inset-top) + 30px)!important;
+        top: calc(constant(safe-area-inset-top) + 30px)!important;
+    }
+    .item-page,.buttons1{
+        padding-top: constant(safe-area-inset-top);
+        padding-top: env(safe-area-inset-top);
+    }
+    #index-footer{
+        margin-bottom: 0!important;
+        padding-bottom: 30px;
+    }
+    .pane {
+        background-color: #f8f8f8;
+    }
+    .homepage {
+        margin-top: calc(constant(safe-area-inset-top)) !important;
+        margin-top: calc(env(safe-area-inset-top)) !important;
+        margin-bottom: calc(constant(safe-area-inset-bottom)) !important;
+        margin-bottom: calc(env(safe-area-inset-bottom)) !important;
+    }
+    .notab{
+        margin-top: 0 !important;
+    }
+    .avatar-section .avatar-wrap {
+        top: env(safe-area-inset-top)!important;
+        top: constant(safe-area-inset-top)!important;
+    }
+}
+// 适配iphoneXSMAX
+@media only screen and (width: 414px) and (height: 896px) and (-webkit-device-pixel-ratio : 3) {
+    .tabs,.bar-footer,.bar-subfooter{
+        margin-bottom: env(safe-area-inset-bottom)!important;
+        margin-bottom: constant(safe-area-inset-top)!important;
+        padding:0;
+        box-sizing: content-box;
+        border: 0 none;
+    }
+    .iphonexlh44{
+        line-height: 44px!important;
+    }
+    .bar-header{
+        margin-top: calc(env(safe-area-inset-top) - 30px);
+        margin-top: calc(constant(safe-area-inset-top) - 30px);
+    }
+    .platform-ios.platform-cordova:not(.fullscreen) .has-header, .platform-ios.platform-cordova:not(.fullscreen) .bar-subheader{
+        top: calc(env(safe-area-inset-top) + 30px)!important;
+        top: calc(constant(safe-area-inset-top) + 30px)!important;
+    }
+    .item-page,.buttons1{
+        padding-top: constant(safe-area-inset-top);
+        padding-top: env(safe-area-inset-top);
+    }
+    #index-footer{
+        margin-bottom: 0!important;
+        padding-bottom: 30px;
+    }
+    .pane {
+        background-color: #f8f8f8;
+    }
+    .homepage {
+        margin-top: calc(constant(safe-area-inset-top)) !important;
+        margin-top: calc(env(safe-area-inset-top)) !important;
+        margin-bottom: calc(constant(safe-area-inset-bottom)) !important;
+        margin-bottom: calc(env(safe-area-inset-bottom)) !important;
+    }
+    .notab{
+        margin-top: 0 !important;
+    }
+    .avatar-section .avatar-wrap {
+        top: env(safe-area-inset-top)!important;
+        top: constant(safe-area-inset-top)!important;
+    }
+}

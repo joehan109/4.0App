@@ -29,6 +29,7 @@ $ionicons-font-path: "../fonts" !default;
 @import "app/photo";
 @import "app/intro";
 @import "app/common";
+@import "app/iphoneX";
 $theme: #6fd6b9;
 .assertive {
     color: $assertive
@@ -489,7 +490,7 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
         left: 50%;
         margin-left: -100px;
         width: 200px;
-        text-align: center
+        text-align: center;
     }
     .avatar-content {
         background-color: #f5f5f5;
@@ -793,7 +794,8 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
 
 .order-btn-row {
     text-align: center;
-    margin: 12px 0 0 0;
+    padding: 12px 0 0 0;
+    background-color: #fff;
 }
 
 .order-btn-row .btn-group .btn {
@@ -895,7 +897,7 @@ span.add-icon {
     width: 100%;
     text-align: center;
     font-size: 16px;
-    line-height: 33px;
+    line-height: 44px;
 }
 
 .address-row span.select-icon {

@@ -150,6 +150,7 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
             $scope.showCode = false;
             $scope.alreadyShow = false;
             $scope.city = $rootScope.cityInfo && $rootScope.cityInfo.city;
+            $rootScope.scanData = {};
             scan();
         }
         $rootScope.backFromScanDetail = false;
@@ -228,6 +229,7 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
                                     return;
                                 }
                                 $scope.data = res.data;
+                                $rootScope.scanData = res.data;
                                 $scope.imgUrl = res.data.proUrl;
                                 $scope.getDetail = true;
                                 if (res.data.pwdFlag) {
@@ -240,6 +242,7 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
                             }
                         }, function(res) {
                             // 查询数据出错
+                            $rootScope.scanData = {};
                             $state.go('appIndex');
                             $scope.$emit("alert", '数据不存在，请重新扫码');
                         }); 
@@ -265,7 +268,7 @@ function scanDetailCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPop
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
     });
-    FetchData.get('/mall/ing/query').then(function(data) {
+    FetchData.get('/mall/mascan/query?maScanId=' + $rootScope.scanData.id).then(function(data) {
         $scope.points = data.data.data;
     });
     $scope.goBack = function () {

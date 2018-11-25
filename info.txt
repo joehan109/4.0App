@@ -15,4 +15,4 @@ Xcode 7.2.1
 Build version 7C1002
 
 // TODOLIST
-弹窗标题居中
+参拍中有时加载数据不全

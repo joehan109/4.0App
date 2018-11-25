@@ -176,7 +176,8 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
 
     // 判断是否是iPhoneX
     if (window.device) {
-        $rootScope.isIphoneX = ['iPhone10,3', 'iPhone10,6'].indexOf(device.model) >= 0
+        var iphonex= ['iPhone10,3', 'iPhone10,6','iPhone11,8', 'iPhone11,2','iPhone11,6'];
+        $rootScope.isIphoneX = iphonex.indexOf(device.model) >= 0;
     }
     // 获取登录城市
     $http.jsonp('http://whois.pconline.com.cn/ipJson.jsp?callback=JSON_CALLBACK').success(function (data){
