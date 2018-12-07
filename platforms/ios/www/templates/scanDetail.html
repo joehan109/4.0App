@@ -1,0 +1,40 @@
+<!-- 地址栏 -->
+<ion-view>
+    <div class="bar bar-header">
+        <button class="button button-clear icon ion-ios-arrow-back" ng-click="goBack()"></button>
+        <div class="title">积分明细</div>
+    </div>
+
+    <ion-content class="has-header" style="background-color: #F5F5F5">
+        <section>
+            <div class="address-select-info">
+                <div>
+                    <div class="row">
+                        <div class="col col-35" style="text-align: center">
+                            <div class="col">扫码序号</div>
+                        </div>
+                        <div class="col col-30" style="text-align: center">
+                            <div class="col">扫码时间</div>
+                        </div>
+                        <div class="col col-35" style="text-align: center">
+                            <div class="col">扫码地区</div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-repeat="addr in points track by $index" style="border-bottom: 1px solid #ddd;background-color: white">
+                    <div class="row">
+                        <div class="col col-35" style="text-align: center">
+                            <div class="col">第 {{addr.num}} 次</div>
+                        </div>
+                        <div class="col col-30" style="text-align: center">
+                            <div class="col">{{addr.createTime | date:'yyyy-MM-dd'}}</div>
+                        </div>
+                        <div class="col col-35" style="text-align: center">
+                            <div class="col">{{addr.area}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </ion-content>
+</ion-view>

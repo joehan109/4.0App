@@ -1,0 +1,49 @@
+<!-- 地址栏 -->
+<ion-view>
+    <div class="bar bar-header">
+        <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button>
+        <div class="title">地址管理</div>
+    </div>
+
+    <ion-content class="has-header">
+
+        <section>
+            <div class="address-select-info" ng-show="addresses.length != 0">
+                <div class="address-row" ng-repeat="addr in addresses track by $index" ng-class="addr.flag? 'address-selected' : ''">
+                    <div class="address-info-1">
+                        <div class="row">
+                            <div class="col">{{addr.name}}</div>
+                            <div class="col" style="text-align: right">{{addr.phone}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">{{addr.detail}}</div>
+                        </div>
+                    </div>
+                    <div class="address-operate row">
+                        <div class="col col-60" ng-click="setDefault(addr.id)">
+                            <i class="icon ion-ios-circle-outline" ng-if="!addr.flag"></i>
+                            <span ng-if="!addr.flag">设为默认</span>
+                            <i class="icon ion-ios-checkmark-outline" ng-if="addr.flag"></i>
+                            <span ng-if="addr.flag">默认地址</span>
+                        </div>
+                        <div class="col" address-form addr-id="addr.id" addresses="addresses">
+                            <i class="icon ion-ios-compose-outline" style="width:16px"></i>
+                            <a href>编辑</a>
+                        </div>
+                        <div class="col" ng-click="removeAddr(addr.id)">
+                            <i class="icon ion-ios-trash-outline" style="width:16px"></i>
+                            <span>删除</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </ion-content>
+    <ion-footer-bar class="bar-energized bar bar-footer">
+        <div class="address-add-btn" address-form addresses="addresses">
+            <div>新增收件地址</div>
+        </div>
+    </ion-footer-bar>
+</ion-view>

@@ -8,46 +8,46 @@
   },
   "installed_plugins": {
     "cordova-plugin-advanced-http": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "cordova-plugin-alipay-v2": {
       "APP_ID": "2018051560119605",
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "cordova-plugin-camera": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "cordova-plugin-device": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "cordova-plugin-file": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "cordova-plugin-file-transfer": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "cordova-plugin-ionic-keyboard": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "cordova-plugin-ionic-webview": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "cordova-plugin-x-toast": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "ionic-plugin-deploy": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     },
     "phonegap-plugin-barcodescanner": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     }
   },
   "dependent_plugins": {
     "cordova-plugin-splashscreen": {
-      "PACKAGE_NAME": "io.ionic.starter"
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     }
   }
 }

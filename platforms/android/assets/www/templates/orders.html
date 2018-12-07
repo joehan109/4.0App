@@ -1,0 +1,132 @@
+<!-- 商品详情 -->
+<ion-view>
+    <div class="bar bar-header">
+        <button class="button button-clear icon ion-ios-arrow-back" ng-click="goTo()"></button>
+        <div class="title">我的订单</div>
+    </div>
+
+    <ion-content class="has-header">
+
+        <section>
+            <div class="order-btn-row">
+                <div class="btn-group cart-btn row" style="display:flex;border-bottom: 1px solid #eee;
+                justify-content: space-between;
+                height: 34px;
+                padding:0;
+                overflow: initial;">
+                    <button class="btn order-btn" ng-class="{'active': orderType == '0'}" ng-style="{'width':isShop ? '25%': '33%'}" ng-click="setType('0')">待付款</button>
+                    <button class="btn order-btn" ng-class="{'active': orderType == '1'}" ng-style="{'width':isShop ? '25%': '33%'}" ng-click="setType('1')">待收货</button>
+                    <button class="btn order-btn" ng-class="{'active': orderType == '2'}" ng-style="{'width':isShop ? '25%': '33%'}" ng-click="setType('2')">已完成</button>
+                    <button class="btn order-btn" ng-class="{'active': orderType == '3'}" ng-if="isShop" ng-click="setType('3')">已取消</button>
+                </div>
+            </div>
+            <div class="order-detail" ng-repeat="order in orders track by $index">
+                <table class="table ngCart cart-table">
+                    <thead>
+                        <tr>
+                            <td class="first-cell" colspan="2">
+                                <button ng-if="isShop" class="button button-clear button-dark button-small">
+                                    订单号：{{order.code }}
+                                </button>
+                                <button ng-if="!isShop" style="font-weight: bold;font-size:14px" class="button button-clear button-dark button-small">
+                                    {{order.auProName}}
+                                </button>
+                            </td>
+                            <td class="detail-cell">
+                                <a class="button button-stable button-small" style="background-color: #fff;padding:1px 2px!important;" ng-href="#/order/{{order.code}}?status_id={{order.status}}">详情 <i class="icon ion-ios-arrow-right"></i></a>
+                            </td>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr ng-if="isShop" ng-repeat="entry in order.detailList track by $index" style="border:0 none; background-color:#f9f9f9">
+
+                            <td class="img-cell">
+                                <div>
+                                    <a ng-href="#/item/{{entry.maProId}}">
+                                        <img ng-src="{{entry.maProImg}}">
+                                    </a>
+                                </div>
+                            </td>
+                            <td class="info-cell">
+                                <div>{{ entry.maProName }}</div>
+                            </td>
+                            <td class="price-cell">
+                                {{ entry.dealPrice | currency:'￥' }}
+                                <div style="color:#333">
+                                    <span>x {{ entry.num | number }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-if="!isShop" style="border:0 none; background-color:#f9f9f9">
+
+                                <td class="img-cell">
+                                    <div ng-if="!isShop">
+                                        <a ng-href="#/pitem/{{order.auProId}}">
+                                            <img ng-src="{{order.auProImg}}">
+                                        </a>
+                                    </div>
+                                </td>
+                                <td class="info-cell" style="width:80%;color:#333;word-break: break-word;">
+                                    <div>订单号：{{ order.code }}</div>
+                                    <div>起拍价：{{ order.beginPrice | currency:""}} 元</div>
+                                    <div>成交价：{{ order.dealPrice | currency:""}} 元</div>
+                                    <div>成交时间：{{ order.createTime }}</div>
+                                </td>
+                                <td class="price-cell" style="width:0%;color:#333">
+                                    <div style="color:#333">
+                                    </div>
+                                </td>
+                            </tr>
+                       </tbody>
+                    <tfoot>
+                        <tr ng-if="isShop && order.integral != 0" style="height: 30px;">
+                            <td colspan="3" class="fee-cell">
+                                积分抵扣:
+                                <span class="price-cell">{{ order.integral | currency:"￥" }}</span> 
+                            </td>
+                        </tr>
+                        <tr ng-if="isShop" style="height: 40px;">
+                            <td colspan="3" class="fee-cell">
+                                运费:
+                                <span class="price-cell">{{ order.trackingAmount | currency:"￥" }}</span> 
+                                总计:
+                                <span class="price-cell">{{ order.totalAmount | currency:"￥" }}</span>
+                            </td>
+                        </tr>
+                        <tr ng-style="{'height':isShop ? '40px%': '50px'}">
+                            <td colspan="3" class="status-cell" style="text-align:right;padding-right:10px;">
+                                <div class="orderTimer" ng-if="order.status=='0' && isShop">
+                                    <i class="icon ion-ios-timer-outline placeholder-icon" style="font-size:16px;padding-left: 10px"></i>
+                                    <timer end-time="order.endTime" finish-callback="finished(order.id)">{{minutes}}分{{seconds}}秒</timer>
+                                </div>
+                                <a class="button button-default button-small" style="border:1px solid #aaa" ng-if="order.status=='0' && isShop" ng-click="orderCancel(order)">
+                                    取消订单
+                                </a>
+                                <a class="button button-default button-small" style="border:1px solid #aaa" ng-if="order.status=='1' || order.status=='2'" ng-href="#/order/logistics/{{order.code}}?status_id={{order.status}}">
+                                    查看物流
+                                </a>
+                                <ngcart-checkout class="orderCheckBtn" ng-if="order.status=='0'" settings="{ order_id: order.id , order_type: 'existed'}" ordertype="existed" orderid={{order.id}} templateUrl="<a class='button button-energized button-small' style='border:1px solid #ff3300;padding:2px 10px 0'>去付款</a>">
+                                    去付款
+                                </ngcart-checkout>
+                                <a class="button button-energized button-small" style="border:1px solid #ff3300" ng-if="order.status=='1'" ng-click="orderDone(order)">
+                                    确认收货
+                                </a>
+                                <a class="button button-energized button-small" style="border:1px solid #ff3300" ng-if="order.status=='3'" ng-click="orderDel(order)">
+                                    删除订单
+                                </a>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+
+            <div class="" ng-if="!orders.length">
+                <div scroll-height rate="1/2" class='icon2 rec' style='width:100%;background-size: 30% 60%'>
+                    <p class="title">暂无记录</p>
+                </div>
+            </div>
+        </section>
+    </ion-content>
+</ion-view>

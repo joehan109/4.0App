@@ -1,0 +1,46 @@
+<!-- 商品列表 -->
+<ion-view>
+    <div class="bar bar-header">
+        <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button>
+        <div class="title">我的关注</div>
+    </div>
+    <ion-content class="has-header homepage notab">
+        <table class="table ngCart cart-table">
+            <tr ng-repeat="item in items track by $index" style="height:150px;padding:10px;">
+
+                <td class="img-cell" ng-click="goItem(item.id)">
+                    <div>
+                        <a href="#" style="position: relative;">
+                            <img ng-src="{{item.mainUrl}}" cache-src style="width:130px;height:130px">
+                            <div class="hover-slideImg" style="font-size:12px;text-align: center;line-height: 1.5;height: 40px;bottom:0;">
+                                <i class="icon ion-ios-clock-outline" style="font-size:14px;"></i>
+                                <span ng-if="!item.ended && item.begined">进行中</span>
+                                <span ng-if="!item.begined">{{item.begin | date:"yyyy.MM.dd HH:mm:ss"}} 开始</span>
+                                <span ng-if="!item.ended && item.begined">{{item.end | date:"yyyy.MM.dd HH:mm:ss"}} 结束</span>
+                                <span ng-if="item.ended">已结束</span>
+                            </div>
+                        </a>
+                    </div>
+                </td>
+                <td class="info-cell" ng-click="goItem(item.id)" style="padding-left:30px">
+                    <div style="margin-bottom: 5px;">{{ item.name }}</div>
+                    <div style="margin-bottom: 5px;">当前价：<span style="color:#ff3300">{{ item.nowPrice | currency:'￥' }}</span></div>
+                    <div style="margin-bottom: 5px;">围观人数：<span style="color:#666;font-weight: normal ">{{ item.applyNum }} 人</span></div>
+
+                </td>
+                <td class="price-cell favorIcon" style="vertical-align: bottom;padding-bottom:10px;padding-right: 15px;width:10%">
+                    <span style="float:right;font-size:20px;">
+                        <i class="icon ion-ios-heart like-icon energized"
+                            ng-click="unfavor(item)"></i>
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+        <div class="" ng-if="!items.length">
+            <div scroll-height rate="1/2" class='icon2 fav' style='width:100%;background-size: 30% 60%'>
+                <p class="title">暂无关注</p>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

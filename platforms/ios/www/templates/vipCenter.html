@@ -1,0 +1,34 @@
+<!-- 地址栏 -->
+<ion-view>
+    <div class="bar bar-header">
+        <button class="button button-clear icon ion-ios-arrow-back" ng-click="$ionicGoBack()"></button>
+        <div class="title">会员中心 </div>
+    </div>
+
+    <ion-content class="has-header" style="background-color: #f7f7f7">
+        <section class="vipCenter">
+            <div class="avatar-wrap">
+                <div class="title">
+                    <img class="avatar" ng-src="{{userCenter.image}}" alt="">
+                    <div class="level">{{userCenter.levelStr}}会员</div>
+                </div>
+            </div>
+            <div class="vipCard" ng-style='cardColor'>
+                <div scroll-height rate="73/135" class='card1' ng-class="cardStyle">
+                    <div class="cardPoints">
+                        <div>当前积分</div>
+                        <div class="cardp">{{userCenter.integral}}</div>
+                    </div>
+                    <div class="cardNum">NO. {{userCenter.num}}</div>
+                </div>
+            </div>
+            <div class="description">
+                <div>会员卡说明：</div><br />
+                <img ng-src="{{userCenter.vipCardDetailUrl}}" />
+            </div>
+        </section>
+
+    </ion-content>
+
+    
+</ion-view>
