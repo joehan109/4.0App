@@ -8,17 +8,17 @@ INJECTED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/Cordova
 INJECTED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml:20:1-23:12
 INJECTED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml:20:1-23:12
 	package
-		ADDED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml:21:7-33
+		ADDED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml:21:7-35
 		INJECTED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml
 		INJECTED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml
 	android:versionName
-		ADDED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml:21:34-59
+		ADDED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml:21:36-61
 		INJECTED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml
 		INJECTED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml
 	xmlns:android
 		ADDED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml:20:11-69
 	android:versionCode
-		ADDED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml:21:60-83
+		ADDED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml:21:62-85
 		INJECTED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml
 		INJECTED from /Users/hanqiang.han/joe/workspace/4.0App/platforms/android/CordovaLib/AndroidManifest.xml
 uses-sdk
