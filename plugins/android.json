@@ -48,6 +48,10 @@
     "phonegap-plugin-barcodescanner": {
       "ANDROID_SUPPORT_V4_VERSION": "27.+",
       "PACKAGE_NAME": "com.bjliquor.sdl"
+    },
+    "cordova-plugin-wechat": {
+      "WECHATAPPID": "wx6562133776850964",
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     }
   },
   "dependent_plugins": {

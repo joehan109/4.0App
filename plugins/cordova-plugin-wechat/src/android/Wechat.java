@@ -95,7 +95,8 @@ public class Wechat extends CordovaPlugin {
 
     protected static CallbackContext currentCallbackContext;
     protected static IWXAPI wxAPI;
-    protected static String appId;
+
+    protected String appId;
 
     @Override
     protected void pluginInitialize() {
@@ -265,6 +266,8 @@ public class Wechat extends CordovaPlugin {
 
     protected boolean sendPaymentRequest(CordovaArgs args, CallbackContext callbackContext) {
 
+        final IWXAPI api = getWxAPI(cordova.getActivity());
+
         // check if # of arguments is correct
         final JSONObject params;
         try {
@@ -277,13 +280,7 @@ public class Wechat extends CordovaPlugin {
         PayReq req = new PayReq();
 
         try {
-            final String appid = params.getString("appid");
-            final String savedAppid = getAppId(cordova.getActivity());
-            if (!savedAppid.equals(appid)) {
-                this.saveAppId(cordova.getActivity(), appid);
-            }
-
-            req.appId = appid;
+            req.appId = getAppId();
             req.partnerId = params.has("mch_id") ? params.getString("mch_id") : params.getString("partnerid");
             req.prepayId = params.has("prepay_id") ? params.getString("prepay_id") : params.getString("prepayid");
             req.nonceStr = params.has("nonce") ? params.getString("nonce") : params.getString("noncestr");
@@ -296,8 +293,6 @@ public class Wechat extends CordovaPlugin {
             callbackContext.error(ERROR_INVALID_PARAMETERS);
             return true;
         }
-
-        final IWXAPI api = getWxAPI(cordova.getActivity());
 
         if (api.sendReq(req)) {
             Log.i(TAG, "Payment request has been sent successfully.");
@@ -595,12 +590,12 @@ public class Wechat extends CordovaPlugin {
         return null;
     }
 
-    public static String getAppId() {
-        if (appId == null) {
-            appId = preferences.getString(WXAPPID_PROPERTY_KEY, "");
+    public String getAppId() {
+        if (this.appId == null) {
+            this.appId = preferences.getString(WXAPPID_PROPERTY_KEY, "");
         }
 
-        return appId;
+        return this.appId;
     }
 
     /**

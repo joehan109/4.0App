@@ -327,6 +327,14 @@ module.exports = [
     "clobbers": [
       "cordova.plugins.barcodeScanner"
     ]
+  },
+  {
+    "id": "cordova-plugin-wechat.Wechat",
+    "file": "plugins/cordova-plugin-wechat/www/wechat.js",
+    "pluginId": "cordova-plugin-wechat",
+    "clobbers": [
+      "Wechat"
+    ]
   }
 ];
 module.exports.metadata = 
@@ -344,7 +352,8 @@ module.exports.metadata =
   "cordova-plugin-whitelist": "1.3.4-dev",
   "cordova-plugin-x-toast": "2.6.2",
   "ionic-plugin-deploy": "0.6.7",
-  "phonegap-plugin-barcodescanner": "7.1.2"
+  "phonegap-plugin-barcodescanner": "7.1.2",
+  "cordova-plugin-wechat": "2.1.0"
 };
 // BOTTOM OF METADATA
 });

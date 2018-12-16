@@ -96,4 +96,7 @@
         <variable name="APP_ID" value="2018051560119605" />
     </plugin>
     <plugin name="cordova-plugin-x-toast" spec="^2.6.2" />
+    <plugin name="cordova-plugin-wechat" spec="^2.1.0">
+        <variable name="WECHATAPPID" value="wx6562133776850964" />
+    </plugin>
 </widget>

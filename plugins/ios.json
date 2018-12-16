@@ -43,6 +43,10 @@
     },
     "phonegap-plugin-barcodescanner": {
       "PACKAGE_NAME": "com.bjliquor.sdl"
+    },
+    "cordova-plugin-wechat": {
+      "WECHATAPPID": "wx6562133776850964",
+      "PACKAGE_NAME": "com.bjliquor.sdl"
     }
   },
   "dependent_plugins": {

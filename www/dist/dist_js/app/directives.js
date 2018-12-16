@@ -120,7 +120,7 @@ angular.module('fourdotzero.directives', [])
     };
 }])
 
-.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', '$http', 'ENV', 'AlipayService', 'Storage', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state, $http, ENV, AlipayService,Storage) {
+.directive('ngcartCheckout', ['ngCart', 'fulfilmentProvider', '$timeout', '$ionicActionSheet', '$state', '$http', 'ENV', 'AlipayService', 'WechatService', 'Storage', function(ngCart, fulfilmentProvider, $timeout, $ionicActionSheet, $state, $http, ENV, AlipayService,WechatService,Storage) {
     return {
         restrict: 'E',
         link: function(scope, element, attrs) {
@@ -159,7 +159,7 @@ angular.module('fourdotzero.directives', [])
                     // if (Storage.get('shopOrSell') === 'sell') {
                     //     $state.go('address');
                     // }
-                    var service = { 0: 'alipay', 1: 'wechat' }
+                    var service = { 0: AlipayService, 1: WechatService }
                     var data = scope.ngCart.getAddress().data;
                     var detailList = scope.ngCart.getSelectedItems().map(function(item) {
                         return {
@@ -182,7 +182,6 @@ angular.module('fourdotzero.directives', [])
                         receiptDetail: data.detail,
                         integral: scope.ngCart.getVipPoints()
                     }
-                    debugger
                     if (attrs.ordertype == 'new') {
                         if (!order.receiptId) {
                             scope.$emit('alert', '请选择收货地址');
@@ -190,13 +189,13 @@ angular.module('fourdotzero.directives', [])
                         }
                         fulfilmentProvider.checkout(order, function() {
                             $ionicActionSheet.hide();
-                        })
+                        }, index)
                     } else if (attrs.ordertype == 'existed') {
                         // 直接掉支付接口
                         var url = Storage.get('shopOrSell') === 'shop' ? '/mall/alipay/maorder/pay?ids=' : '/mall/alipay/auorder/pay?ids='
                         $http.post(ENV.SERVER_URL + url + attrs.orderid).success(function(r, status) {
                             if (r.ret) {
-                                AlipayService.alipayCheckout(r.data)
+                                service[index].checkout(r.data)
                             }
                         });
                     }
