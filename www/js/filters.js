@@ -25,7 +25,6 @@ angular.module('fourdotzero.filters', [])
                 'huitongkuaidi': '百世汇通',
                 'ems': 'EMS',
                 'guotongkuaidi': '国通快递',
-                'huitongkuaidi': '汇通快运',
                 'quanfengkuaidi': '全峰快递',
                 'rufengda': '如风达快递',
                 'shentong': '申通快递',
