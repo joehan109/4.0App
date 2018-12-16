@@ -129,17 +129,33 @@ angular.module('fourdotzero.directives', [])
             scope.payInfo = attrs.ordertype == 'new' ? '提交订单' : '现在支付';
 
             scope.showPaymentMethods = function() {
+                
+                //没有收获地址时先填写收货地址
+                $http.get(ENV.SERVER_URL + '/mall/receipt/get').success(function(data) {
+                    if (data.data) {
+                        // 没有选择地址，则将改地址设为默认地址
+                        if(!scope.ngCart.getAddress().id) {
+                            scope.ngCart.setAddress(data.data)
+                        }
+                        var sheet = {};
+                        sheet.buttonClicked = buttonClicked;
+                        sheet.buttons = [{
+                            text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付'
+                        }];
+                        sheet.cancelOnStateChange = true;
 
-                var sheet = {};
-                sheet.buttonClicked = buttonClicked;
-                sheet.buttons = [{
-                    text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付'
-                }];
-                sheet.cancelOnStateChange = true;
+                        $ionicActionSheet.show(sheet);
+                    } else {
+                        scope.$emit('alert', '请先填写收货地址');
+                    }
+                });
 
-                $ionicActionSheet.show(sheet);
 
                 function buttonClicked(index) {
+                    // 竞拍需要重新选择收货地址
+                    // if (Storage.get('shopOrSell') === 'sell') {
+                    //     $state.go('address');
+                    // }
                     var service = { 0: 'alipay', 1: 'wechat' }
                     var data = scope.ngCart.getAddress().data;
                     var detailList = scope.ngCart.getSelectedItems().map(function(item) {
@@ -163,6 +179,7 @@ angular.module('fourdotzero.directives', [])
                         receiptDetail: data.detail,
                         integral: scope.ngCart.getVipPoints()
                     }
+                    debugger
                     if (attrs.ordertype == 'new') {
                         if (!order.receiptId) {
                             scope.$emit('alert', '请选择收货地址');

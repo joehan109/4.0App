@@ -38,9 +38,12 @@
                         <tr ng-repeat="item in ngCart.getCart().selectedItems track by $index">
                             <td class="img-cell">
                                 <div>
-                                    <a ng-href="#/item/{{item.getData().id}}">
+                                    <a>
                                         <img ng-src="{{item.getData().mainUrl}}">
                                     </a>
+                                    <!-- <a ng-if="!isShop" ng-href="#/pitem/{{item.getData().id}}">
+                                        <img ng-src="{{item.getData().mainUrl}}">
+                                    </a> -->
                                 </div>
                             </td>
                             <td class="info-cell">
@@ -57,6 +60,7 @@
                 </table>
             </div>
         </section>
+        
         <!-- <section>
             <div class="btn-group">
                 <button class="btn del-num" ng-class="{'disabled':item.getQuantity()==1}" ng-click="setQuantity(item, -1, true)">-</button>

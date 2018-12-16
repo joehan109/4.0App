@@ -1010,14 +1010,19 @@ angular.module('fourdotzero.services', [])
             });
         };
 
-        this.selectItem = function(id) {
+        this.selectItem = function(id, data) {
             // 查找cart已有的item,并加进selectedItems
+            // 如果传第二个参数且为对象，则直接把第二个参数存入selectedItems,主要针对拍卖
             var inCart = this.getItemById(id);
-            if (typeof inCart === 'object') {
-                this.$cart.selectedItems.push(inCart);
+            var select = '';
+            if (data && (typeof data === 'object')) {
+                select = new ngCartItem(data._id, data._name, data._price, data._quantity, data._data);
+            } else if (typeof inCart === 'object') {
+                select = inCart
             } else {
                 console.log('irregular item');
             }
+            this.$cart.selectedItems.push(select);
             this.$save();
         };
         this.buyRightNow = function(id, name, price, quantity, data) {

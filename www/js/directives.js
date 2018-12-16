@@ -125,6 +125,7 @@ angular.module('fourdotzero.directives', [])
         restrict: 'E',
         link: function(scope, element, attrs) {
             scope.ngCart = ngCart;
+            scope.isShop = Storage.get('shopOrSell') === 'shop';
 
             scope.payInfo = attrs.ordertype == 'new' ? '提交订单' : '现在支付';
 
@@ -141,6 +142,8 @@ angular.module('fourdotzero.directives', [])
                         sheet.buttonClicked = buttonClicked;
                         sheet.buttons = [{
                             text: '<i class="icon"><img class="aliIcon" src="./img/ali.png" /></i> 支付宝支付'
+                        },{
+                            text: '<i class="icon"><img class="wxIcon" src="./img/wechat.png" /></i> 微信支付'
                         }];
                         sheet.cancelOnStateChange = true;
 

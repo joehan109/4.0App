@@ -2439,6 +2439,25 @@ function ordersCtrl($rootScope, $scope, FetchData, ngCart, $ionicPopup, orderOpt
             });
         }
     };
+    $scope.checkoutSell = function (order) {
+        ngCart.selectItem(null, {
+            _id:order.auProId,
+            _name:order.auProName,
+            _price:order.dealPrice,
+            _quantity:1,
+            _data:{
+                id: order.id,
+                maProId: order.auProId,
+                mainUrl: order.auProImg,
+                name: order.auProName,
+                num: 1,
+                price: order.dealPrice,
+                vipId: order.vipId
+            }
+        });
+        
+        $state.go('checkout');
+    };
     $scope.orderDone = function(order) {
         var confirmPopup = $ionicPopup.confirm({
             template: '确定已收到货?',
@@ -2972,7 +2991,7 @@ function checkoutCtrl($state, $scope, $rootScope, FetchData, ngCart, Storage, Au
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
-        
+        $scope.isShop = Storage.get('shopOrSell') === 'shop';
         AuthService.refreshUser().then(function(){
             setMaxPoints();
         })
@@ -3150,6 +3169,9 @@ function addressCtrl($rootScope, $state, $scope, FetchData, ngCart, $ionicPopup)
                                 $scope.addresses.splice(index, 1);
                             }
                         });
+                        if (ngCart.getAddress().id == addr_id) {
+                            ngCart.setAddress({})
+                        }
                     } else {
                         $scope.$emit("alert", data.error);
                     }

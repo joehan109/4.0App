@@ -14785,7 +14785,12 @@ input.ion-google-place[readonly] {
 
 .aliIcon {
   height: 30px;
-  background-color: black;
+  background-color: #fafafa;
+  vertical-align: middle; }
+
+.wxIcon {
+  height: 30px;
+  background-color: #fafafa;
   vertical-align: middle; }
 
 .item-thumbnail-left {
