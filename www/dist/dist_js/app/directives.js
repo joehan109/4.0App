@@ -155,11 +155,8 @@ angular.module('fourdotzero.directives', [])
 
 
                 function buttonClicked(index) {
-                    // 竞拍需要重新选择收货地址
-                    // if (Storage.get('shopOrSell') === 'sell') {
-                    //     $state.go('address');
-                    // }
                     var service = { 0: AlipayService, 1: WechatService }
+                    var isShop = Storage.get('shopOrSell') === 'shop';
                     var data = scope.ngCart.getAddress().data;
                     var detailList = scope.ngCart.getSelectedItems().map(function(item) {
                         return {
@@ -183,6 +180,7 @@ angular.module('fourdotzero.directives', [])
                         integral: scope.ngCart.getVipPoints()
                     }
                     if (attrs.ordertype == 'new') {
+                        // 商城从购物车新建订单
                         if (!order.receiptId) {
                             scope.$emit('alert', '请选择收货地址');
                             return;
@@ -191,9 +189,14 @@ angular.module('fourdotzero.directives', [])
                             $ionicActionSheet.hide();
                         }, index)
                     } else if (attrs.ordertype == 'existed') {
+                        // 已有商城订单或者竞品订单支付
                         // 直接掉支付接口
-                        var url = Storage.get('shopOrSell') === 'shop' ? '/mall/alipay/maorder/pay?ids=' : '/mall/alipay/auorder/pay?ids='
-                        $http.post(ENV.SERVER_URL + url + attrs.orderid).success(function(r, status) {
+                        var url = [
+                            isShop ? '/mall/alipay/maorder/pay?ids=' : '/mall/alipay/auorder/pay?ids=',
+                            isShop ? '/mall/wechat/maorder/pay?ids=' : '/mall/wechat/auorder/pay?ids='
+                        ][index]
+                        var params = url + attrs.orderid + (isShop ? '' : '&type='+order.trackingType+'&money='+order.trackingAmount+'&reId='+ order.receiptId);
+                        $http.post(ENV.SERVER_URL + params).success(function(r, status) {
                             if (r.ret) {
                                 service[index].checkout(r.data)
                             }
