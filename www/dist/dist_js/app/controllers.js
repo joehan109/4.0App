@@ -193,6 +193,7 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
             .then(function(barcodeData) {
                 $scope.barcodeData = barcodeData;
                 if (barcodeData.text) {
+                    // 扫描的都是下载地址+url=***,具体的***见下
                     // 如果以boxUrl开头，则为包装箱二维码，直接展示
                     // 如果以getCode开头，则为要发请求
                     var urlExceptDownload = barcodeData.text.split('/app/download?url=')[1];
