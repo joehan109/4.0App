@@ -143,40 +143,47 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
                 if (barcodeData.text) {
                     // 如果以boxUrl开头，则为包装箱二维码，直接展示
                     // 如果以getCode开头，则为要发请求
-                    if (barcodeData.text.indexOf('boxUrl') === 0) {
-                        $scope.showImg = true;
-                        $scope.imgSrc = barcodeData.text.split('boxUrl')[1];
-                    } else if (barcodeData.text.indexOf('getCode') === 0) {
-                        $scope.showImg = false;
-                        FetchData.get('/mall/mascan/get?code=' + $scope.barcodeData.text + "&area=" + $scope.city).then(function(res) {
-                            if (res.ret) {
-                                if (typeof res.data == 'string'){
-                                    $state.go('appIndex');
-                                    $scope.$emit("alert", res.data);
-                                    return;
-                                }
-                                $scope.data = res.data;
-                                $rootScope.scanData = res.data;
-                                $scope.imgUrl = res.data.proUrl;
-                                $scope.getDetail = true;
-                                if (res.data.pwdFlag) {
-                                    $scope.showCode = true;
-                                    $scope.openCode = res.data.sonPwd;
-                                    $scope.num = res.data.num || 0;
-                                } else {
-                                    $scope.showOpen = true;
-                                }
-                            }
-                        }, function(res) {
-                            // 查询数据出错
-                            $rootScope.scanData = {};
-                            $state.go('appIndex');
-                            $scope.$emit("alert", '数据不存在，请重新扫码');
-                        }); 
-                    } else {
+                    var urlExceptDownload = barcodeData.text.split('/app/download?url=')[1];
+                    if (!urlExceptDownload){
                         $state.go('appIndex');
                         $scope.$emit("alert", '请扫描包装箱二维码或瓶盖二维码');
+                    } else {
+                        if (urlExceptDownload.indexOf('boxUrl') === 0) {
+                            $scope.showImg = true;
+                            $scope.imgSrc = urlExceptDownload.split('boxUrl')[1];
+                        } else if (urlExceptDownload.indexOf('getCode') === 0) {
+                            $scope.showImg = false;
+                            FetchData.get('/mall/mascan/get?code=' + urlExceptDownload + "&area=" + $scope.city).then(function(res) {
+                                if (res.ret) {
+                                    if (typeof res.data == 'string'){
+                                        $state.go('appIndex');
+                                        $scope.$emit("alert", res.data);
+                                        return;
+                                    }
+                                    $scope.data = res.data;
+                                    $rootScope.scanData = res.data;
+                                    $scope.imgUrl = res.data.proUrl;
+                                    $scope.getDetail = true;
+                                    if (res.data.pwdFlag) {
+                                        $scope.showCode = true;
+                                        $scope.openCode = res.data.sonPwd;
+                                        $scope.num = res.data.num || 0;
+                                    } else {
+                                        $scope.showOpen = true;
+                                    }
+                                }
+                            }, function(res) {
+                                // 查询数据出错
+                                $rootScope.scanData = {};
+                                $state.go('appIndex');
+                                $scope.$emit("alert", '数据不存在，请重新扫码');
+                            }); 
+                        } else {
+                            $state.go('appIndex');
+                            $scope.$emit("alert", '请扫描包装箱二维码或瓶盖二维码');
+                        }
                     }
+                    
                 }
                 if (barcodeData.cancelled) {
                     // 点击返回 
