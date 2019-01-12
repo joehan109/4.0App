@@ -193,7 +193,7 @@ angular.module('fourdotzero.directives', [])
                         // 直接掉支付接口
                         var url = [
                             isShop ? '/mall/alipay/maorder/pay?ids=' : '/mall/alipay/auorder/pay?ids=',
-                            isShop ? '/mall/wechat/maorder/pay?ids=' : '/mall/wechat/auorder/pay?ids='
+                            isShop ? '/mall/weixin/maorder/pay?ids=' : '/mall/weixin/auorder/pay?ids='
                         ][index]
                         var params = url + attrs.orderid + (isShop ? '' : '&type='+order.trackingType+'&money='+order.trackingAmount+'&reId='+ order.receiptId);
                         $http.post(ENV.SERVER_URL + params).success(function(r, status) {

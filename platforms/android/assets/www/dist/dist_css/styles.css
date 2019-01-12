@@ -14785,7 +14785,12 @@ input.ion-google-place[readonly] {
 
 .aliIcon {
   height: 30px;
-  background-color: black;
+  background-color: #fafafa;
+  vertical-align: middle; }
+
+.wxIcon {
+  height: 30px;
+  background-color: #fafafa;
   vertical-align: middle; }
 
 .item-thumbnail-left {
@@ -15002,9 +15007,9 @@ input.ion-google-place[readonly] {
   color: white; }
 
 .sacnDetailSpan {
-  width: 28%;
-  display: inline-flex;
-  justify-content: space-around; }
+  width: 30%;
+  display: inline-block;
+  text-align-last: justify; }
 
 @media only screen and (width: 375px) and (height: 812px) {
   .tabs, .bar-footer, .bar-subfooter {

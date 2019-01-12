@@ -1361,7 +1361,7 @@ angular.module('fourdotzero.services', [])
                 }
             }).then(function(res) {
                 if (res.data.ret) {
-                    var url = ['/mall/alipay/maorder/pay?ids=', '/mall/wechat/maorder/pay?ids='][index];
+                    var url = ['/mall/alipay/maorder/pay?ids=', '/mall/weixin/maorder/pay?ids='][index];
                     $http.post(ENV.SERVER_URL + url + res.data.data).success(function(r, status) {
                         $ionicLoading.show({
                             template: '订单生成成功',
@@ -1486,26 +1486,27 @@ angular.module('fourdotzero.services', [])
 .service('WechatService', function($rootScope, $http, ENV, $state, $timeout) {
 
     this.checkout = function(data) {
-
         var params = {
-            partnerid: '10000100', // merchant id
-            prepayid: 'wx201411101639507cbf6ffd8b0779950874', // prepay id
-            noncestr: '1add1a30ac87aa2db72f57a2375d8fec', // nonce
-            timestamp: '1439531364', // timestamp
-            sign: '0CB01533B8C1EF103065174F50BCA001', // signed string
+            appid: data.appid, 
+            noncestr: data.noncestr, 
+            package: data.package, 
+            partnerid: data.partnerid, 
+            prepayid: data.prepayid, 
+            sign: data.sign, 
+            timestamp: data.timestamp 
         };
 
         Wechat.sendPaymentRequest(params, function() {
             $rootScope.$broadcast('alert', "支付成功");
             $timeout(function() {
-                $state.go('tab.order_detail', {
-                    order_id: data.order_id
+                $state.go('orders', {
+                    status_id: 1
                 }, {
                     reload: true
-                })
-            }, 1000);
+                });
+            }, 500);
         }, function(reason) {
-            $rootScope.$broadcast('alert', "Failed: " + reason);
+            $rootScope.$broadcast('alert', "支付失败: " + reason);
         });
 
     };

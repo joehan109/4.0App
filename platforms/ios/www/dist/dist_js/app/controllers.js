@@ -195,24 +195,24 @@ function scanCtrl($scope, $rootScope, $state, $cordovaToast,
                 if (barcodeData.text) {
                     // 扫描的都是下载地址+url=***,具体的***见下
                     // 包装箱二维码：
-                    // http://sdl.lightour.com/mall/sdk/app/download?url=boxUrlPJBZX00000
+                    // http://sdl.lightour.com/mall/s/app/dl?u=bPJBZX00000
 
                     // 瓶子二维码：
-                    // http://sdl.lightour.com/mall/sdk/app/download?url=getCodePJPZ00000.jpg
+                    // http://sdl.lightour.com/mall/sdk/app/download?url=cPJPZ00000.jpg
                     // 1.两个都是在/mall/sdk/app/download下面 
                     // 2.包装箱二维码后面有后缀.jpg
                     // 3.http://39.106.199.108:8080/mall/img/app/download?name=PJBZX00000.jpg就是要展示的图片的地址
-                    // 如果以boxUrl开头，则为包装箱二维码，直接展示
-                    // 如果以getCode开头，则为要发请求
-                    var urlExceptDownload = barcodeData.text.split('/mall/sdk/app/download?url=')[1];
+                    // 如果以b开头，则为包装箱二维码，直接展示
+                    // 如果以c开头，则为要发请求
+                    var urlExceptDownload = barcodeData.text.split('/mall/s/app/dl?u=')[1];
                     if (!urlExceptDownload){
                         $state.go('appIndex');
                         $scope.$emit("alert", '请扫描包装箱二维码或瓶盖二维码');
                     } else {
-                        if (urlExceptDownload.indexOf('boxUrl') === 0) {
+                        if (urlExceptDownload.indexOf('b') === 0) {
                             $scope.showImg = true;
-                            $scope.imgSrc = ENV.SERVER_URL + "/mall/img/app/download?name=" + urlExceptDownload.split('boxUrl')[1];
-                        } else if (urlExceptDownload.indexOf('getCode') === 0) {
+                            $scope.imgSrc = ENV.SERVER_URL + "/mall/img/app/download?name=" + urlExceptDownload.split('b')[1]+'.jpg';
+                        } else if (urlExceptDownload.indexOf('c') === 0) {
                             $scope.showImg = false;
                             FetchData.get('/mall/mascan/get?code=' + urlExceptDownload + "&area=" + $scope.city).then(function(res) {
                                 if (res.ret) {
