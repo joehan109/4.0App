@@ -81,7 +81,7 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
     $scope.types = [
         // { name: '扫一扫', url: 'scan', icon: 'qr-scanner', pic: 'category' },
         { name: '4.0 商城', url: 'shopTab.cateHome', icon: 'ios-home-outline', pic: 'calculate' },
-        { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline', pic: 'limit' },
+        // { name: '4.0 拍卖', url: 'tab.home', icon: 'ios-timer-outline', pic: 'limit' },
         { name: '我的会员', url: 'userDetail', icon: 'qr-scanner', pic: 'send' }
     ];
     $scope.goto = function(url) {
