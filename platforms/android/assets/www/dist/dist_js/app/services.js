@@ -775,7 +775,9 @@ angular.module('fourdotzero.services', [])
                             items: [],
                             selectedItems: []
                         });
-                        $state.go('appIndex');
+                        if (!$rootScope.noNeedLogin) {
+                            $state.go('appIndex');
+                        }
 
                         d.reject();
                     }
@@ -795,7 +797,9 @@ angular.module('fourdotzero.services', [])
                         template: "网络连接失败, " + status,
                         duration: 1000
                     });
-                    $state.go('appIndex');
+                    if (!$rootScope.noNeedLogin) {
+                        $state.go('appIndex');
+                    }
                     d.reject();
                 });
                 return d.promise;
@@ -841,7 +845,9 @@ angular.module('fourdotzero.services', [])
                             items: [],
                             selectedItems: []
                         });
-                        $state.go('appIndex');
+                        if (!$rootScope.noNeedLogin) {
+                            $state.go('appIndex');
+                        }
                         d.reject();
                     }
                 }).error(function(data, status) {
@@ -860,7 +866,9 @@ angular.module('fourdotzero.services', [])
                         items: [],
                         selectedItems: []
                     });
-                    $state.go('appIndex');
+                    if (!$rootScope.noNeedLogin) {
+                        $state.go('appIndex');
+                    }
                     d.reject();
                 });
                 return d.promise;

@@ -170,7 +170,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
                     selectedItems: []
                 });
             }
-            $rootScope.authDialog.show();
+            // $rootScope.authDialog.show();
         }
     });
 
@@ -209,8 +209,14 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     };
 
     $rootScope.$on('$stateChangeStart', function(event, next) {
+        // 通过name判断是否需要展示登录框
+        var name = next.name;
+        // 主页、商城主页、商品详情、扫描页可以免登录
+        var noNeedLogin = /^(appIndex|shopTab.cateHome|item|scan)$/.test(name);
+        $rootScope.noNeedLogin = noNeedLogin;
         if (AuthService.isLoggedIn() === false) {
             var token = Storage.get('access_token');
+            // if (token || noNeedLogin) {
             if (token) {
                 // AuthService.authenticate(token)
                 //     .then(function() {

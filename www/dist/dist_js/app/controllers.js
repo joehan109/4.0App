@@ -85,7 +85,7 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
         { name: '我的会员', url: 'userDetail', icon: 'qr-scanner', pic: 'send' }
     ];
     $scope.goto = function(url) {
-        if (!Storage.get('access_token')) {
+        if  (['shopTab.cateHome','scan'].indexOf(url) === -1 && !Storage.get('access_token') ) {
             $rootScope.showAuthBox();
             return;
         }
