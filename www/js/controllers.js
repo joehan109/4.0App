@@ -8,7 +8,7 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
     $scope.$on('$ionicView.beforeEnter', function() {
         $ionicSlideBoxDelegate.start();
         $ionicSlideBoxDelegate.loop(true);
-        FetchData.get('/mall/img/query?type=1').then(function(res) {
+        FetchData.get('/mall/img/app/query?type=1').then(function(res) {
             if (res.ret) {
                 $scope.bannerList = res.data.data;
                 $ionicSlideBoxDelegate.loop(true);
@@ -16,7 +16,7 @@ function appIndexCtrl($scope, $rootScope, $state, $cordovaToast,
         });
     });
     $scope.$on('authDialog:hide', function(event) {
-        FetchData.get('/mall/img/query?type=1').then(function(res) {
+        FetchData.get('/mall/img/app/query?type=1').then(function(res) {
             if (res.ret) {
                 $scope.bannerList = res.data.data;
                 $ionicSlideBoxDelegate.loop(true);
@@ -696,7 +696,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         });
         $rootScope.hideTabs = '';
         Storage.set('shopOrSell', 'shop');
-        $scope.searchQuery = { url: '/mall/mapro/query', name: '' };
+        $scope.searchQuery = { url: '/mall/mapro/app/query', name: '' };
         if (Storage.get('cateHomeOrigin') == 'index') {
             $scope.currentIndex = 0;
             Storage.remove('cateHomeOrigin');
@@ -705,7 +705,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
         $ionicSlideBoxDelegate.update();
         $ionicSlideBoxDelegate.loop(true);
     });
-    FetchData.get('/mall/mapro/getAll').then(function(res) {
+    FetchData.get('/mall/mapro/app/getAll').then(function(res) {
         $scope.tuijian = res.data;
         $ionicSlideBoxDelegate.update();
         $ionicSlideBoxDelegate.loop(true);
@@ -774,7 +774,7 @@ function cateHomeCtrl($scope, $rootScope, $log, $timeout, $state,
     $scope.searchItem = function(query) {
         // $state.go('tab.search', { 'query': query });
         Items.fetchTopItems({ 'query': {
-            url: '/mall/mapro/query',
+            url: '/mall/mapro/app/query',
             name:query
         } }).then(function(data) {
             $scope.isFirst = false;
@@ -870,7 +870,7 @@ function homeCtrl($scope, $rootScope, $log, $timeout, $state,
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = '';
         $scope.searchQuery = { url: '/mall/aupro/app/query?flag=&status=', name: '' };
-        // $scope.searchQuery = { url: '/mall/mapro/query', name: '' };
+        // $scope.searchQuery = { url: '/mall/mapro/app/query', name: '' };
         if (Storage.get('cateHomeOrigin') == 'index') {
             $scope.currentIndex = 0;
             Storage.remove('cateHomeOrigin');
@@ -1491,7 +1491,7 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
     //查看是在商城还是特卖
     $scope.$on('$ionicView.beforeEnter', function() {
         $scope.isShop = Storage.get('shopOrSell') === 'shop';
-        $scope.isLogin=!!Storage.get('access_token')
+        $scope.isLogin= !!Storage.get('access_token');
         $rootScope.hideTabs = '';
     });
 
@@ -2003,7 +2003,7 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData, Storage,
         $scope.buyDialog.close();
     })
 
-    FetchData.get('/mall/mapro/get?id=' + $stateParams.id).then(function(data) {
+    FetchData.get('/mall/mapro/app/get?id=' + $stateParams.id).then(function(data) {
         $scope.item = data.data;
         // $scope.specs = data.data.specs;
         // $scope.selectedSpec = data.data.specs[0];
