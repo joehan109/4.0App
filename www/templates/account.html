@@ -1,15 +1,15 @@
 <ion-view>
     <div class="avatar-section" ng-style="style">
-        <div ng-if="user.getUser().name" class="avatar-content">
+        <div ng-if="isLogin" class="avatar-content">
             <div class="avatar-wrap" ng-click="$state.go('profile')">
                 <p><img class="avatar" ng-src="{{user.getUser().image}}" alt=""></p>
-                <p ng-if="user.getUser().name" class="user dark">{{user.getUser().name}}</p>
+                <p ng-if="isLogin" class="user dark">{{user.getUser().name}}</p>
             </div>
         </div>
-        <div ng-click="showAuthBox()" ng-if="!user.getUser().name" class="avatar-content">
+        <div ng-click="showAuthBox()" ng-if="!isLogin" class="avatar-content">
             <div class="avatar-wrap">
-                <p><img class="avatar" ng-src="{{user.getUser().image}}" alt=""></p>
-                <p ng-if="!user.getUser().name" class="login-btn">登录</p>
+                <p><img class="avatar defaultImage" alt=""></p>
+                <p ng-if="!isLogin" class="login-btn">登录</p>
             </div>
         </div>
 
@@ -72,10 +72,10 @@
             </div>
         </ion-list>
         <div style="margin-top:50px;text-align:center">
-            <button class="button button-assertive" ng-if="user.getUser().name" style="width:80%; border:1px solid #6fd6b9" ng-click="logout()">
+            <button class="button button-assertive" ng-if="isLogin" style="width:80%; border:1px solid #6fd6b9" ng-click="logout()">
               退出当前账户
             </button>
-            <button class="button button-assertive" ng-if="!user.getUser().name" style="width:80%;" ng-click="showAuthBox()">
+            <button class="button button-assertive" ng-if="!isLogin" style="width:80%;" ng-click="showAuthBox()">
             登录
             </button>
         </div>

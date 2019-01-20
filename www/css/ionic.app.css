@@ -15539,7 +15539,9 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
   width: 50px;
   height: 50px;
   border-radius: 100%;
-  box-shadow: 1px 1px 2px; }
+  box-shadow: 1px 1px 2px;
+  background: url("../img/user.png") no-repeat;
+  background-size: 50px 50px; }
 
 .account i.icon {
   color: grey;

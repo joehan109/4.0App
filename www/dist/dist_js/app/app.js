@@ -152,26 +152,26 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     //     });
     // }
     // ngCart.init();
-    // 检测是否登录
-    $http({
-        method: "GET",
-        url: ENV.SERVER_URL + '/mall/mashopping/getAll'
-    }).success(function(res, status) {
-        if (status === 200 && res.ret) {} else {
-            if (res.data === 'login') {
-                Storage.remove('user');
-                Storage.remove('access_token');
-                // 清空购物车
-                Storage.set('cart', {
-                    shipping: null,
-                    taxRate: null,
-                    tax: null,
-                    items: [],
-                    selectedItems: []
-                });
-            }
-            // $rootScope.authDialog.show();
-        }
+    // $http({
+    //     method: "GET",
+    //     url: ENV.SERVER_URL + '/mall/mashopping/getAll'
+    // }).success(function(res, status) {
+    //     if (status === 200 && res.ret) {} else {
+    //         if (res.data === 'login') {
+    //         }
+    //         // $rootScope.authDialog.show();
+    //     }
+    // });
+    // 初始化清空缓存，除了之前保存的用户名密码
+    Storage.remove('user');
+    Storage.remove('access_token');
+    // 清空购物车
+    Storage.set('cart', {
+        shipping: null,
+        taxRate: null,
+        tax: null,
+        items: [],
+        selectedItems: []
     });
 
     // 判断是否是iPhoneX
@@ -211,13 +211,13 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
     $rootScope.$on('$stateChangeStart', function(event, next) {
         // 通过name判断是否需要展示登录框
         var name = next.name;
-        // 主页、商城主页、商品详情、扫描页可以免登录
-        var noNeedLogin = /^(appIndex|shopTab.cateHome|item|scan)$/.test(name);
+        // 主页、商城主页、商品详情、扫描页、商城我的可以免登录
+        var noNeedLogin = /^(appIndex|shopTab.cateHome|item|scan|shopTab.account)$/.test(name);
         $rootScope.noNeedLogin = noNeedLogin;
         if (AuthService.isLoggedIn() === false) {
             var token = Storage.get('access_token');
-            // if (token || noNeedLogin) {
-            if (token) {
+            if (token || noNeedLogin) {
+            // if (token) {
                 // AuthService.authenticate(token)
                 //     .then(function() {
                 //

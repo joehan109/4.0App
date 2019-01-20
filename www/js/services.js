@@ -70,13 +70,13 @@ angular.module('fourdotzero.services', [])
                 buttonClicked: function(button, scope) {
                     if (share_type == 'post') {
                         var title = item.title.substr(0, 24);
-                        var description = "来自美比，比邻中国的海外生活。";
-                        var url = "http://www.may.bi/";
+                        var description = "来自4.0酒。";
+                        var url = "http://sdl.lightour.com";
                         var image = item.small_url;
                     } else {
                         var title = item.title.substr(0, 24);
-                        var description = "来自美比，比邻中国的海外生活。";
-                        var url = "http://may.bi/#/items/" + item.item_id;
+                        var description = "来自4.0酒。";
+                        var url = "http://sdl.lightour.com";
                         var image = item.small_thumbnail;
                     }
 
@@ -114,7 +114,7 @@ angular.module('fourdotzero.services', [])
                         args.title = title;
                         args.description = description;
                         args.imageUrl = image;
-                        args.appName = "美比客户端";
+                        args.appName = "4.0酒客户端";
                         window.YCQQ.shareToQQ(function() {}, failCallback, args);
                     }
                 }

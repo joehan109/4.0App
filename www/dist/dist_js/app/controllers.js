@@ -31,7 +31,7 @@ setVIPCardCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV', '$ionicPopup']
 changePhoneCtrl.$inject = ['$rootScope', '$scope', '$http', 'ENV', '$interval', 'Storage'];
 settingsCtrl.$inject = ['$rootScope', '$scope', '$state', 'AuthService', '$ionicModal', 'Storage'];
 paymentSuccessCtrl.$inject = ['$location', '$timeout'];
-itemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup'];
+itemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', 'Storage', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup'];
 pitemCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', 'utils', '$ionicSlideBoxDelegate', 'sheetShare', '$cordovaSocialSharing', '$ionicPopup', '$interval'];
 itemsCtrl.$inject = ['$rootScope', '$scope', 'Items', '$state', '$stateParams'];
 boardCtrl.$inject = ['$scope', '$rootScope', '$stateParams', 'FetchData', '$state'];
@@ -1543,6 +1543,7 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
     //查看是在商城还是特卖
     $scope.$on('$ionicView.beforeEnter', function() {
         $scope.isShop = Storage.get('shopOrSell') === 'shop';
+        $scope.isLogin=!!Storage.get('access_token')
         $rootScope.hideTabs = '';
     });
 
@@ -1568,7 +1569,6 @@ function accountCtrl($rootScope, $scope, AuthService, User, Photogram,
     $scope.switchListStyle = function(style) {
         $scope.gridStyle = style;
     }
-
 
     $scope.zoom = function(img) {
         if (ionic.Platform.isAndroid()) {
@@ -1972,7 +1972,7 @@ function paymentCancelCtrl() {
 }
 
 
-function itemCtrl($scope, $rootScope, $stateParams, FetchData,
+function itemCtrl($scope, $rootScope, $stateParams, FetchData, Storage,
     $ionicSlideBoxDelegate, sheetShare, $cordovaSocialSharing, $ionicPopup) {
     //商品详情
     //
@@ -2014,6 +2014,10 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData,
 
 
     $scope.showSpecsBox = function() {
+        if (!isLogin ()) {
+            $rootScope.showAuthBox();
+            return;
+        }
         $scope.specsDialog = $ionicPopup.show({
             templateUrl: 'specs-dialog.html',
             scope: $scope,
@@ -2022,6 +2026,10 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData,
     };
 
     $scope.showSpecsBuy = function() {
+        if (!isLogin ()) {
+            $rootScope.showAuthBox();
+            return;
+        }
         $scope.buyDialog = $ionicPopup.show({
             templateUrl: 'specsBuy-dialog.html',
             scope: $scope,
@@ -2078,6 +2086,10 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData,
     });
 
     $scope.favor = function(item_id) {
+        if (!isLogin ()) {
+            $rootScope.showAuthBox();
+            return;
+        }
         if (!$scope.item.collectFlag) {
             FetchData.post('/mall/macollect/save?maProId=' + item_id).then(function(data) {
                 $scope.item.collectFlag = true;
@@ -2156,8 +2168,10 @@ function itemCtrl($scope, $rootScope, $stateParams, FetchData,
         }
         return null;
     }
-
-
+    // 是否已登录
+    function isLogin () {
+        return !!Storage.get('access_token')
+    }
 }
 
 function pitemCtrl($scope, $rootScope, $stateParams, FetchData,utils,
