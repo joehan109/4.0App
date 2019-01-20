@@ -212,7 +212,7 @@ angular.module('fourdotzero', ['ionic', 'ionic.service.core', 'ngCordova',
         // 通过name判断是否需要展示登录框
         var name = next.name;
         // 主页、商城主页、商品详情、扫描页、商城我的可以免登录
-        var noNeedLogin = /^(appIndex|shopTab.cateHome|item|scan|shopTab.account)$/.test(name);
+        var noNeedLogin = /^(appIndex|shopTab.cateHome|item|shopTab.account)$/.test(name);
         $rootScope.noNeedLogin = noNeedLogin;
         if (AuthService.isLoggedIn() === false) {
             var token = Storage.get('access_token');
