@@ -1826,7 +1826,10 @@ function settingsCtrl($rootScope, $scope, $state, AuthService, $ionicModal, Stor
     //
     $scope.$on('$ionicView.beforeEnter', function() {
         $rootScope.hideTabs = 'tabs-item-hide';
-        $scope.defaultPhone = Storage.get('user').phone
+        $scope.defaultPhone = Storage.get('user') && Storage.get('user').phone;
+        if (!Storage.get('access_token')) {
+            $state.go('appIndex');
+        }
     });
     $scope.user = AuthService;
 
