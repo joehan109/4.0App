@@ -1792,12 +1792,23 @@ function signupCtrl($rootScope, $scope, AuthService, $state, $http, ENV) {
                     $scope.form[type] = true;
                 }
             } else {
+                $scope.form[type] = false;
                 $scope.$emit('alert', "请输入正确的" + name);
             }
         }
     };
     $scope.signup = function() {
         // call register from service
+        var validate = true;
+        ['phone','name','password'].forEach(element => {
+            if (validate && (!$scope.form[element] || !$scope.signupForm[element])){
+                $scope.$emit('alert', "请输入正确格式的"+{name:'用户名',phone:'手机号',password:'密码'}[element]);
+                validate = false;
+            }
+        });
+        if (!validate){
+            return;
+        }
         if ($scope.signupForm.password !== $scope.signupForm.password1) {
             $scope.$emit('alert', "两次输入的密码需保持一致");
             return;
