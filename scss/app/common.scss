@@ -513,7 +513,10 @@
 
 .sacnDetailSpan{
     width: 30%;
-    display: inline-block;
+    display: flex;
     text-align-last: justify;
-    // justify-content: space-around;
+    justify-content: space-around;
+}
+.sacnDetailSpan1{
+    
 }
