@@ -41,7 +41,7 @@
   "_requiredBy": [
     "#USER"
   ],
-  "_resolved": "http://npmrepo.corp.qunar.com/cordova-plugin-splashscreen/-/cordova-plugin-splashscreen-5.0.2.tgz",
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-splashscreen/-/cordova-plugin-splashscreen-5.0.2.tgz",
   "_shasum": "747e74f56e201cd585bc62d14bca19f6867ff1ed",
   "_shrinkwrap": null,
   "_spec": "cordova-plugin-splashscreen@5.0.2",
@@ -72,7 +72,7 @@
     "shasum": "747e74f56e201cd585bc62d14bca19f6867ff1ed",
     "size": 59952,
     "noattachment": false,
-    "tarball": "http://npmrepo.corp.qunar.com/cordova-plugin-splashscreen/-/cordova-plugin-splashscreen-5.0.2.tgz"
+    "tarball": "https://registry.npmjs.org/cordova-plugin-splashscreen/-/cordova-plugin-splashscreen-5.0.2.tgz"
   },
   "engines": {
     "cordovaDependencies": {

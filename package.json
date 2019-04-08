@@ -15,7 +15,6 @@
     "cordova-plugin-console": "^1.1.0",
     "cordova-plugin-device": "2.0.2",
     "cordova-plugin-file": "^6.0.1",
-    "cordova-plugin-file-opener2": "^2.2.0",
     "cordova-plugin-file-transfer": "^1.7.1",
     "cordova-plugin-ionic-keyboard": "2.0.5",
     "cordova-plugin-ionic-webview": "1.1.19",
@@ -97,9 +96,6 @@
         "WECHATAPPID": "wx6562133776850964"
       },
       "cordova-plugin-network-information": {},
-      "cordova-plugin-file-opener2": {
-        "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      },
       "cordova-plugin-app-version": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       }

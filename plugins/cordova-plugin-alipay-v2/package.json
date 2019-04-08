@@ -43,7 +43,7 @@
     "#USER",
     "/"
   ],
-  "_resolved": "http://npmrepo.corp.qunar.com/cordova-plugin-alipay-v2/-/cordova-plugin-alipay-v2-0.0.4.tgz",
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-alipay-v2/-/cordova-plugin-alipay-v2-0.0.4.tgz",
   "_shasum": "6293d1ce957bf9d08bf1e3db86943fc63a6fe8b5",
   "_shrinkwrap": null,
   "_spec": "cordova-plugin-alipay-v2",

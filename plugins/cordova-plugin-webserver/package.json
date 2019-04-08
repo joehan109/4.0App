@@ -39,7 +39,7 @@
     "#USER",
     "/"
   ],
-  "_resolved": "http://npmrepo.corp.qunar.com/cordova-plugin-webserver/-/cordova-plugin-webserver-1.0.3.tgz",
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-webserver/-/cordova-plugin-webserver-1.0.3.tgz",
   "_shasum": "18a0d7a81ef7840ea279cfba86894928241e939e",
   "_shrinkwrap": null,
   "_spec": "cordova-plugin-webserver",
