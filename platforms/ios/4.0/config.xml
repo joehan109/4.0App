@@ -131,4 +131,13 @@
         <param name="onload" value="true" />
     </feature>
     <preference name="WECHATAPPID" value="wx6562133776850964" />
+    <feature name="NetworkStatus">
+        <param name="ios-package" value="CDVConnection" />
+    </feature>
+    <feature name="FileOpener2">
+        <param name="ios-package" value="FileOpener2" />
+    </feature>
+    <feature name="AppVersion">
+        <param name="ios-package" value="AppVersion" />
+    </feature>
 </widget>

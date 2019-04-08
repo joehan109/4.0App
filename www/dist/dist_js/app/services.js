@@ -1588,7 +1588,32 @@ angular.module('fourdotzero.services', [])
     }
 }])
 
-.factory("appUpdateService", ['$ionicPopup', '$timeout', '$ionicLoading', function($ionicPopup, $timeout, $ionicLoading) {
+.service('device',['$rootScope', '$http', function($rootScope, $http) {
+    var browser = {  
+        versions: function() {  
+            var u = navigator.userAgent, app = navigator.appVersion;  
+            return {//移动终端浏览器版本信息  
+                trident: u.indexOf('Trident') > -1, //IE内核  
+                presto: u.indexOf('Presto') > -1, //opera内核  
+                webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核  
+                gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核  
+                mobile: !!u.match(/AppleWebKit.*Mobile.*/) || !!u.match(/AppleWebKit/), //是否为移动终端  
+                ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端  
+                android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器  
+                iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者QQHD浏览器  
+                iPad: u.indexOf('iPad') > -1, //是否iPad  
+                webApp: u.indexOf('Safari') == -1 //是否web应该程序，没有头部与底部  
+            };  
+        }(),  
+        language: (navigator.browserLanguage || navigator.language).toLowerCase()  
+    };
+    return {
+        isIos: browser.versions.ios || browser.versions.iPhone || browser.versions.iPad,
+        isAndroid: browser.versions.android
+    }
+}])
+
+.factory("appUpdateService", ['$ionicPopup', '$timeout', '$ionicLoading', 'device', function($ionicPopup, $timeout, $ionicLoading, device) {
     var version;
     var deploy = new Ionic.Deploy();
 
@@ -1604,17 +1629,33 @@ angular.module('fourdotzero.services', [])
             showDelay: 0
         });
 
-        deploy.check().then(function(hasUpdate) {
+        if (device.isIos) {  
+            setTimeout(function () {
+                window.location="https://itunes.apple.com/cn/app/id1449451647?mt=8";  
+            }, 3000)
+        }  
+        else if (device.isAndroid) {  
+            setTimeout(function () {
+                window.location="http://39.106.199.108:8080/mall/version/app/download?name=mall_service_1.0.0.apk"; 
+            }, 3000)
+        }  
+        // deploy.check().then(function(hasUpdate) {
+        //     console.log(hasUpdate)
+        //     if (hasUpdate) {
+        //         showUpdateConfirm();
+        //     } else {
+        //         $ionicLoading.show({
+        //             template: '当前已是最新版本！',
+        //             animation: 'fade-out',
+        //             showBackdrop: true,
+        //             duration: 3000,
+        //             showDelay: 0
+        //         });
+        //     }
+        // }, function(err) {
+        //     console.log(err);
 
-            if (hasUpdate) {
-                showUpdateConfirm();
-            } else {
-                console.log('already nb');
-            }
-        }, function(err) {
-            console.log(err);
-
-        });
+        // });
     }
 
     function showUpdateConfirm() {

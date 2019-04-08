@@ -15006,10 +15006,15 @@ input.ion-google-place[readonly] {
 .slider-pager .slider-pager-page.active {
   color: white; }
 
+.sacnDetailSpanWrap {
+  display: flex; }
+
 .sacnDetailSpan {
   width: 30%;
-  display: inline-block;
-  text-align-last: justify; }
+  display: flex;
+  text-align-last: justify;
+  justify-content: space-between;
+  min-width: 54px; }
 
 @media only screen and (width: 375px) and (height: 812px) {
   .tabs, .bar-footer, .bar-subfooter {

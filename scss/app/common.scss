@@ -510,12 +510,15 @@
 //     height: 12px;
 //     box-sizing: border-box;
 // }
-
+.sacnDetailSpanWrap{
+    display: flex;
+}
 .sacnDetailSpan{
     width: 30%;
     display: flex;
     text-align-last: justify;
-    justify-content: space-around;
+    justify-content: space-between;
+    min-width: 54px;
 }
 .sacnDetailSpan1{
     
